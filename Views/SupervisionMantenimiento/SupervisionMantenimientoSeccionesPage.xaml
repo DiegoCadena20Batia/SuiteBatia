@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.Supervisionmantenimiento"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.SupervisionMantenimiento.SupervisionMantenimientoSeccionesPage"
+    MasterPageTitle="PUNTOS A SUPERVISAR"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#F5F5F5"
+    ShowFloatingButton="False">
+
+    <!--<ContentPage.BindingContext>
+        <viewModel:SupervisionMantenimientoInmuebleViewModel />
+    </ContentPage.BindingContext>-->
+    <controls:MasterPage.MasterPageContent>
+        <Grid x:Name="mainGrid">
+
+        <Grid>
+                <Grid RowDefinitions=" * , auto">
+                    <Grid Grid.Row="0">
+                    <CollectionView
+    ItemsSource="{Binding SeccionesList}"
+    x:Name="collectionView">
+
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame
+                                HeightRequest="75"
+                Margin="15,4"
+                Padding="20,0,20,0"
+                BackgroundColor="White"
+                CornerRadius="15"
+                HasShadow="False"
+                                BorderColor="LightGray">
+
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer
+                        Command="{Binding Path=BindingContext.SelectedSectionCommand, Source={x:Reference collectionView}}"
+                        CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+
+                                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+
+                                    <!-- 📝 Nombre de la sección -->
+                                    <Label
+                        Text="{Binding Seccion}"
+                        FontSize="17"
+                        FontAttributes="Bold"
+                        TextColor="#333"
+                                        VerticalOptions="Center"/>
+
+                                    <!-- 🔄 Estado -->
+                                    <Grid Grid.Column="1" VerticalOptions="Center">
+
+                                        <!-- ✅ Terminada -->
+                                        <Image
+                            Source="check_green.png"
+                            WidthRequest="30"
+                            HeightRequest="30"
+                            IsVisible="{Binding Terminada}" />
+
+                                        <!-- ⏳ Pendiente -->
+                                        <Label
+                            Text="Pendiente"
+                            FontSize="14"
+                            TextColor="Gray"
+                            IsVisible="{Binding Terminada, Converter={StaticResource InvertedBoolConverter}}" />
+                                    </Grid>
+
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Button Text="Continuar"
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Margin="100,10"
+                                TextColor="White"
+                                BackgroundColor="DodgerBlue"
+                                Command="{Binding ContinuarCommand}"></Button>
+                    
+                    </Grid>
+                    
+                </Grid>
+                
+                
+
+
+                <!--<CollectionView
+                BackgroundColor="Transparent"
+                ItemsSource="{Binding Secciones}"
+                Margin="0,0,0,0"
+                x:Name="collectionView">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        Orientation="Vertical"
+                        ItemSpacing="1" /> 
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="5,5,5,5" BackgroundColor="White" BorderColor="AliceBlue" Padding="20" CornerRadius="20">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Path=BindingContext.SelectedSectionCommand, Source={x:Reference collectionView}}"
+                                    CommandParameter="{Binding .}"
+                                    Tapped="TapGestureRecognizer_Tapped">
+                                </TapGestureRecognizer>
+                            </Frame.GestureRecognizers>
+                            <Grid RowDefinitions="auto, auto" RowSpacing="5" ColumnSpacing="10">
+                                --><!-- Fila 1 --><!--
+                                <Label FontSize="16" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Text="{Binding Seccion }"></Label>
+                                <Label FontSize="16" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Text="{Binding Terminada }"></Label>
+
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>-->
+        </Grid>
+
+        <!--<ImageButton
+            Source="{StaticResource ArrowIcon}"
+            Style="{StaticResource FloatingButtonStyle}"
+            Command="{Binding ContinuarCommand}" />-->
+
+        <Grid
+            BackgroundColor="#88000000"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+                Color="{StaticResource AzulOscuro}"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}" />
+        </Grid>
+    </Grid>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

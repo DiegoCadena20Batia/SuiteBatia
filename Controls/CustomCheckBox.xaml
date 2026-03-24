@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Controls.CustomCheckBox">
+
+    <Grid
+        ColumnDefinitions="*, auto"
+        HorizontalOptions="FillAndExpand">
+
+        <Label
+            Text="{Binding Text}"
+            TextColor="Black"
+            FontAttributes="Bold"
+            FontSize="16" 
+            VerticalTextAlignment="Center"/>
+
+        <ImageButton
+            Grid.Column="1"
+            x:Name="imageButton"
+            Source="ch_f"
+            HeightRequest="{OnPlatform Android=30, iOS=20}"
+            WidthRequest="{OnPlatform Android=30, iOS=20}"
+            Aspect="AspectFit"
+            Clicked="imageButton_Clicked"
+            Margin="10, 0, 0, 0"
+            Command="{Binding Command}"
+            CommandParameter="{Binding CommandParameter}">
+
+            <ImageButton.Triggers>
+                <DataTrigger
+                    TargetType="ImageButton"
+                    Binding="{Binding IsChecked}"
+                    Value="true">
+                    
+                    <Setter
+                        Property="Source"
+                        Value="ch_t" />
+                </DataTrigger>
+            </ImageButton.Triggers>
+        </ImageButton>
+    </Grid>
+</ContentView>

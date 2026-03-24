@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    x:Class="BatiaSuite.Views.Vacantes.DatosComplementariosPage"
+    MasterPageTitle="{x:Static utils:Constants.DATOS_COMPLEMENTARIOS}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <controls:MasterPage.Resources>
+        <ResourceDictionary>
+            <myConverters:StringToBoolConverter
+                x:Key="StringToBoolConverter" />
+        </ResourceDictionary>
+    </controls:MasterPage.Resources>
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                Padding="{OnIdiom '10, 0, 10, 70', Tablet='10, 0, 10, 105'}">
+
+                <VerticalStackLayout
+                    Spacing="10">
+
+                    <controls:BordererLabel
+                        Placeholder="{x:Static utils:Constants.ULTIMO_GRADO_ESTUDIOS}"
+                        Text="{Binding SelectedGradoEstudios.Descripcion}"
+                        Command="{Binding SelectGradoEstudiosCommand}" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:CheckBoxView
+                        x:Name="chBoxHijos"
+                        Text="{x:Static utils:Constants.TIENE_HIJOS}"
+                        IsChecked="{Binding Vacante.TieneHijos}"
+                        Command="{Binding TieneHijosChangedCommand}"
+                        CommandParameter="{Binding IsChecked, Source={x:Reference chBoxHijos}}" />
+
+                    <VerticalStackLayout
+                        Spacing="10"
+                        IsVisible="{Binding IsChecked, Source={x:Reference chBoxHijos}}">
+
+                        <controls:BordererEntry
+                            Text="{Binding Vacante.CantHijos}"
+                            Placeholder="{x:Static utils:Constants.CUANTOS_HIJOS}"
+                            Keyboard="Numeric"
+                            MaxLength="2" />
+
+                        <controls:CheckBoxView
+                            Text="{x:Static utils:Constants.DEPENDEN_ECONOMICAMENTE}"
+                            IsChecked="{Binding Vacante.DependeEconomico}" />
+                    </VerticalStackLayout>
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:CheckBoxView
+                        Text="{x:Static utils:Constants.SABE_LEER}"
+                        IsChecked="{Binding Vacante.SabLeer}" />
+
+                    <controls:CheckBoxView
+                        Text="{x:Static utils:Constants.SABE_ESCRIBIR}"
+                        IsChecked="{Binding Vacante.SabEscribir}" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:CheckBoxView
+                        x:Name="chBoxTelefono"
+                        Text="{x:Static utils:Constants.TIENE_TELEFONO}"
+                        IsChecked="{Binding Vacante.TelIntel}"
+                        Command="{Binding TieneTelefonoChangedCommand}"
+                        CommandParameter="{Binding IsChecked, Source={x:Reference chBoxTelefono}}" />
+
+                    <VerticalStackLayout
+                        Spacing="10"
+                        IsVisible="{Binding IsChecked, Source={x:Reference chBoxTelefono}, Converter={StaticResource InvertedBoolConverter}}">
+
+                        <controls:BordererLabel
+                            x:Name="labelComunicacion"
+                            Text="{Binding SelectedMetodoComunica.Descripcion}"
+                            Placeholder="{x:Static utils:Constants.COMO_COMUNICA}"
+                            Command="{Binding SelectMetodoComunicaCommand}" />
+
+                        <controls:BordererEntry
+                            Text="{Binding Vacante.FormComunDesc}"
+                            Placeholder="{x:Static utils:Constants.ESPECIFIQUE_COMUNICA}"
+                            IsVisible="{Binding Text, Source={x:Reference labelComunicacion}, Converter={StaticResource StringToBoolConverter}}" />
+
+                    </VerticalStackLayout>
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:BordererLabel
+                        x:Name="labelTransporte"
+                        Text="{Binding SelectedTransporte.Descripcion}"
+                        Placeholder="{x:Static utils:Constants.QUE_TRANSPORTE}"
+                        Command="{Binding SelectTransporteCommand}" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.TransporteDesc}"
+                        Placeholder="{x:Static utils:Constants.ESPECIFIQUE_TRANSPORTE}"
+                        IsVisible="{Binding Text, Source={x:Reference labelTransporte}, Converter={StaticResource StringToBoolConverter}}" />
+
+                    <controls:BordererLabel
+                        Text="{Binding SelectedCantidadTransporte.Descripcion}"
+                        Placeholder="{x:Static utils:Constants.CUANTO_UNIDADES_TRANSPORTE}"
+                        Command="{Binding SelectCantidadTransporteCommand}" />
+
+                    <controls:CheckBoxView
+                        Text="{x:Static utils:Constants.CUENTA_BONO}"
+                        IsChecked="{Binding Vacante.TransporteBono}" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.TransporteGasto}"
+                        Placeholder="{x:Static utils:Constants.CUANTO_GASTA}"
+                        Keyboard="Numeric" />
+
+                    <controls:CheckBoxView
+                        Text="{x:Static utils:Constants.SE_OFRECE_BONO}"
+                        IsChecked="{Binding Vacante.BonoPuntual}" />
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

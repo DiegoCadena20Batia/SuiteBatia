@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Controls.OptionsView">
+
+    <ContentView.Resources>
+        <Style
+            x:Key="ThisFrameStyle"
+            TargetType="Frame">
+
+            <Setter
+                Property="CornerRadius"
+                Value="5" />
+            <Setter
+                Property="BorderColor"
+                Value="{StaticResource LightGray}" />
+            <Setter
+                Property="Padding"
+                Value="8" />
+        </Style>
+    </ContentView.Resources>
+
+    <Grid
+        RowDefinitions="auto, 80"
+        ColumnDefinitions="*, *, *, *"
+        RowSpacing="10"
+        ColumnSpacing="5"
+        Margin="1">
+
+        <Label
+            Grid.ColumnSpan="4"
+            Text="{Binding Text}"
+            TextColor="Black"
+            FontAttributes="Bold"
+            FontSize="16" />
+
+        <Frame
+            x:Name="bien"
+            Grid.Row="1"
+            BackgroundColor="White"
+            Style="{StaticResource ThisFrameStyle}">
+
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer
+                    Tapped="bien_Clicked"
+                    NumberOfTapsRequired="1" />
+            </Frame.GestureRecognizers>
+
+            <Image
+                Source="bien"
+                Aspect="AspectFit" />
+        </Frame>
+
+        <Frame
+            x:Name="regular"
+            Grid.Row="1"
+            Grid.Column="1"
+            BackgroundColor="White"
+            Style="{StaticResource ThisFrameStyle}">
+
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer
+                    Tapped="regular_Clicked"
+                    NumberOfTapsRequired="1" />
+            </Frame.GestureRecognizers>
+
+            <Image
+                Source="regular"
+                Aspect="AspectFit" />
+        </Frame>
+
+        <Frame
+            x:Name="mal"
+            Grid.Row="1"
+            Grid.Column="2"
+            BackgroundColor="White"
+            Style="{StaticResource ThisFrameStyle}">
+
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer
+                    Tapped="mal_Clicked"
+                    NumberOfTapsRequired="1" />
+            </Frame.GestureRecognizers>
+
+            <Image
+                Source="mal"
+                Aspect="AspectFit" />
+        </Frame>
+
+        <Frame
+            x:Name="no"
+            Grid.Row="1"
+            Grid.Column="3"
+            BackgroundColor="White"
+            Style="{StaticResource ThisFrameStyle}">
+
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer
+                    Tapped="no_Clicked"
+                    NumberOfTapsRequired="1" />
+            </Frame.GestureRecognizers>
+
+            <Image
+                Source="na"
+                Aspect="AspectFit" />
+        </Frame>
+    </Grid>
+</ContentView>

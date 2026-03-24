@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.OrdenesTrabajo.GenerarOrdenTrabajo"
+    xmlns:vm="clr-namespace:BatiaSuite.ViewModel.OrdenesTrabajo"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    Title="{x:Static const:Constants.GENERAR_ORDEN_TRABAJO}"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <ContentPage.BindingContext>
+        <vm:GenerarOrdenTrabajoViewModel />
+    </ContentPage.BindingContext>
+    <Grid>
+        
+    
+    <ScrollView>
+        <Grid
+        RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto"
+        ColumnDefinitions="*,*"
+        RowSpacing="{OnIdiom 20, Tablet=30}"
+        Margin="10, 0">
+
+            <controls:BordererLabel
+            IsEnabled="False"
+            Grid.Row="0"
+            Grid.ColumnSpan="2"
+            Opacity="0.5"
+            Text="{Binding SelectedCliente.nombre}"
+            Placeholder="{x:Static const:Constants.SELECCIONE_CLIENTE}"
+            Command="{Binding SelectClienteCommand}" />
+
+
+
+            <controls:BordererLabel
+            Grid.Row="1"               
+            Grid.ColumnSpan="2"
+            Text="{Binding SelectedInmueble.Nombre}"
+            Placeholder="{x:Static const:Constants.SELECCIONE_PUNTO_ATENCION}"
+            Command="{Binding SelectInmuebleCommand}" />
+
+            <controls:BordererLabel
+            Grid.Row="2"
+            Grid.ColumnSpan="3"
+            Text="{Binding SelectedTipoOrden.Descripcion}"
+            Placeholder="{x:Static const:Constants.SELECCIONE_TIPO_ORDEN}"
+            Command="{Binding SelectTipoOrdenCommand}" />
+            
+            <controls:BordererLabel
+            Grid.Row="3"
+            Grid.ColumnSpan="3"
+            Text="{Binding SelectedTecnico.Nombre}"
+            Placeholder="{x:Static const:Constants.SELECCIONE_TECNICO}"
+            Command="{Binding SelectTecnicoCommand}" />
+            <Entry
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
+                Placeholder="Folio de cliente"
+                PlaceholderColor="DarkGray"
+                BackgroundColor="White"
+                Text="{Binding ReporteCliente}"
+                ></Entry>
+
+            <Entry
+                    Margin="5"
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    BackgroundColor="White"
+                    Placeholder="Edificio"
+                PlaceholderColor="DarkGray"
+                Text="{Binding Edificio}"
+                        ></Entry>
+            <Entry
+                    Margin="5"
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    BackgroundColor="White"
+                    Placeholder="Piso"
+                PlaceholderColor="DarkGray"
+                Text="{Binding Piso}"
+                    ></Entry>
+            <Entry
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Margin="5"
+                    BackgroundColor="White"
+                    Placeholder="Área"
+                PlaceholderColor="DarkGray"
+                Text="{Binding Area}"
+                        ></Entry>
+            <Entry
+                    Grid.Row="6"
+                    Grid.Column="1"
+                    Margin="5"
+                    BackgroundColor="White"
+                    Placeholder="Subarea"
+                PlaceholderColor="DarkGray"
+                Text="{Binding Subarea}"
+                    ></Entry>
+            
+            <Entry
+                    Grid.Row="7"
+                    Grid.ColumnSpan="2"
+                    Placeholder="Trabajos a realizar"
+                PlaceholderColor="DarkGray"
+                    BackgroundColor="White"
+                    Text="{Binding TrabajosEjecutados}"
+                    ></Entry>
+            <Label
+                Grid.Row="8"
+                Grid.Column="0"
+                Text="Capturar fotografia"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                ></Label>
+            <ImageButton
+                    Grid.Row="8"
+                    Grid.Column="1"
+                    Style="{StaticResource ImageButtonIconStyle}"
+                    Source="{StaticResource CameraIcon}"
+                    Command="{Binding TakePhotoCommand}"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center" />
+                <Grid
+                Grid.Row="9"
+                Grid.ColumnSpan="2"
+                HeightRequest="350"
+                WidthRequest="280"
+                Margin="0, 5, 0, 0">
+
+                    <!-- Mensaje cuando no hay video -->
+                    <Frame
+                    x:Name="labelNoVideo"
+                    BorderColor="{StaticResource LightGray}"
+                    BackgroundColor="White"
+                    IsVisible="{Binding ImageMediaSource, Converter={StaticResource IsNullConverter}}">
+                        <Label
+                        Text="Sin Imagen"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource Gray}"
+                        VerticalTextAlignment="Center"
+                        HorizontalTextAlignment="Center" />
+                    </Frame>
+
+                    <!-- Contenedor del video -->
+                    <Frame
+                    BorderColor="{StaticResource LightGray}"
+                    BackgroundColor="White"
+                    IsVisible="{Binding Source={x:Reference labelNoVideo}, Path=IsVisible, Converter={StaticResource InvertedBoolConverter}}"
+                    Padding="25, 0">
+                        <Grid>
+                            <!-- Reproductor de video -->
+
+                            <Image
+                            Source="{Binding ImagePath}"
+                            Aspect="AspectFit"
+                            HeightRequest="350"
+                            WidthRequest="250">
+                            </Image>
+
+                            <!-- Botón de eliminar video -->
+                            <Border
+                            BackgroundColor="Red"
+                            Stroke="Transparent"
+                            StrokeThickness="0"
+                            HorizontalOptions="End"
+                            VerticalOptions="Start"
+                            Margin="5"
+                            Padding="5"
+                            StrokeShape="RoundRectangle 20">
+                                <Border.Shadow>
+                                    <Shadow
+                                    Brush="Black"
+                                    Offset="2,2"
+                                    Opacity="0.2"
+                                    Radius="4" />
+                                </Border.Shadow>
+                                <ImageButton
+                                Style="{StaticResource ImageButtonIconStyle}"
+                                Source="{StaticResource TrashIconWhite}"
+                                Command="{Binding RemoveImageCommand}"
+                                WidthRequest="20"
+                                HeightRequest="20"
+                                BackgroundColor="Transparent"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+                    </Frame>
+                </Grid>
+                <Button
+                Grid.Row="10"
+                Grid.ColumnSpan="2"
+                Text="Enviar"
+                Background="DodgerBlue"
+                Margin="20"
+                Command="{Binding ValidaryGenerarOrdenCommand}"
+                ></Button>
+        </Grid>
+        
+    </ScrollView>
+        <Grid
+            BackgroundColor="#88000000"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            IsVisible="{Binding IsLoading}">
+
+                    <ActivityIndicator
+                        Color="{StaticResource LightGray}"
+                        IsRunning="{Binding IsLoading}"
+                        HeightRequest="{OnIdiom 70, Tablet=120}" />
+                        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Sanitizacion.EvidenciasPage"
+    MasterPageTitle="{x:Static utils:Constants.EVIDENCIAS}"
+    FloatingButtonCommand="{Binding SendDataCommand}"
+    Shell.FlyoutBehavior="Disabled"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding LoadingText}"
+    IsLastPage="True">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+
+            <ScrollView
+                Padding="{OnIdiom '10, 0, 10, 70', Tablet='10, 0, 10, 105'}">
+
+                <Grid
+                    x:Name="mainGrid"
+                    ColumnDefinitions="auto, *">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="auto" />
+                        <RowDefinition
+                            Height="{OnIdiom 180, Tablet = 220}" />
+                        <RowDefinition
+                            Height="auto" />
+                        <RowDefinition
+                            Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label
+                        Text="{x:Static utils:Constants.CARGAR_FOTOS}"
+                        Style="{StaticResource ContentBoldLabelStyle}"
+                        Margin="0, 0, 20, 0" />
+
+                    <ImageButton
+                        Grid.Column="1"
+                        Style="{StaticResource ImageButtonIconStyle}"
+                        Command="{Binding TakePhotoCommand}"
+                        Source="{StaticResource CameraIcon}"
+                        HorizontalOptions="Start" />
+
+
+                    <ScrollView
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Orientation="Horizontal"
+                        BackgroundColor="White"
+                        Margin="0, 10">
+
+                        <HorizontalStackLayout
+                            BindableLayout.ItemsSource="{Binding PhotoList}"
+                            Spacing="5">
+
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Image
+                                            Source="{Binding .}"
+                                            Aspect="AspectFit"
+                                            WidthRequest="{OnIdiom 130, Tablet=160}"
+                                            Margin="{OnIdiom '10, 10, 10, 15', Tablet='10, 15, 15, 20'}" />
+
+                                        <ImageButton
+                                            Style="{StaticResource ImageButtonIconStyle}"
+                                            Source="{StaticResource TrashIcon}"
+                                            Command="{Binding Source={x:Reference mainGrid}, Path=BindingContext.RemovePhotoCommand}"
+                                            CommandParameter="{Binding .}"
+                                            WidthRequest="{OnIdiom 15, Tablet=25}"
+                                            HorizontalOptions="End"
+                                            VerticalOptions="End"
+                                            Scale="{OnPlatform Android=1, iOS=.5}"
+                                            TranslationX="{OnPlatform Android=0, iOS=10}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <controls:BordererEntry
+                        Grid.Row="2"
+                        Grid.ColumnSpan="2"
+                        Placeholder="{x:Static utils:Constants.RECIBE}"
+                        TextTransform="Uppercase"
+                        Text="{Binding Recibe}" 
+                        Margin="{OnIdiom '0, 10', Tablet='0, 20'}"/>
+
+                    <Frame
+                        Grid.Row="3"
+                        Grid.ColumnSpan="2"
+                        Style="{StaticResource FrameStyle}"
+                        Margin="0, 10, 0, 0">
+
+                        <Grid>
+                            <views:DrawingView
+                                x:Name="drawingView"
+                                LineColor="Black"
+                                LineWidth="3"
+                                HeightRequest="{OnIdiom 200, Tablet= 250}"
+                                IsMultiLineModeEnabled="True"
+                                ShouldClearOnFinish="False"
+                                BackgroundColor="White"
+                                DrawingLineCompletedCommand="{Binding DrawCommand}" />
+
+                            <ImageButton
+                                x:Name="iconClear"
+                                IsVisible="{Binding ShowCleaner}"
+                                Source="{StaticResource TrashIcon}"
+                                Style="{StaticResource ImageButtonIconStyle}"
+                                HorizontalOptions="End"
+                                VerticalOptions="Start"
+                                Command="{Binding ClearDrawingViewCommand}" />
+
+                            <Label
+                                Text="{x:Static utils:Constants.FIRME_AQUI}"
+                                TextColor="{StaticResource Gray}"
+                                FontSize="{OnIdiom 18, Tablet=24}"
+                                VerticalOptions="CenterAndExpand"
+                                HorizontalOptions="CenterAndExpand"
+                                IsVisible="{Binding Source={x:Reference iconClear}, Path=IsVisible, Converter={StaticResource InvertedBoolConverter}}" />
+                        </Grid>
+                    </Frame>
+                </Grid>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

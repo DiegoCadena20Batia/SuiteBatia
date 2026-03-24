@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Sanitizacion.SanitizacionPage"
+    MasterPageTitle="{x:Static utils:Constants.SANITIZACION}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled"
+    IsLoading="{Binding IsLoading}">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <Grid
+                RowDefinitions="auto, auto, auto, auto, auto"
+                RowSpacing="{OnIdiom 20, Tablet=30}"
+                Margin="10, 0">
+
+                <controls:BordererLabel
+                    Text="{Binding SelectedCliente.nombre}"
+                    Placeholder="{x:Static utils:Constants.SELECCIONE_CLIENTE}"
+                    Command="{Binding SelectClienteCommand}" />
+
+                <controls:BordererLabel
+                    Grid.Row="1"
+                    Text="{Binding SelectedEstado.descripcion}"
+                    Placeholder="{x:Static utils:Constants.SELECCIONE_ESTADO}"
+                    Command="{Binding SelectEstadoCommand}" />
+
+                <controls:BordererLabel
+                    Grid.Row="2"
+                    Text="{Binding SelectedInmueble.Nombre}"
+                    Placeholder="{x:Static utils:Constants.SELECCIONE_PUNTO_ATENCION}"
+                    Command="{Binding SelectInmuebleCommand}" />
+
+                <controls:BordererEntry
+                    Grid.Row="3"
+                    Text="{Binding Area}"
+                    Placeholder="{x:Static utils:Constants.AREA}" />
+
+                <controls:BordererLabel
+                    Grid.Row="4"
+                    Text="{Binding SelectedProcedimiento.Descripcion}"
+                    Placeholder="{x:Static utils:Constants.PROCEDIMIENTO}"
+                    Command="{Binding SelectProcedimientoCommand}" />
+            </Grid>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

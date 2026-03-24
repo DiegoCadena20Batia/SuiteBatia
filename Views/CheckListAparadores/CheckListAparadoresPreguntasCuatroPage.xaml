@@ -1,0 +1,239 @@
+<controls:MasterPage
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.CheckListAparadores.CheckListAparadoresPreguntasCuatroPage"
+    MasterPageTitle="CHECKLIST DE APARADORES"
+    ShowFloatingButton="False"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#f0f0f0">
+
+    <controls:MasterPage.MasterPageContent>
+        <Grid x:Name="mainGrid">
+            <Grid RowDefinitions="auto, *,auto">
+
+                <!-- TÍTULO DE SECCIÓN EN AZUL -->
+                <Frame
+        Margin="10,0,10,2"
+        BackgroundColor="#2e3192"
+        Grid.Row="0"
+        CornerRadius="15">
+                    <Label
+            BackgroundColor="Transparent"
+            Text="ESTADO EN EL QUE SE ENCUENTRA LA TIENDA"
+            TextColor="White"
+            FontSize="14"
+            HorizontalOptions="Center"/>
+                </Frame>
+
+                <!-- CONTENIDO PRINCIPAL -->
+                <Grid Grid.Row="1"
+          RowDefinitions="Auto, *">
+
+
+                    <!-- LISTA DE PREGUNTAS CON CHECKBOX Y COMENTARIOS -->
+                    <!--<ScrollView Grid.Row="1">-->
+                        <Grid
+                            RowDefinitions="*,auto">
+                            <Grid Grid.Row="0">
+                                <CollectionView ItemsSource="{Binding Preguntas}"
+                                                HeightRequest="350"
+    Margin="20,0,20,20">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Frame Padding="0" 
+       Margin="0,1" 
+       BorderColor="#ddd" 
+       BackgroundColor="White" 
+       CornerRadius="15">
+
+                                                <Grid RowDefinitions="Auto, Auto" 
+          RowSpacing="0">
+
+                                                    <!-- FILA 1: PREGUNTA + CHECKBOX -->
+                                                    <Grid Grid.Row="0"
+              Padding="15,5,15,0"
+              ColumnDefinitions="*, Auto">
+
+                                                        <!-- PREGUNTA -->
+                                                        <Label Grid.Column="0"
+                   Text="{Binding Pregunta}"
+                   FontSize="14"
+                   VerticalOptions="Center"
+                   LineBreakMode="WordWrap"/>
+
+                                                        <!-- CHECKBOX -->
+                                                        <CheckBox Grid.Column="1"
+                      x:Name="checkPregunta"
+                      IsVisible="False"
+                      IsChecked="{Binding Valor3, Mode=TwoWay}"
+                      HorizontalOptions="Center"
+                      VerticalOptions="Center"
+                      Color="#2e3192"/>
+                                                    </Grid>
+
+                                                    <!-- FILA 2: COMENTARIOS (SOLO PARA SECCIONES 4 Y 5) -->
+                                                    <StackLayout Grid.Row="1"
+                     x:Name="comentariosContainer"
+                     IsVisible="False"
+                     Padding="15,0,15,12"
+                     Spacing="5">
+
+                                                        <Editor 
+                Text="{Binding Comentarios, Mode=TwoWay}"
+                Placeholder="Escribe tus comentarios aquí..."
+                HeightRequest="30"
+                BackgroundColor="#f8f9fa"
+                FontSize="12"/>
+                                                    </StackLayout>
+
+                                                </Grid>
+
+                                                <!-- TRIGGERS PARA CONTROL DINÁMICO -->
+                                                <Frame.Triggers>
+
+                                                    <!-- SECCIONES 4 Y 5 → CHECKBOX + COMENTARIOS -->
+                                                    <DataTrigger TargetType="Frame" Binding="{Binding IdSeccion}" Value="4">
+                                                        <Setter TargetName="checkPregunta" Property="IsVisible" Value="True" />
+                                                        <Setter TargetName="comentariosContainer" Property="IsVisible" Value="True" />
+                                                    </DataTrigger>
+
+                                                    <DataTrigger TargetType="Frame" Binding="{Binding IdSeccion}" Value="5">
+                                                        <Setter TargetName="checkPregunta" Property="IsVisible" Value="True" />
+                                                        <Setter TargetName="comentariosContainer" Property="IsVisible" Value="True" />
+                                                    </DataTrigger>
+
+                                                </Frame.Triggers>
+
+                                            </Frame>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                            <Grid 
+    Margin="20,0,20,20"
+    RowDefinitions="auto,auto,auto"
+    HeightRequest="250"
+    Grid.Row="1">
+    <Button
+        Margin="10,0,10,10"
+        HorizontalOptions="Start"
+        HeightRequest="50"
+        WidthRequest="240"
+        Text="{x:Static utils:Constants.CAPTURAR_FOTOGRAFIAS}"
+        TextColor="White"
+        BackgroundColor="DodgerBlue"
+        Grid.Row="0"
+        ImageSource="camera.png"
+        ContentLayout="left, 10"
+        Command="{Binding TakePhotoCommand}"
+        ></Button>
+
+                            <Frame
+HeightRequest="120"
+Grid.Row="2"
+Grid.ColumnSpan="2"
+Padding="0"
+BorderColor="White"
+                                BackgroundColor="White">
+
+                                <ScrollView
+    Margin="0"
+    Orientation="Horizontal"
+    BackgroundColor="White">
+
+                                    <HorizontalStackLayout
+        BindableLayout.ItemsSource="{Binding PhotoList}"
+        Spacing="10">
+
+
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Border
+                        BackgroundColor="White"
+                        Stroke="Transparent"
+                        StrokeThickness="0"
+                        Padding="0"
+                        StrokeShape="RoundRectangle 10">
+                                                        <Border.Shadow>
+                                                            <Shadow
+                                Brush="Black"
+                                Offset="2,2"
+                                Opacity="0.2"
+                                Radius="4" />
+                                                        </Border.Shadow>
+                                                        <Image
+                            Source="{Binding .}"
+                            Aspect="AspectFit"
+                            WidthRequest="{OnIdiom 100, Tablet=130}"
+                            Margin="{OnIdiom '0, 10, 0, 10', Tablet='10, 15, 15, 20'}" />
+                                                    </Border>
+
+                                                    <Border
+                        BackgroundColor="Red"
+                        Opacity="0.7"
+                        Stroke="Transparent"
+                        StrokeThickness="0"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        Margin="0"
+                        Padding="6"
+                        StrokeShape="RoundRectangle 10">
+                                                        <Border.Shadow>
+                                                            <Shadow
+                                Brush="Black"
+                                Offset="2,2"
+                                Opacity="0.2"
+                                Radius="4" />
+                                                        </Border.Shadow>
+                                                        <ImageButton
+                            Style="{StaticResource ImageButtonIconStyle}"
+                            Source="{StaticResource TrashIconWhite}"
+                            Command="{Binding Source={x:Reference mainGrid}, Path=BindingContext.RemovePhotoCommand}"
+                            CommandParameter="{Binding .}"
+                            WidthRequest="{OnIdiom 10, Tablet=30}"
+                            HeightRequest="{OnIdiom 10, Tablet=30}"
+                            BackgroundColor="Transparent"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
+                                                    </Border>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </HorizontalStackLayout>
+                                </ScrollView>
+                            </Frame>
+                        </Grid>
+                        </Grid>
+                        
+                    <!--</ScrollView>-->
+                </Grid>
+                <Button
+Margin="20,0,20,20"
+Grid.Row="2"
+BackgroundColor="#2e3192"
+TextColor="White"
+FontSize="18"
+Text="Continuar"
+Command="{Binding ContinuarCommand}" />
+            </Grid>
+            <Grid
+BackgroundColor="#88000000"
+HorizontalOptions="FillAndExpand"
+VerticalOptions="FillAndExpand"
+IsVisible="{Binding IsLoading}">
+
+                <ActivityIndicator
+    Color="{StaticResource AzulOscuro}"
+    IsRunning="{Binding IsLoading}"
+    HeightRequest="{OnIdiom 70, Tablet=120}" />
+            </Grid>
+        </Grid>
+        
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

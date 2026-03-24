@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.OrdenesTrabajo"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    x:Class="BatiaSuite.Views.OrdenesTrabajo.ManoObra"
+    Title="{Binding Title}"
+    Style="{StaticResource PageStyle}"
+    x:Name="ManoObraPage"
+    Shell.FlyoutBehavior="Disabled">
+
+    <ContentPage.BindingContext>
+        <viewModel:ManoObraViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid>
+        <ScrollView
+            Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}">
+
+            <Grid
+                Margin="10,0,10,0"
+                RowDefinitions="auto,auto,auto,auto,auto, auto, *">
+                
+                
+                <!--<Label
+                    Margin="0,0,0,0"
+                    Grid.Row="3"
+                    FontSize="15"
+                    Style="{StaticResource ContentLabelStyle}"
+                    Text="{Binding DescripcionTrabajos}"
+                    ></Label>-->
+
+                <Frame
+                    
+                    BackgroundColor="White"
+                    BorderColor="LightBlue"
+                    Grid.Row="2"
+                    CornerRadius="15"
+                    Margin="5,5,5,5">
+
+                    <Grid
+                        RowDefinitions="auto,auto,auto, auto,auto,auto">
+                        <Label
+                        Grid.Row="0"
+                        FontSize="16"
+                        FontFamily="MontSemibold"
+                        Style="{StaticResource ContentLabelStyle}"
+                        Text="{Binding Cliente}"
+                        HorizontalOptions="Start"
+                        ></Label>
+                        <Label
+                        Grid.Row="1"
+                        FontSize="14"
+                        Style="{StaticResource ContentLabelStyle}"
+                        Text="{Binding Inmueble}"
+                        TextColor="{StaticResource AzulClaro}"
+                        Margin="0,0,0,0"
+                        HorizontalOptions="Start"
+                        ></Label>
+                        <Label
+                            Grid.Row="2"
+                            HeightRequest="1"
+                            VerticalOptions="End"
+                            BackgroundColor="LightGray"
+                            Margin="0,1,52,0"
+                            ></Label>
+                        <Label
+                            Grid.Row="3"
+                            Text="{Binding Tipo, StringFormat='Tipo: {0}'}"
+                            Style="{StaticResource ContentLabelStyle}"
+                            Margin="0,5,0,5" />
+                        <Frame
+                            Grid.Row="4"
+                            BackgroundColor="#f5f5f5"
+                            BorderColor="Transparent"
+                            CornerRadius="15"
+                            Margin="0,10,0,0"
+                            >
+
+                            <ScrollView MinimumHeightRequest="10" MaximumHeightRequest="300" Margin="0">
+                                <Grid RowDefinitions="auto,auto">
+                                    <Label Grid.Row="0"
+                                       TextColor="{StaticResource AzulClaro}"
+                                        Margin="0,0,0,0"
+                                        Text="Descripcion:"
+                                        Style="{StaticResource ContentLabelStyle}" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Margin="0,0,0,0"
+                                        Text="{Binding DescripcionTrabajos, StringFormat='{0}'}"
+                                        Style="{StaticResource ContentLabelStyle}" />
+                                </Grid>
+
+                            </ScrollView>
+                        </Frame>
+                        <Label
+                            Margin="0,10,0,0"
+                            HorizontalOptions="End"
+                            Grid.Row="5"
+                            Text="{Binding Falta}">
+                            
+                        </Label>
+                    </Grid>
+                    
+                </Frame>
+                <!--<Label
+                    
+                    HeightRequest="2"
+                    VerticalOptions="End"
+                    Margin="0,10,0,10"
+                    BackgroundColor="LightGray"
+                ></Label>-->
+                <Label
+                    Margin="5,10,0,10"
+                    Grid.Row="3"
+                    FontSize="17"
+                    Text="Ingrese los trabajos realizados:"
+                    Style="{StaticResource ContentBoldLabelStyle}"
+                    TextColor="Black"/>
+                <controls:BordererEditor
+                    Grid.Row="4"
+                    Text="{Binding Descripcion}"
+                    Margin="0, 0, 0, 0" />
+
+                <Grid
+                    Grid.Row="5"
+                    Margin="10,20,10,0"
+                    RowDefinitions="auto,auto"
+                    ColumnDefinitions="*, auto">
+
+                    <Label
+                        FontSize="17"
+                        Text="Agregar personal"
+                        Style="{StaticResource ContentBoldLabelStyle}"
+                        TextColor="Black"/>
+
+                    <ImageButton
+                        Grid.Column="1"
+                        Margin="10,0,0,0"
+                        Source="{StaticResource GreenPlusIcon}"
+                        Style="{StaticResource ImageButtonIconStyle}"
+                        Command="{Binding AgregarPersonalCommand}" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        HeightRequest="2"
+                        VerticalOptions="End"
+                        Margin="0,5,0,0"
+                        BackgroundColor="LightGray"
+                    ></Label>
+                </Grid>
+
+                <StackLayout
+                    Grid.Row="6"
+                    BindableLayout.ItemsSource="{Binding SelectedPersonalList}"
+                    Spacing="10"
+                    Margin="0,10,0,0">
+
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItem
+                                        Text="{x:Static const:Constants.QUITAR}"
+                                        BackgroundColor="Red"
+                                        Command="{Binding BindingContext.EliminarEmpleadoSeleccionadoCommand, Source={x:Reference Name=ManoObraPage}}"
+                                        CommandParameter="{Binding .}" />
+                                </SwipeView.RightItems>
+
+                                <Frame
+                                    CornerRadius="15"
+                                    Padding="{OnIdiom 15, Tablet=20}"
+                                    Style="{StaticResource FrameStyle}">
+
+                                    <Grid
+                                        ColumnDefinitions="*, auto"
+                                        RowDefinitions="*, *"
+                                        BackgroundColor="White">
+
+                                        <Label
+                                            Text="{Binding Nombre}"
+                                            Style="{StaticResource ContentLabelStyle}"
+                                            FontAttributes="Bold"
+                                            LineBreakMode="TailTruncation"
+                                            Margin="0, 0, 10, 0"/>
+
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding IdEmpleado}"
+                                            Style="{StaticResource ContentLabelStyle}"
+                                            HorizontalOptions="End"
+                                            VerticalTextAlignment="Center"/>
+
+                                        <Label
+                                            Grid.Row="1"
+                                            Text="{Binding Horas, StringFormat='Horas trabajadas: {0}'}"
+                                            Style="{StaticResource ContentLabelStyle}" />
+                                    </Grid>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+
+            </Grid>
+        </ScrollView>
+
+        <ImageButton
+            Source="{StaticResource ArrowIcon}"
+            Style="{StaticResource FloatingButtonStyle}"
+            Command="{Binding ContinuarCommand}" />
+        <Grid
+    Grid.RowSpan="3"
+    RowDefinitions="*,*"
+    BackgroundColor="#88000000"
+    IsVisible="{Binding IsLoading}">
+            <ActivityIndicator
+        Grid.Row="0"
+        VerticalOptions="End"
+        Color="White"
+        IsRunning="{Binding IsLoading}"
+        HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            <Label
+         VerticalOptions="Start"
+         HorizontalOptions="Center"
+         Grid.Row="1"
+         TextColor="White"
+         Text="{Binding TextLoading}"
+    ></Label>
+        </Grid>
+    </Grid>
+</ContentPage>

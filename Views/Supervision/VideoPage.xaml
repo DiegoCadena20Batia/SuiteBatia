@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:cameraui="clr-namespace:Camera.MAUI;assembly=Camera.MAUI"
+    x:Class="BatiaSuite.Views.Supervision.VideoPage"
+    MasterPageTitle="{Binding PageTitle}"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding LoadingText}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled"
+    x:Name="contentView">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                x:Name="scrollView">
+
+                <Grid 
+                    RowDefinitions="auto, auto, *,*">
+
+                    <Grid
+                        Grid.Row="1"
+                        RowDefinitions="auto, auto, auto, *"
+                        ColumnDefinitions="auto, *"
+                        ColumnSpacing="15"
+                        HorizontalOptions="Center"
+                        Margin="{OnIdiom '10, 5, 10, 70', Tablet='10, 5, 10, 105'}"
+                        IsVisible="{Binding CameraVisible, Converter={StaticResource InvertedBoolConverter}}">
+                        <Label
+                            Grid.Row="1"
+                            x:Name="labelVideo"
+                            Text="{x:Static utils:Constants.GRABAR_VIDEO}"
+                            HorizontalOptions="Center"
+                            VerticalTextAlignment="Center"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            FontSize="16" />
+                        
+                        <ImageButton
+                            IsVisible ="{Binding VideoMediaSource}"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Style="{StaticResource ImageButtonIconStyle}"
+                            Source="{StaticResource VideoIcon}"
+                            Clicked="OnCapturarVideoClicked"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center" />
+                        
+                        <!--<ImageButton
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Style="{StaticResource ImageButtonIconStyle}"
+                                Source="{StaticResource VideoIcon}"
+                                Command="{Binding CapturarVideoCommand}"
+                                HorizontalOptions="Start"
+                                VerticalOptions="Center" />-->
+
+                        <Grid
+                            Grid.Row="2"
+                            Grid.ColumnSpan="2"
+                            HeightRequest="450"
+                            WidthRequest="350"
+                            Margin="0, 5, 0, 0">
+
+                            <!-- Mensaje cuando no hay video -->
+                            <Frame
+                                BorderColor="Transparent"
+                                x:Name="labelNoVideo"
+                                BackgroundColor="White"
+                                IsVisible="{Binding VideoMediaSource, Converter={StaticResource IsNullConverter}}">
+                                <Label
+                                    Text="{x:Static utils:Constants.VIDEO_NO_GRABADO}"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="{StaticResource Gray}"
+                                    VerticalTextAlignment="Center"
+                                    HorizontalTextAlignment="Center" />
+                            </Frame>
+
+                            <!-- Contenedor del video -->
+                            <Frame
+                                BorderColor="Transparent"
+                                BackgroundColor="White"
+                                IsVisible="{Binding Source={x:Reference labelNoVideo}, Path=IsVisible, Converter={StaticResource InvertedBoolConverter}}"
+                                Padding="25, 0">
+                                <Grid>
+                                    <!-- Reproductor de video -->
+                                    <toolkit:MediaElement
+                                        Background="White"
+                                        BackgroundColor="White"
+                                        x:Name="mediaElement"
+                                        Source="{Binding VideoMediaSource}"
+                                        ShouldShowPlaybackControls="True"
+                                        Aspect="AspectFit"
+                                        WidthRequest="300"
+                                        HeightRequest="400"
+                                        HorizontalOptions="Center" />
+
+                                    <!-- Botón de eliminar video -->
+                                    <Border
+                                        BackgroundColor="Red"
+                                        Stroke="Transparent"
+                                        StrokeThickness="0"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="Start"
+                                        Margin="5"
+                                        Padding="5"
+                                        StrokeShape="RoundRectangle 20">
+                                        <Border.Shadow>
+                                            <Shadow
+                                                Brush="Black"
+                                                Offset="2,2"
+                                                Opacity="0.2"
+                                                Radius="4" />
+                                        </Border.Shadow>
+                                        <ImageButton
+                                            Style="{StaticResource ImageButtonIconStyle}"
+                                            Source="{StaticResource TrashIconWhite}"
+                                            Command="{Binding RemoveVideoCommand}"
+                                            WidthRequest="20"
+                                            HeightRequest="20"
+                                            BackgroundColor="Transparent"
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Center" />
+                                    </Border>
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </Grid>
+                                            <!---->
+
+                    <Grid
+                        
+                        IsVisible="{Binding  CameraVisible}"
+                        RowDefinitions="*"
+                        Grid.Row="2"
+                        Grid.ColumnSpan="2"
+                        Margin="0, 25, 0, 0"
+                        BackgroundColor="Transparent"
+                        HeightRequest="450"
+                        WidthRequest="350">
+                        <Frame
+                            BorderColor="Transparent"
+                            Grid.Row="0"
+                            Padding="25, 0">
+                            <Grid>
+                                <cameraui:CameraView
+                                    x:Name="CameraView"
+                                    WidthRequest="300"
+                                    HeightRequest="400" />
+                            </Grid>
+                        </Frame>
+                    </Grid>
+                    <Grid
+                        VerticalOptions="Start"
+                        HeightRequest="80"
+                        WidthRequest="300"
+                        RowDefinitions="*"
+                        Grid.Row="3"
+                        Margin="0, 5, 0, 0"
+                        BackgroundColor="Transparent"
+                        IsVisible="{Binding  CameraVisible}">
+                        <Frame
+                            BorderColor="Transparent"
+                            BackgroundColor="Transparent"
+                            Grid.Row="0">
+                            <Button 
+                                HeightRequest="60"
+                                WidthRequest="150"
+                                BackgroundColor="Red"
+                                TextColor="White"
+                                BorderColor="Transparent"
+                                Text="" 
+                                Command="{Binding DetenerGrabacionCommand}" 
+                                IsEnabled="{Binding IsRecording}"
+                                ImageSource="stoprecord.png"
+                                ContentLayout="Right,0" />
+                        </Frame>
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Popups.LocationUse"
+    BackgroundColor="{StaticResource BackgroundPopup}"
+    Style="{StaticResource PopupStyle}">
+
+
+        <ScrollView
+            Margin="0"
+            VerticalOptions="Center">
+        <Frame
+            CornerRadius="25"
+            BackgroundColor="White"
+            BorderColor="Transparent"
+            Margin="15"
+            Padding="10"
+            VerticalOptions="Center">
+            <Grid
+                RowDefinitions="auto,auto, auto, auto, auto, auto, auto"
+                ColumnDefinitions="*, *"
+                Margin="0">
+                <Label
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    FontAttributes="Bold"
+                    Text="{x:Static const:Constants.PERMISSIONS_LOCATION_TITLE}"
+                    FontSize="{OnPlatform Android={OnIdiom Phone=20, Tablet=40}, iOS=20}"
+                    FontFamily="Regular"
+                    TextColor="Black"
+                    Margin="{OnPlatform Android={OnIdiom Phone=10, Tablet=30}, iOS=10}">
+
+                </Label>
+                <BoxView
+                    Color="Black"
+                    Grid.Row="2"
+                    Grid.ColumnSpan="2"
+                    HeightRequest="1"/>
+                <ScrollView
+                    Grid.Row="3"
+                    Grid.ColumnSpan="2">
+
+                    <Label
+                        Text="{x:Static const:Constants.PERMISSIONS_LOCATION_BODY}"
+                        FontSize="{OnPlatform Android={OnIdiom Phone=15, Tablet=35}, iOS=16}"
+                        LineBreakMode="WordWrap"
+                        FontAttributes="None"
+                        FontFamily="Regular"
+                        TextColor="Black"
+                        HorizontalTextAlignment="Start"
+                        Margin="{OnPlatform Android={OnIdiom Phone=10, Tablet=30}, iOS=15}" />
+                </ScrollView>
+                <BoxView 
+                    Color="Black"
+                    Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    HeightRequest="1"/>
+                <Button
+                    FontSize="18"
+                    BackgroundColor="#3775b4"
+                    TextColor="White"
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Text="Aceptar"
+                    Command="{Binding AceptarCommand}"
+                    HeightRequest="55"
+                    WidthRequest="150"
+                    HorizontalOptions="Center"
+                    Margin="15"
+                    />
+                <Button
+                    FontSize="18"
+                    BackgroundColor="#3775b4"
+                    TextColor="White"
+                    Grid.Row="6"
+                    Grid.Column="1"
+                    Text="Cancelar"
+                    Command="{Binding CancelarCommand}"
+                    HeightRequest="55"
+                    WidthRequest="150"
+                    HorizontalOptions="Center"
+                        Margin="5"
+                        />
+            </Grid>
+        </Frame>
+            
+            </ScrollView>
+
+</mopup:PopupPage>

@@ -1,0 +1,356 @@
+<controls:MasterPage
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.SupervisionMantenimiento.SupervisionMantenimientoFirmasPage"
+    MasterPageTitle="SUPERVISION MANTENIMIENTO"
+    ShowFloatingButton="False"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#f0f0f0">
+
+    <controls:MasterPage.MasterPageContent>
+        <!--<ScrollView>-->
+            <Grid>
+                <Grid RowDefinitions="auto, *, auto">
+
+                    
+
+                    <Grid
+                        Grid.Row="0"
+                        Margin="10,0,10,0">
+                        <Frame
+                            BorderColor="LightGray"
+                            BackgroundColor="White"
+                            HeightRequest="60"
+                            CornerRadius="5"
+                            Padding="5,0,0,-10"
+                            Margin="0,10,0,0">
+                            <Entry
+                                FontFamily="MontBold"
+                                HorizontalTextAlignment="Start"
+                                VerticalTextAlignment="Center"
+                                FontSize="13"
+                                TextColor="#3775B5"
+                                x:Name="txt_ComentariosFinales"
+                                Text="{Binding ComentariosFinales}"
+                                Placeholder="Comentarios"
+                                PlaceholderColor="LightGray"
+                                ClearButtonVisibility="WhileEditing" />
+                        </Frame>
+                    </Grid>
+                    <!-- SECCIÓN 4: FIRMAS -->
+                    <Frame Grid.Row="1" BackgroundColor="White" BorderColor="LightGray" Padding="15" Margin="10">
+                        <ScrollView >
+                            <VerticalStackLayout Spacing="20">
+                                <Label Text="FIRMAS" 
+                               FontAttributes="Bold" 
+                               FontSize="18" 
+                               HorizontalOptions="Center"
+                               TextColor="Black"/>
+
+                                <!-- Firma Administracion Entrante -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label HorizontalOptions="Center" 
+                                    Text="Administracion Entrante" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="administracionEntranteDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            BackgroundColor="White"
+                                            HeightRequest="50"
+                                            CornerRadius="5"
+                                            Padding="5,0,0,-10"
+                                            Margin="0,10,0,0">
+                                            <Entry
+                                                FontFamily="MontBold"
+                                                HorizontalTextAlignment="Start"
+                                                VerticalTextAlignment="Center"
+                                                FontSize="13"
+                                                TextColor="#3775B5"
+                                                x:Name="txt_AdministracionEntranteAparadorista"
+                                                Text="{Binding NombreAdministracionEntrante}"
+                                                Placeholder="Nombre"
+                                                PlaceholderColor="LightGray"
+                                                ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearAdministracionEntranteSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Administracion Saliente -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label 
+                                    HorizontalOptions="Center"
+                                    Text="Administracion Saliente" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="administracionSalienteDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <Frame
+                                    BorderColor="LightGray"
+                                    BackgroundColor="White"
+                                    HeightRequest="50"
+                                    CornerRadius="5"
+                                    Padding="5,0,0,-10"
+                                    Margin="0,10,0,0">
+                                            <Entry
+                                        FontFamily="MontBold"
+                                        HorizontalTextAlignment="Start"
+                                        VerticalTextAlignment="Center"
+                                        FontSize="13"
+                                        TextColor="#3775B5"
+                                        x:Name="txt_NombreAdministracionSaliente"
+                                        Text="{Binding NombreAdministracionSaliente}"
+                                        Placeholder="Nombre"
+                                        PlaceholderColor="LightGray"
+                                        ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearAdministracionSalienteSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Testigo Uno -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label 
+                                    HorizontalOptions="Center"
+                                    Text="Testigo Uno" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="testigoUnoDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <Frame
+                                    BorderColor="LightGray"
+                                    BackgroundColor="White"
+                                    HeightRequest="50"
+                                    CornerRadius="5"
+                                    Padding="5,0,0,-10"
+                                    Margin="0,10,0,0">
+                                            <Entry
+                                        FontFamily="MontBold"
+                                        HorizontalTextAlignment="Start"
+                                        VerticalTextAlignment="Center"
+                                        FontSize="13"
+                                        TextColor="#3775B5"
+                                        x:Name="txt_NombreTestigoUno"
+                                        Text="{Binding NombreTestigoUno}"
+                                        Placeholder="Nombre"
+                                        PlaceholderColor="LightGray"
+                                        ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearTestigoUnoSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Testigo Dos -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label
+                                    HorizontalOptions="Center"
+                                    Text="Testigo Dos" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="testigoDosDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            BackgroundColor="White"
+                                            HeightRequest="50"
+                                            CornerRadius="5"
+                                            Padding="5,0,0,-10"
+                                            Margin="0,10,0,0">
+                                            <Entry
+                                                FontFamily="MontBold"
+                                                HorizontalTextAlignment="Start"
+                                                VerticalTextAlignment="Center"
+                                                FontSize="13"
+                                                TextColor="#3775B5"
+                                                x:Name="txt_NombreTestigoDos"
+                                                Text="{Binding NombreTestigoDos}"
+                                                Placeholder="Nombre"
+                                                PlaceholderColor="LightGray"
+                                                ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearTestigoDosSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Testigo Tres -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label
+                                            HorizontalOptions="Center"
+                                            Text="Testigo Tres" 
+                                               FontAttributes="Bold" 
+                                               FontSize="16"/>
+                                        <views:DrawingView
+                                            x:Name="testigoTresDrawingView"
+                                            LineColor="Black"
+                                            LineWidth="3"
+                                            HeightRequest="120"
+                                            IsMultiLineModeEnabled="True"
+                                            ShouldClearOnFinish="False"
+                                            BackgroundColor="White"/>
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            BackgroundColor="White"
+                                            HeightRequest="50"
+                                            CornerRadius="5"
+                                            Padding="5,0,0,-10"
+                                            Margin="0,10,0,0">
+                                            <Entry
+                                                FontFamily="MontBold"
+                                                HorizontalTextAlignment="Start"
+                                                VerticalTextAlignment="Center"
+                                                FontSize="13"
+                                                TextColor="#3775B5"
+                                                x:Name="txt_NombreTestigoTres"
+                                                Text="{Binding NombreTestigoTres}"
+                                                Placeholder="Nombre"
+                                                PlaceholderColor="LightGray"
+                                                ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                                Command="{Binding ClearTestigoTresSignatureCommand}"
+                                                BackgroundColor="#FF6B6B"
+                                                TextColor="White"
+                                                WidthRequest="100"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Testigo Cuatro -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label
+                                            HorizontalOptions="Center"
+                                            Text="Testigo Cuatro" 
+                                            FontAttributes="Bold" 
+                                            FontSize="16"/>
+                                        <views:DrawingView
+                                            x:Name="testigoCuatroDrawingView"
+                                            LineColor="Black"
+                                            LineWidth="3"
+                                            HeightRequest="120"
+                                            IsMultiLineModeEnabled="True"
+                                            ShouldClearOnFinish="False"
+                                            BackgroundColor="White"/>
+                                        <Frame
+                                            BorderColor="LightGray"
+                                            BackgroundColor="White"
+                                            HeightRequest="50"
+                                            CornerRadius="5"
+                                            Padding="5,0,0,-10"
+                                            Margin="0,10,0,0">
+                                            <Entry
+                                                FontFamily="MontBold"
+                                                HorizontalTextAlignment="Start"
+                                                VerticalTextAlignment="Center"
+                                                FontSize="13"
+                                                TextColor="#3775B5"
+                                                x:Name="txt_NombreTestigoCuatro"
+                                                Text="{Binding NombreTestigoCuatro}"
+                                                Placeholder="Nombre"
+                                                PlaceholderColor="LightGray"
+                                                ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                                Command="{Binding ClearTestigoCuatroSignatureCommand}"
+                                                BackgroundColor="#FF6B6B"
+                                                TextColor="White"
+                                                WidthRequest="100"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Frame>
+                    <Button
+Margin="20,0,20,20"
+Grid.Row="2"
+BackgroundColor="DodgerBlue"
+TextColor="White"
+FontSize="18"
+Text="Enviar Supervisión"
+Command="{Binding EnviarRegistroCompletoCommand}" />
+                    <!--<Button
+                Grid.Row="3"
+                Text="Registrar CheckList"
+                Command="{Binding EnviarRegistroCompletoCommand}"></Button>-->
+
+                </Grid>
+                <Grid
+BackgroundColor="#88000000"
+HorizontalOptions="FillAndExpand"
+VerticalOptions="FillAndExpand"
+IsVisible="{Binding IsLoading}">
+
+                    <ActivityIndicator
+    Color="{StaticResource AzulOscuro}"
+    IsRunning="{Binding IsLoading}"
+    HeightRequest="{OnIdiom 70, Tablet=120}" />
+                </Grid>
+            </Grid>
+        <!--</ScrollView>-->
+        
+        
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

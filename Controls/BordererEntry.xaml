@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="BatiaSuite.Controls.BordererEntry">
+
+    <Frame
+        Style="{StaticResource FrameStyle}"
+        Padding="{OnIdiom 5, Phone={OnPlatform Android=5, iOS=15}, Tablet=10}">
+
+        <controls:TransparentEntry
+            Text="{Binding Text}"
+            Placeholder="{Binding Placeholder}"
+            ReturnType="{Binding ReturnType}"
+            Keyboard="{Binding Keyboard}"
+            FontAttributes="{Binding BordererEntryFontAttributes}"
+            TextColor="Black"
+            FontSize="{OnIdiom 16, Tablet=20}"
+            VerticalOptions="Center"
+            PlaceholderColor="{StaticResource Gray}"
+            ReturnCommand="{Binding ReturnCommand}"
+            ReturnCommandParameter="{Binding ReturnCommandParameter}"
+            MaxLength="{Binding MaxLength}"
+            TextTransform="{Binding TextTransform}">
+
+            <controls:TransparentEntry.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    EventName="TextChanged"
+                    Command="{Binding Command}"
+                    CommandParameter="{Binding CommandParameter}" />
+            </controls:TransparentEntry.Behaviors>
+        </controls:TransparentEntry>
+    </Frame>
+</ContentView>

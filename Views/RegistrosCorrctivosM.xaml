@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.RegistrosCorrctivosM"
+             xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             Title="Evaluacion de los trabajos"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="True"
+    Shell.FlyoutBehavior="Disabled">
+
+    <ScrollView>
+
+        <Grid
+            RowDefinitions="auto,*, auto"
+            Margin="10, 5">
+
+            <Frame
+                BackgroundColor="#3775B5"
+                BorderColor="Transparent"
+                Padding="0"
+                HasShadow="True"
+                CornerRadius="5">
+
+                <Grid
+                    RowDefinitions="*"
+                    ColumnDefinitions="*,*,*,*"
+                    ColumnSpacing="5">
+
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        FontSize="15"
+                        TextColor="White"
+                        HorizontalTextAlignment="Start"
+                        VerticalTextAlignment="Center"
+                        FontFamily="MontExtrabold"
+                        Margin="10">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span
+                                    Text="¿Se pudo entrevistar con el cliente?" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                    <CheckBox
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        CheckedChanged="CheckBox_CheckedChanged"
+                        BackgroundColor="Transparent"
+                        Color="White"/>
+
+                </Grid>
+            </Frame>
+
+            <Frame
+                Grid.Row="1"
+                BackgroundColor="Transparent"
+                HeightRequest="500"
+                BorderColor="#3775B5"
+                Padding="1"
+                HasShadow="True"
+                CornerRadius="5"
+                IsVisible="{Binding  IsVisible}">
+
+                <ScrollView>
+                    <VerticalStackLayout
+                        Margin="10">
+                        <Frame
+                            CornerRadius="5"
+                            BackgroundColor="Transparent"
+                            Padding="10">
+
+                            <Grid
+                                RowDefinitions="*,*"
+                                ColumnDefinitions="*"
+                                ColumnSpacing="5">
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="4"
+                                    Text="¿Cómo evalúa los trabajos en general?"
+                                    FontSize="15"
+                                    FontFamily="MontBold" />
+                                <Grid
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="4">
+
+                                    <HorizontalStackLayout>
+
+                                        <RadioButton
+                                            Content="Bueno"
+                                            Value="3"
+                                            CheckedChanged="RadioButton_CheckedChanged"
+                                            FontSize="12"
+                                            WidthRequest="100"
+                                            FontFamily="MontRegular" />
+                                        <RadioButton
+                                            Content="Regular"
+                                            Value="2"
+                                            CheckedChanged="RadioButton_CheckedChanged"
+                                            FontSize="12"
+                                            WidthRequest="100"
+                                            FontFamily="MontRegular" />
+                                        <RadioButton
+                                            Content="Malo"
+                                            Value="1"
+                                            CheckedChanged="RadioButton_CheckedChanged"
+                                            FontSize="12"
+                                            WidthRequest="100"
+                                            FontFamily="MontRegular" />
+                                    </HorizontalStackLayout>
+
+                                </Grid>
+                            </Grid>
+                        </Frame>
+
+                        <Label
+                            Text="Personal Asignado"
+                            FontSize="15"
+                            FontFamily="MontSemibold"
+                            Margin="10"
+                            HorizontalTextAlignment="Center" />
+
+                        <Frame
+                            BackgroundColor="Transparent"
+                            Padding="10">
+                            
+                            <VerticalStackLayout>
+                                <Grid
+                                    RowDefinitions="*,*"
+                                    ColumnDefinitions="*"
+                                    ColumnSpacing="5">
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4"
+                                        Text="¿El(los) técnico(s) portan uniforme y gafete?"
+                                        FontSize="15"
+                                        FontFamily="MontBold" />
+                                    <Grid
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4">
+                                        <HorizontalStackLayout>
+                                            <RadioButton
+                                                Content="Si"
+                                                Value="2"
+                                                CheckedChanged="RadioButton_CheckedChanged_1"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                            <RadioButton
+                                                Content="No"
+                                                Value="1"
+                                                CheckedChanged="RadioButton_CheckedChanged_1"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Grid>
+                                <Grid
+                                    RowDefinitions="*,*"
+                                    ColumnDefinitions="*"
+                                    ColumnSpacing="5">
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4"
+                                        Text="El trato de nuestro(s) técnico(s) fue"
+                                        FontSize="15"
+                                        FontFamily="MontBold" />
+                                    <Grid
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4">
+                                        <HorizontalStackLayout>
+                                            <RadioButton
+                                                Content="Bueno"
+                                                Value="3"
+                                                CheckedChanged="RadioButton_CheckedChanged_2"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                            <RadioButton
+                                                Content="Regular"
+                                                Value="2"
+                                                CheckedChanged="RadioButton_CheckedChanged_2"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                            <RadioButton
+                                                Content="Malo"
+                                                Value="1"
+                                                CheckedChanged="RadioButton_CheckedChanged_2"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Label
+                            Text="Calidad de los trabajos"
+                            FontSize="15"
+                            FontFamily="MontSemibold"
+                            Margin="10"
+                            HorizontalTextAlignment="Center" />
+
+                        <Frame
+                           BackgroundColor="Transparent"
+                            CornerRadius="5"
+                            Padding="10">
+                            <VerticalStackLayout>
+                                <Grid
+                                    RowDefinitions="*,*"
+                                    ColumnDefinitions="*"
+                                    ColumnSpacing="5">
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4"
+                                        Text="¿Los trabajos fueron realizados con orden y limpieza?"
+                                        FontSize="15"
+                                        FontFamily="MontBold" />
+                                    <Grid
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4">
+                                        <HorizontalStackLayout>
+                                            <RadioButton
+                                                Content="Si"
+                                                Value="2"
+                                                CheckedChanged="RadioButton_CheckedChanged_3"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                            <RadioButton
+                                                Content="No"
+                                                Value="1"
+                                                CheckedChanged="RadioButton_CheckedChanged_3"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Grid>
+                                <Grid
+                                    RowDefinitions="*,*"
+                                    ColumnDefinitions="*"
+                                    ColumnSpacing="5">
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4"
+                                        Text="¿Los materiales utilizados fueron los adecuados?"
+                                        FontSize="15"
+                                        FontFamily="MontBold" />
+                                    <Grid
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4">
+                                        <HorizontalStackLayout>
+                                            <RadioButton
+                                                Content="Si"
+                                                Value="2"
+                                                CheckedChanged="RadioButton_CheckedChanged_4"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                            <RadioButton
+                                                Content="No"
+                                                Value="1"
+                                                CheckedChanged="RadioButton_CheckedChanged_4"
+                                                FontSize="12"
+                                                WidthRequest="100"
+                                                FontFamily="MontRegular" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Label
+                            Text="Gracias, sus respuestas son realmente valiosas para nosotros ¡gracias por ayudarnos a mejorar!"
+                            FontSize="15"
+                            FontFamily="MontSemibold"
+                            Margin="5"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center" />
+
+                        <Frame
+                            BorderColor="#3775B5"
+                            HeightRequest="40"
+                            CornerRadius="5"
+                            Padding="5,0,0,-10"
+                           BackgroundColor="Transparent"
+                            Margin="0,10">
+
+                            <Entry
+                                FontFamily="MontBold"
+                                HorizontalTextAlignment="Start"
+                                VerticalTextAlignment="Center"
+                                FontSize="12"
+                                TextColor="#3775B5"
+                                Text="{Binding NombreRecibe}"
+                                Placeholder="Nombre del encuestado:"
+                                ClearButtonVisibility="WhileEditing" />
+                        </Frame>
+                        
+                        <HorizontalStackLayout
+                            HorizontalOptions="Center">
+
+                            <Button
+                                x:Name="btn_Firmar"
+                                BackgroundColor="#3775B5"
+                                HeightRequest="50"
+                                CornerRadius="5"
+                                WidthRequest="100"
+                                TextColor="White"
+                                FontFamily="MontBold"
+                                FontSize="20"
+                                Padding="0"
+                                IsEnabled="{Binding IsSignature}"
+                                Text="FIRMAR"
+                                Clicked="btn_Firmar_Clicked"
+                                Margin="0,0,10,0">
+                                <Button.Shadow>
+                                    <Shadow
+                                        Brush="Black"
+                                        Offset="10,10"
+                                        Radius="25"
+                                        Opacity="0.8" />
+                                </Button.Shadow>
+                            </Button>
+
+                            <Button
+                                x:Name="btn_Clear"
+                                BackgroundColor="#3775B5"
+                                HeightRequest="50"
+                                WidthRequest="100"
+                                CornerRadius="5"
+                                TextColor="White"
+                                FontFamily="MontBold"
+                                FontSize="20"
+                                Padding="0"
+                                Text="LIMPIAR"
+                                Clicked="btn_Clear_Clicked"
+                                Margin="10,15,10,15">
+                                <Button.Shadow>
+                                    <Shadow
+                                        Brush="Black"
+                                        Offset="10,10"
+                                        Radius="25"
+                                        Opacity="0.8" />
+                                </Button.Shadow>
+                            </Button>
+                        </HorizontalStackLayout>
+                        
+                        <Frame
+                            HeightRequest="300"
+                            BorderColor="#3775B5"
+                          BackgroundColor="Transparent"
+                            CornerRadius="5"
+                            Margin="0,0,0,10">
+
+                            <mct:DrawingView
+                                LineColor="Black"
+                                x:Name="DrawView"
+                                LineWidth="3"
+                                WidthRequest="400"
+                                HeightRequest="300"
+                                IsMultiLineModeEnabled="True"
+                                BackgroundColor="Transparent" />
+                        </Frame>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Frame>
+            
+            <ActivityIndicator
+                ZIndex="1"
+                Grid.Row="2"
+                IsRunning="{Binding IsBusy}"
+                Color="White"
+                VerticalOptions="Fill"
+                Scale="0.5"
+                Margin="0,10" />
+            
+            <Button
+                Grid.Row="3"
+                BackgroundColor="#2E3192"
+                HeightRequest="50"
+                WidthRequest="290"
+                CornerRadius="5"
+                TextColor="White"
+                FontFamily="MontBold"
+                FontSize="25"
+                Padding="0"
+                Text="REGISTRAR"
+                IsEnabled="{Binding IsEnabled}"
+                Command="{Binding RegisterCommand}"
+                Margin="0, 10">
+                <Button.Shadow>
+                    <Shadow
+                        Brush="Black"
+                        Offset="10,10"
+                        Radius="25"
+                        Opacity="0.8" />
+                </Button.Shadow>
+            </Button>
+
+        </Grid>
+
+    </ScrollView>
+
+</ContentPage>
+    

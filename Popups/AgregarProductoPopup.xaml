@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.Popups"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    x:Class="BatiaSuite.Views.SolicitudCotizacion.AgregarProductoPopup"
+    BackgroundColor="#88000000">
+    <!--xmlns:controls="clr-namespace:Plugin.Maui.SegmentedControl;assembly=Plugin.Maui.SegmentedControl"-->
+
+    <mopups:PopupPage.BindingContext>
+        <viewModel:AgregarProductoViewModel />
+    </mopups:PopupPage.BindingContext>
+
+    <Frame WidthRequest="400" 
+           HeightRequest="780" 
+           Padding="20" 
+           HorizontalOptions="Center" 
+           VerticalOptions="Center"
+           HasShadow="True"
+           CornerRadius="35"
+           BorderColor="Transparent"
+           BackgroundColor="#F5F5F5">
+        <ScrollView
+            VerticalScrollBarVisibility="Never">
+            <Grid RowDefinitions="auto, auto, auto,auto" RowSpacing="15">
+
+                <Grid Grid.Row="0" RowDefinitions="auto, auto" RowSpacing="15">
+                    <Label Text="{Binding TituloPopup}" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center" 
+                       TextColor="{StaticResource Primary}"
+                       FontFamily="MontBold"/>
+
+                    <!-- Segmented Control para Tipo de Producto CORREGIDO -->
+                    <!--<controls:SegmentedControl 
+                    Grid.Row="1"
+                    SelectedSegment="{Binding TipoProducto, Mode=TwoWay}"
+                    HorizontalOptions="Center"
+                    HeightRequest="40"
+                    WidthRequest="320">
+
+                        <controls:SegmentedControl.Children>
+                            <controls:SegmentedControlOption 
+                            Text="🏢 Interno"/>
+                            <controls:SegmentedControlOption 
+                            Text="🛒 Externo" />
+                        </controls:SegmentedControl.Children>
+                    </controls:SegmentedControl>-->
+                </Grid>
+
+
+
+
+                <Label
+        VerticalOptions="End"
+        Grid.Row="2"
+        HeightRequest="2"
+        BackgroundColor="AliceBlue"></Label>
+
+                <!-- Formulario -->
+                <ScrollView Grid.Row="2">
+                    <Grid RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto" 
+              ColumnDefinitions="auto,*"
+              RowSpacing="5">
+                        <Label
+                VerticalOptions="Center"
+                    Text="Clave:"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                Grid.ColumnSpan="0">
+                        </Label>
+                        <Label VerticalOptions="Center"
+                    Text="Nombre:"
+                    Grid.Row="1"
+                    Grid.Column="0">
+                        </Label>
+                        <Label VerticalOptions="Center"
+                    Text="Marca:"
+                    Grid.Row="2"
+                    Grid.Column="0">
+                        </Label>
+                        <Label VerticalOptions="Center"
+                    Text="Unidad:"
+                    Grid.Row="3"
+                    Grid.Column="0">
+                        </Label>
+                        <Label VerticalOptions="Center"
+                    Text="Cantidad:"
+                    Grid.Row="4"
+                    Grid.Column="0">
+                        </Label>
+
+                        <!--<Entry 
+                   Grid.Row="0" 
+                   Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   Text="{Binding ClaveProducto}" />-->
+
+
+                        <Frame
+                Grid.Row="0"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                BorderColor="#3775B5"
+                BackgroundColor="White"
+                HeightRequest="50"
+                CornerRadius="5"
+                Padding="5,0,0,-10"
+                Margin="0,10,0,0">
+                            <Entry
+                    FontFamily="MontBold"
+                    HorizontalTextAlignment="Start"
+                    VerticalTextAlignment="Center"
+                    FontSize="13"
+                    TextColor="#3775B5"
+                    Text="{Binding ClaveProducto}"
+                    Placeholder=""
+                    PlaceholderColor="#3775B5"
+                    ClearButtonVisibility="WhileEditing" />
+                        </Frame>
+
+
+
+
+                        <!--<Entry Grid.Row="1" 
+                   Grid.Column="1"
+                   Text="{Binding NombreProducto}" />-->
+
+
+
+
+                        <Frame
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                BorderColor="#3775B5"
+                BackgroundColor="White"
+                HeightRequest="50"
+                CornerRadius="5"
+                Padding="5,0,0,-10"
+                Margin="0,10,0,0">
+                            <Entry
+                    FontFamily="MontBold"
+                    HorizontalTextAlignment="Start"
+                    VerticalTextAlignment="Center"
+                    FontSize="13"
+                    TextColor="#3775B5"
+                    Text="{Binding NombreProducto}"
+                    Placeholder=""
+                    PlaceholderColor="#3775B5"
+                    ClearButtonVisibility="WhileEditing" />
+                        </Frame>
+
+                        <!--<Entry Grid.Row="2" 
+                   Grid.Column="1"
+                   Text="{Binding MarcaProducto}" />-->
+
+                        <Frame
+                Grid.Row="2"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                BorderColor="#3775B5"
+                BackgroundColor="White"
+                HeightRequest="50"
+                CornerRadius="5"
+                Padding="5,0,0,-10"
+                Margin="0,10,0,0">
+                            <Entry
+                    FontFamily="MontBold"
+                    HorizontalTextAlignment="Start"
+                    VerticalTextAlignment="Center"
+                    FontSize="13"
+                    TextColor="#3775B5"
+                    Text="{Binding MarcaProducto}"
+                    Placeholder=""
+                    PlaceholderColor="#3775B5"
+                    ClearButtonVisibility="WhileEditing" />
+                        </Frame>
+                        <Frame
+                 WidthRequest="120"
+                 HorizontalOptions="Start"
+                 Grid.Row="3"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="1"
+                 BorderColor="#3775B5"
+                 BackgroundColor="White"
+                 HeightRequest="50"
+                 CornerRadius="5"
+                 Padding="5,0,0,-10"
+                 Margin="0,10,0,0">
+                            <Picker Grid.Row="3" 
+                    Grid.Column="1"
+                    SelectedIndex="{Binding UnidadProducto}">
+
+                                <Picker.Items>
+                                    <x:String>Pieza</x:String>
+                                    <x:String>Metro</x:String>
+                                    <x:String>Litro</x:String>
+                                    <x:String>Kilogramo</x:String>
+                                </Picker.Items>
+                            </Picker>
+                        </Frame>
+
+
+
+                        <!--<Entry Grid.Row="4" 
+                   Grid.Column="1"
+                   Placeholder="Cantidad" 
+                   Keyboard="Numeric" 
+                   Text="{Binding CantidadProducto}" />-->
+                        <Frame
+                WidthRequest="80"
+                HorizontalOptions="Start"
+                Grid.Row="4"
+                Grid.Column="1"
+                Grid.ColumnSpan="1"
+                BorderColor="#3775B5"
+                BackgroundColor="White"
+                HeightRequest="50"
+                CornerRadius="5"
+                Padding="5,0,0,-10"
+                Margin="0,10,0,0">
+                            <Entry
+                    FontFamily="MontBold"
+                    HorizontalTextAlignment="Start"
+                    VerticalTextAlignment="Center"
+                    FontSize="13"
+                    TextColor="#3775B5"
+                    Text="{Binding CantidadProducto}"
+                    Placeholder=""
+                    PlaceholderColor="#3775B5"
+                    ClearButtonVisibility="WhileEditing" />
+                        </Frame>
+
+                        <!-- Foto -->
+                        <Grid Grid.Row="5" 
+                  ColumnDefinitions="auto, auto" 
+                  ColumnSpacing="10">
+                            <Button Grid.Column="0" 
+                        Command="{Binding TomarFotoCommand}" 
+                        BackgroundColor="CornflowerBlue" 
+                        ImageSource="camera.png"
+                        ContentLayout="Right,0"
+                        TextColor="White"
+                        HeightRequest="45"/>
+                            <!--<ImageButton Grid.Column="1" 
+                             Source="camera.png" 
+                             Command="{Binding TomarFotoCommand}" 
+                             HeightRequest="45" 
+                             WidthRequest="45"/>-->
+                        </Grid>
+
+                        <Image Grid.Row="6" 
+                   Grid.Column="0"
+                   Grid.ColumnSpan="4"
+                   HeightRequest="100" 
+                   Source="{Binding FotoPathProducto}" 
+                   Aspect="AspectFit" 
+                   HorizontalOptions="Center"/>
+                        <!--IsVisible="{Binding FotoPathProducto, Converter={x:Static converters:IsNotNullConverter.Instance}}"-->
+
+                        <Grid Grid.Row="7" 
+                  Grid.ColumnSpan="4"
+                  ColumnDefinitions="auto, auto " 
+                  ColumnSpacing="10">
+                            <CheckBox Grid.Column="0" 
+                          IsChecked="{Binding MaterialFueraDeInventario}"
+                          VerticalOptions="Center"/>
+                            <Label Grid.Column="1" 
+                       Text="Material fuera de inventario" 
+                       VerticalOptions="Center"
+                       FontSize="14"/>
+                        </Grid>
+                    </Grid>
+                </ScrollView>
+
+                <!-- Botones -->
+                <Grid Grid.Row="3"
+          ColumnDefinitions="*, *" 
+          ColumnSpacing="10">
+                    <Button Grid.Column="0" 
+                Text="Cancelar" 
+                Command="{Binding CancelarCommand}" 
+                BackgroundColor="Red" 
+                TextColor="White"
+                HeightRequest="45"/>
+                    <Button Grid.Column="1" 
+                Text="Guardar" 
+                Command="{Binding GuardarCommand}" 
+                BackgroundColor="ForestGreen" 
+                TextColor="White"
+                HeightRequest="45"/>
+                </Grid>
+            </Grid>
+        </ScrollView>
+
+        
+    </Frame>
+</mopups:PopupPage>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.OrdenesTrabajo"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:converters="clr-namespace:BatiaSuite.Converters"
+    x:Class="BatiaSuite.Views.OrdenesTrabajo.FotoEvidenciaPage"
+    Title="{x:Static const:Constants.FOTOS_EVIDENCIA}"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:FilePathToFileNameConverter
+                x:Key="FilePathToFileNameConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <viewModel:FotoEvidenciaViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid
+        x:Name="mainGrid">
+
+        <ScrollView
+            Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}">
+
+            <Grid
+                ColumnDefinitions="auto, auto, *">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="auto" />
+                    <RowDefinition
+                        Height="{OnIdiom 180, Tablet = 220}" />
+                    <RowDefinition
+                        Height="auto" />
+                    <RowDefinition
+                        Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label
+                    Text="{x:Static const:Constants.CARGAR_FOTOS}"
+                    Style="{StaticResource ContentBoldLabelStyle}"
+                    TextColor="Black"
+                    Margin="10" />
+
+                <ImageButton
+                    Grid.Column="1"
+                    Style="{StaticResource ImageButtonIconStyle}"
+                    Command="{Binding OpenGalleryCommand}"
+                    Source="{StaticResource GalleryIcon}"
+                    Margin="20,0,40,0" />
+
+                <ImageButton
+                    Grid.Column="2"
+                    Style="{StaticResource ImageButtonIconStyle}"
+                    Command="{Binding TakePhotoCommand}"
+                    Source="{StaticResource CameraIcon}"
+                    HorizontalOptions="Start" />
+
+                <ScrollView
+                    Grid.Row="1"
+                    Grid.ColumnSpan="3"
+                    Orientation="Horizontal"
+                    BackgroundColor="White">
+
+                    <HorizontalStackLayout
+                        BindableLayout.ItemsSource="{Binding PhotoList}"
+                        Spacing="5">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Image
+                                        Source="{Binding .}"
+                                        Aspect="AspectFit"
+                                        WidthRequest="{OnIdiom 130, Tablet=160}"
+                                        Margin="{OnIdiom '10, 10, 10, 15', Tablet='10, 15, 15, 20'}" />
+
+                                    <ImageButton
+                                        Style="{StaticResource ImageButtonIconStyle}"
+                                        Source="{StaticResource TrashIcon}"
+                                        Command="{Binding Source={x:Reference mainGrid}, Path=BindingContext.RemovePhotoCommand}"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="{OnIdiom 15, Tablet=25}"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="End"
+                                        Margin="0"
+                                        Scale="{OnPlatform Android=1, iOS=.5}"
+                                        TranslationX="{OnPlatform Android=0, iOS=15}" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+                <Label
+                    Grid.Row="2"
+                    Text="{x:Static const:Constants.CARGAR_REPORTE}"
+                    Style="{StaticResource ContentBoldLabelStyle}"
+                    TextColor="Black"
+                    Margin="10, 50, 10, 10" />
+
+                <ImageButton
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Style="{StaticResource ImageButtonIconStyle}"
+                    Command="{Binding OpenFilesPickerCommand}"
+                    Source="{StaticResource AttachIcon}"
+                    Margin="10, 50, 10, 10" />
+
+                <ScrollView
+                    Grid.Row="3"
+                    Grid.ColumnSpan="3">
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding FileList}"
+                        Margin="10,10,10,0"
+                        Spacing="10">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+
+                                <SwipeView>
+                                    <SwipeView.RightItems>
+                                        <SwipeItem
+                                            BackgroundColor="Red"
+                                            Text="{x:Static const:Constants.QUITAR}"
+                                            Command="{Binding Source={x:Reference mainGrid}, Path=BindingContext.RemoveFilePathCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </SwipeView.RightItems>
+
+                                    <Frame
+                                        CornerRadius="20"
+                                        Style="{StaticResource FrameStyle}"
+                                        Padding="15">
+
+                                        <Label
+                                            Text="{Binding ., Converter={StaticResource FilePathToFileNameConverter}}"
+                                            LineBreakMode="MiddleTruncation"
+                                            Style="{StaticResource ContentLabelStyle}" />
+                                    </Frame>
+                                </SwipeView>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+        </ScrollView>
+        <Grid
+Grid.RowSpan="3"
+RowDefinitions="*,*"
+BackgroundColor="#88000000"
+IsVisible="{Binding IsLoading}">
+            <ActivityIndicator
+    Grid.Row="0"
+    VerticalOptions="End"
+    Color="White"
+    IsRunning="{Binding IsLoading}"
+    HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            <Label
+     VerticalOptions="Start"
+     HorizontalOptions="Center"
+     Grid.Row="1"
+     TextColor="White"
+     Text="{Binding TextLoading}"
+></Label>
+        </Grid>
+        <ImageButton
+            Source="{StaticResource ArrowIcon}"
+            Style="{StaticResource FloatingButtonStyle}"
+            Command="{Binding NextPageCommand}" />
+        
+    </Grid>
+
+</ContentPage>

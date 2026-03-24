@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="BatiaSuite.Popups.AlmacenPicker"
+    BackgroundColor="{StaticResource BackgroundPopup}"
+    Style="{StaticResource PopupStyle}">
+
+    <Frame
+        Style="{StaticResource PopupFrameStyle}">
+
+        <Grid
+            RowDefinitions="auto, *, auto">
+
+            <Entry
+                x:Name="searchEntry"
+                Placeholder="{x:Static const:Constants.BUSCAR_ALMACEN}"
+                Margin="10, 10, 10, 0">
+
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior
+                        EventName="TextChanged"
+                        Command="{Binding GetAlmacenListCommand}"
+                        CommandParameter="{Binding Source={x:Reference searchEntry}, Path=Text}" />
+                </Entry.Behaviors>
+            </Entry>
+
+            <CollectionView
+                Grid.Row="1"
+                x:Name="collectionView"
+                ItemsSource="{Binding AlmacenList}"
+                Margin="{OnPlatform Android='10, 0', iOS='10, 10, 10, 0'}"
+                VerticalScrollBarVisibility="Never">
+
+                <CollectionView.EmptyView>
+                    <Label
+                        Text="{Binding EmptyView}"
+                        VerticalTextAlignment="Start"
+                        HorizontalTextAlignment="Center"
+                        TextColor="Gray"
+                        FontSize="12"
+                        Margin="20" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        ItemSpacing="10"
+                        Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame
+                            Style="{StaticResource FrameStyle}">
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    NumberOfTapsRequired="1"
+                                    Command="{Binding Source={x:Reference collectionView}, Path=BindingContext.SelectAlmacenCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <Grid
+                                ColumnDefinitions="auto, *"
+                                ColumnSpacing="20">
+                                <Label
+                                    Text="{Binding IdAlmacen}"
+                                    Style="{StaticResource ContentLabelStyle}"
+                                    FontAttributes="Bold" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding Nombre}"
+                                    Style="{StaticResource ContentLabelStyle}" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button
+                Grid.Row="2"
+                Text="{x:Static const:Constants.CANCELAR}"
+                Command="{Binding CancelCommand}"
+                Style="{StaticResource ButtonPopupStyle}" />
+        </Grid>
+    </Frame>
+</mopup:PopupPage>

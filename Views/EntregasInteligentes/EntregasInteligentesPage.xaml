@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.EntregasInteligentes"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    xmlns:converters="clr-namespace:BatiaSuite.Converters"
+    x:Class="BatiaSuite.Views.EntregasInteligentes.EntregasInteligentesPage"
+
+    Title="{x:Static const:Constants.ENTREGAS_INTELIGENTES}"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:OrdenFechaConverter x:Key="OrdenFechaConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid x:Name="MainGrid" >
+        <Grid
+            
+                RowDefinitions="auto,*,*,*,*,*,*"
+                Margin="10,0"
+                IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+
+                <Button 
+                    HeightRequest="60"
+                        Grid.Row="0"
+                        BackgroundColor="Gray"
+                        Text="Precargar datos" 
+                        TextColor="White"
+                        Command="{Binding ObtenerRutaCommand}"/>
+            <Button 
+        HeightRequest="60"
+        Grid.Row="1"
+        BackgroundColor="DarkSeaGreen"
+        Text="Iniciar Ruta" 
+        TextColor="White"
+        Command="{Binding IniciarRutaCommand}"/>
+            <Button 
+        HeightRequest="60"
+        Grid.Row="2"
+        BackgroundColor="Red"
+        Text="Finalizar Ruta" 
+        TextColor="White"
+        Command="{Binding FinalizarRutaCommand}"/>
+            <Button 
+    HeightRequest="60"
+    Grid.Row="3"
+    BackgroundColor="Green"
+    Text="Ver en Google maps" 
+    TextColor="White"
+    Command="{Binding AbrirGoogleMapsCommand}"/>
+            <Button 
+    HeightRequest="60"
+    Grid.Row="4"
+    BackgroundColor="Blue"
+    Text="Ver en Waze" 
+    TextColor="White"
+    Command="{Binding AbrirWazeCommand}"/>
+
+
+
+            <maps:Map x:Name="RutaMap"
+                      BackgroundColor="Blue"
+                      Margin="10"
+                      Grid.Row="5"
+                      Grid.RowSpan ="3"
+              MapType="Street"
+              IsShowingUser="true"
+              VerticalOptions="Center"
+              HorizontalOptions="Center" />
+            
+        </Grid>
+
+        <Grid
+            RowDefinitions="*,*"
+            BackgroundColor="#88000000"
+            IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+                Grid.Row="0"
+                VerticalOptions="End"
+                Color="{StaticResource AzulOscuro}"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}"/>
+             <Label
+                 VerticalOptions="Start"
+                 HorizontalOptions="Center"
+                 Grid.Row="1"
+                 TextColor="White"
+                 Text="{Binding TextLoading}"
+            ></Label>
+        </Grid>
+    </Grid>
+
+
+</ContentPage>

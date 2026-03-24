@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Controls.BordererLabel">
+
+    <Frame
+        CornerRadius="15"
+        Style="{StaticResource FrameStyle}"
+        Padding="{OnIdiom '10, 15', Tablet=18}"
+        IsEnabled="{Binding IsEnabledCommand}">
+
+        <Frame.GestureRecognizers>
+            <TapGestureRecognizer
+                NumberOfTapsRequired="1"
+                Command="{Binding Command}"
+                CommandParameter="{Binding CommandParameter}"
+                Tapped="Frame_Tapped" />
+        </Frame.GestureRecognizers>
+
+        <Grid>
+            <Label
+                x:Name="labelText"
+                Text="{Binding Text}"
+                Style="{StaticResource LabelStyleBase}"
+                TextColor="Black"
+                FontSize="{OnIdiom 16, Tablet=20}"
+                VerticalOptions="Center" />
+
+            <Label
+                Text="{Binding Placeholder}"
+                Style="{StaticResource LabelStyleBase}"
+                TextColor="{StaticResource Gray}"
+                FontSize="{OnIdiom 16, Tablet=20}"
+                VerticalOptions="Center"
+                IsVisible="{Binding Text, Converter={StaticResource IsStringNullOrWhiteSpaceConverter}}" />
+            <!-- Ícono de flechita ▼ -->
+            <Label
+                Grid.Column="1"
+                Text="▼"
+                FontSize="{OnPlatform Android=20, iOS=12}"
+                TextColor="Gray"
+                VerticalOptions="Center"
+                HorizontalOptions="End"
+                Margin="0,0,10,0"
+                IsEnabled="False" />
+        </Grid>
+    </Frame>
+</ContentView>

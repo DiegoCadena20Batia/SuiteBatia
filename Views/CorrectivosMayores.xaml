@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.CorrectivosMayores"
+             Title="Correctivos Mayores"
+             xmlns:utils="clr-namespace:BatiaSuite.Utils"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="True"
+             Shell.FlyoutBehavior="Disabled">
+
+    <ScrollView>
+        <VerticalStackLayout>
+            <Grid RowDefinitions="*,*,*,*,*,*,*"
+                  ColumnDefinitions="*,*,*,*"
+                  VerticalOptions="CenterAndExpand"
+                  ColumnSpacing="5"
+                  RowSpacing="5"
+                  Margin="15">
+
+                <Frame Grid.Row="1"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       Padding="0"
+                       BackgroundColor="#2E3192">
+
+                    <Grid RowDefinitions="*"
+                          ColumnDefinitions="auto,*, auto"
+                          Margin="5">
+                        
+                        <Label TextColor="White"
+                               HeightRequest="50"
+                               WidthRequest="150"
+                               HorizontalOptions="End"
+                               VerticalOptions="Center"
+                               HorizontalTextAlignment="Start"
+                               VerticalTextAlignment="Start"
+                               FontSize="18"
+                               FontFamily="MontBold"
+                               Text="Busca por ID de correctivo mayor" 
+                               Margin="5"/>
+
+                        <Frame Margin="10"
+                               Padding="0,5,0,0"
+                               BorderColor="#3775B5"
+                               Grid.Row="0"
+                               Grid.Column="1"
+                               HorizontalOptions="Start"
+                               VerticalOptions="Center"
+                               WidthRequest="100"
+                               BackgroundColor="White"
+                               CornerRadius="5">
+
+                            <Entry TextColor="#3775B5"
+                                   ClearButtonVisibility="WhileEditing"
+                                   VerticalTextAlignment="Center"
+                                   HorizontalTextAlignment="Center"
+                                   Text="{Binding IdClave}"
+                                   ReturnCommand="{Binding GetInfoEmpleadoCommand}"
+                                   ReturnType="Send"
+                                   Keyboard="Numeric" />
+                        </Frame>
+
+                        <ImageButton
+                            Grid.Column="2"
+                            Scale=".75"
+                            Source="{StaticResource SearchIcon}"
+                            Command="{Binding GetInfoEmpleadoCommand}"
+                           IsVisible="{x:Static utils:Constants.IS_IOS}"/>
+                    </Grid>
+                </Frame>
+
+                <Label Grid.Row="2"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       HeightRequest="50"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       FontSize="20"
+                       FontFamily="MontBold"
+                       TextColor="#2E3192"
+                       Text="Busca por seleccion de cliente" />
+
+                <Frame Margin="0,10"
+                       Padding="0,5,0,-10"
+                       BorderColor="#3775B5"
+                       HorizontalOptions="FillAndExpand"
+                       Grid.Row="3"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       HeightRequest="50"
+                       BackgroundColor="Transparent"
+                       CornerRadius="5">
+
+                    <Picker Title="Seleciona Cliente"
+                            TitleColor="#3775B5"
+                            FontFamily="MontRegular"
+                            FontSize="12"
+                            FontAutoScalingEnabled="True"
+                            VerticalTextAlignment="Center"
+                            HorizontalTextAlignment="Center"
+                            CharacterSpacing="2"
+                            ItemsSource="{Binding ClienteCm}"
+                            ItemDisplayBinding="{Binding nombre}"
+                            SelectedItem="{Binding IdClientSelected}" />
+                </Frame>
+
+
+                <Frame Margin="0,0,0,0"
+                       Padding="0,5,0,-10"
+                       BorderColor="#3775B5"
+                       HorizontalOptions="FillAndExpand"
+                       Grid.Row="4"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       HeightRequest="50"
+                       BackgroundColor="Transparent"
+                       CornerRadius="5">
+
+                    <Picker Title="Seleciona Inmueble"
+                            TitleColor="#3775B5"
+                            FontFamily="MontRegular"
+                            FontSize="12"
+                            FontAutoScalingEnabled="True"
+                            VerticalTextAlignment="Center"
+                            HorizontalTextAlignment="Center"
+                            CharacterSpacing="2"
+                            ItemsSource="{Binding InmuebleCm}"
+                            ItemDisplayBinding="{Binding nombre}"
+                            SelectedItem="{Binding IdInmubleSelected}" />
+                </Frame>
+                <ActivityIndicator ZIndex="1"
+                                   Grid.Row="5"
+                                   Grid.Column="1"
+                                   Grid.ColumnSpan="2"
+                                   IsRunning="{Binding IsBusy}"
+                                   Color="#3775B5"
+                                   VerticalOptions="Fill"
+                                   Scale="0.8"
+                                   Margin="0,0,0,0" />
+
+                <Frame Grid.Row="6"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                    HeightRequest="350"
+                    BackgroundColor="White"
+                    Margin="0,0,0,0">
+
+                    <CollectionView x:Name="lisApp"
+                                    ItemsSource="{Binding ListApps}"
+                                    IsEnabled="{Binding IsEnabled}"
+                                    >
+
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout 
+                                Orientation="Vertical"
+                                ItemSpacing="10"/>
+                        </CollectionView.ItemsLayout>
+                        
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="5"
+                                       CornerRadius="5"
+                                       BackgroundColor="#3775B5">
+                                    <Grid RowDefinitions="*"
+                                          ColumnDefinitions="*,*,*"
+                                          ColumnSpacing="5">
+                                        <Label Grid.Row="0"
+                                               Grid.Column="0"
+                                               Text="{Binding idClaveCM}"
+                                               FontSize="20"
+                                               TextColor="White"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"
+                                               FontFamily="MontSemibold" />
+                                        <Label Grid.Row="0"
+                                               Grid.Column="1"
+                                               Text="{Binding cliente}"
+                                               FontSize="10"
+                                               TextColor="White"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"
+                                               FontFamily="MontSemibold" />
+                                        <Label Grid.Row="0"
+                                               Grid.Column="2"
+                                               Text="{Binding inmueble}"
+                                               FontSize="10"
+                                               TextColor="White"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"
+                                               FontFamily="MontSemibold" />
+                                    </Grid>
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Path=BindingContext.CommandListadoSelec, 
+                                          Source={x:Reference lisApp}}"
+                                                              CommandParameter="{Binding .}">
+                                        </TapGestureRecognizer>
+                                    </Frame.GestureRecognizers>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Frame>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

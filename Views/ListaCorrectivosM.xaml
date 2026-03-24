@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.ListaCorrectivosM"
+    Title="Carga de evidencias"
+    BackgroundColor="White"
+    Shell.FlyoutBehavior="Disabled">
+
+    <ScrollView>
+
+        <Grid
+            RowDefinitions="auto, auto, *, auto, auto"
+            Margin="15">
+
+            <Frame
+                Grid.Row="0"
+                Padding="5"
+                BackgroundColor="Transparent"
+                HasShadow="True">
+
+                <Grid
+                    RowDefinitions="*,*"
+                    ColumnDefinitions="*,*"
+                    VerticalOptions="CenterAndExpand"
+                    ColumnSpacing="5"
+                    RowSpacing="5"
+                    Margin="15">
+
+                    <Frame
+                        Padding="5"
+                        BackgroundColor="#3775B5"
+                        BorderColor="#3775B5"
+                        HasShadow="True">
+
+                        <Label
+                            Text="{Binding  Tipos}"
+                            FontFamily="MontBold"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            FontSize="15"
+                            TextColor="White"
+                            Padding="0"
+                            Margin="0,0,0,0" />
+                    </Frame>
+
+                    <Frame
+                        Grid.Column="1"
+                        Padding="5"
+                        BorderColor="#3775B5"
+                        BackgroundColor="#3775B5"
+                        HasShadow="True">
+                        <Label
+                            Text="{Binding  Fechas}"
+                            FontFamily="MontBold"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            FontSize="15"
+                            TextColor="White"
+                            Padding="0"
+                            Margin="0,0,0,0" />
+                    </Frame>
+
+                    <VerticalStackLayout
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Margin="0,20,0,0">
+                        
+                        <Label
+                            Text="DETALLES"
+                            FontFamily="MontSemibold"
+                            FontSize="15"
+                            TextColor="#3775B5" />
+                        <Label
+                            Text="{Binding  Detalles}"
+                            FontFamily="MontBold"
+                            FontSize="15"
+                            TextColor="#3775B5"
+                            Padding="0"
+                            Margin="0,0,0,0" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <Button
+                Grid.Row="1"
+                BackgroundColor="#2E3192"
+                HeightRequest="50"
+                WidthRequest="130"
+                CornerRadius="5"
+                TextColor="White"
+                FontFamily="MontBold"
+                FontSize="25"
+                Padding="0"
+                Text="FOTO"
+                Command="{Binding PhotoCommand}"
+                Margin="0,50,0,10">
+                <Button.Shadow>
+                    <Shadow
+                        Brush="Black"
+                        Offset="10,10"
+                        Radius="25"
+                        Opacity="0.8" />
+                </Button.Shadow>
+            </Button>
+
+            <ScrollView
+                Orientation="Horizontal"
+                Grid.Row="2"
+                Margin="5"
+                x:Name="MiCarrusel">
+
+                <HorizontalStackLayout
+                    BindableLayout.ItemsSource="{Binding photoPaths}">
+
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <Frame
+                                    HasShadow="True"
+                                    BorderColor="Gray"
+                                    CornerRadius="5"
+                                    Margin="10"
+                                    WidthRequest="250"
+                                    HeightRequest="200"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    BackgroundColor="White">
+                                    <Image
+                                        Source="{Binding UrlPhoto}"
+                                        Aspect="Fill"
+                                        HeightRequest="180"
+                                        WidthRequest="230"
+                                        HorizontalOptions="Center" />
+                                </Frame>
+                                <SwipeView.BottomItems>
+                                    <SwipeItems>
+                                        <SwipeItem
+                                            Text="ELIMINAR"
+                                            BackgroundColor="Red"
+                                            Command="{Binding Source={x:Reference MiCarrusel}, Path=BindingContext.DeletePhotoCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </SwipeItems>
+                                </SwipeView.BottomItems>
+                            </SwipeView>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <ActivityIndicator
+                Grid.Row="3"
+                IsRunning="{Binding IsBusy}"
+                Color="#3775B5"
+                VerticalOptions="Fill"/>
+
+            <Button
+                Grid.Row="4"
+                BackgroundColor="#2E3192"
+                HeightRequest="50"
+                WidthRequest="290"
+                CornerRadius="5"
+                TextColor="White"
+                FontFamily="MontBold"
+                FontSize="25"
+                Padding="0"
+                Text="SIGUIENTE"
+                Command="{Binding NextPageCommand}">
+                <Button.Shadow>
+                    <Shadow
+                        Brush="Black"
+                        Offset="10,10"
+                        Radius="25"
+                        Opacity="0.8" />
+                </Button.Shadow>
+            </Button>
+
+        </Grid>
+
+    </ScrollView>
+
+</ContentPage>

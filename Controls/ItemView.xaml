@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Controls.ItemView">
+    
+    <SwipeView>
+        
+        <SwipeView.RightItems >
+            <SwipeItem
+                Text="{x:Static const:Constants.QUITAR}"
+                BackgroundColor="Red"
+                Command="{Binding SwipeCommand}"
+                CommandParameter="{Binding SwipeCommandParameter}"
+                IsEnabled="{Binding HasSwipe}"/>
+        </SwipeView.RightItems>
+
+        <Frame
+            HasShadow="False"
+            BackgroundColor="White"
+            CornerRadius="5"
+            BorderColor="Transparent"
+            Padding="10">
+
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding Command}"
+                    CommandParameter="{Binding CommandParameter}"
+                    Tapped="TapGestureRecognizer_Tapped">
+                </TapGestureRecognizer>
+            </Frame.GestureRecognizers>
+
+            <ContentView
+                Content="{Binding ItemContent}" />
+
+        </Frame>
+    </SwipeView>    
+</ContentView>

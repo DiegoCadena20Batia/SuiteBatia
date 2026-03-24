@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.Supervisionmantenimiento"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.SupervisionMantenimiento.SupervisionMantenimientoSeccionPage"
+    MasterPageTitle="{Binding Seccion}"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#F5F5F5"
+    ShowFloatingButton="False">
+
+    <controls:MasterPage.MasterPageContent>
+        <Grid x:Name="mainGrid">
+
+            <Grid>
+                <Grid RowDefinitions="*, auto,auto">
+                    <ScrollView Grid.Row="0">
+                        <Grid
+                            RowDefinitions="*, auto">
+                            <Grid
+                                Grid.Row="0">
+                                
+                                   <CollectionView Grid.Row="0" ItemsSource="{Binding Preguntas}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                                            <Frame
+                                Margin="15,5"
+                                Padding="16"
+                                BackgroundColor="White"
+                                BorderColor="LightGray"
+                                CornerRadius="16"
+                                HasShadow="False">
+
+                                                <VerticalStackLayout Spacing="12">
+
+                                    <!-- TEXTO DE LA PREGUNTA -->
+                                    <Label
+                                        Text="{Binding Pregunta}"
+                                        FontSize="17"
+                                        FontAttributes="Bold"
+                                        TextColor="#333" />
+
+                                    <!-- OPCIONES -->
+                                    <Grid RowDefinitions="auto,auto,auto" ColumnDefinitions="*,*,*" ColumnSpacing="10">
+
+                                        <!-- ✅ APLICA -->
+                                        <Border
+        Stroke="LightGreen"
+        StrokeThickness="1"
+        StrokeShape="RoundRectangle 14"
+        Padding="10">
+
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, 
+                                  Path=BindingContext.SelectAplicaCommand}"
+                CommandParameter="{Binding Source={RelativeSource Self}, Path=BindingContext}" />
+                                            </Border.GestureRecognizers>
+
+                                            <Image Source="respuestacumplenew.png" HeightRequest="60" />
+
+                                            <Border.Triggers>
+                                                <!-- SELECCIONADO -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="1">
+                                                    <Setter Property="BackgroundColor" Value="#E8F5E9"/>
+                                                    <Setter Property="Stroke" Value="#4CAF50"/>
+                                                </DataTrigger>
+
+                                                <!-- NO SELECCIONADO -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="2">
+                                                    <Setter Property="BackgroundColor" Value="White"/>
+                                                    <Setter Property="Stroke" Value="LightGreen"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="3">
+                                                    <Setter Property="BackgroundColor" Value="White"/>
+                                                    <Setter Property="Stroke" Value="LightGreen"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                        </Border>
+
+                                        <!-- ❌ NO APLICA -->
+                                        <Border Grid.Column="1"
+        Stroke="#EF9A9A"
+        StrokeThickness="1"
+        StrokeShape="RoundRectangle 14"
+        Padding="10">
+
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, 
+                                  Path=BindingContext.SelectNoAplicaCommand}"
+                CommandParameter="{Binding Source={RelativeSource Self}, Path=BindingContext}" />
+                                            </Border.GestureRecognizers>
+
+                                            <Image Source="respuestanocumplenew.png" HeightRequest="60" />
+
+                                            <Border.Triggers>
+                                                <!-- SELECCIONADO -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="2">
+                                                    <Setter Property="BackgroundColor" Value="#FDECEA"/>
+                                                    <Setter Property="Stroke" Value="#F44336"/>
+                                                </DataTrigger>
+
+                                                <!-- NO SELECCIONADO -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="1">
+                                                    <Setter Property="BackgroundColor" Value="White"/>
+                                                    <Setter Property="Stroke" Value="#EF9A9A"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="3">
+                                                    <Setter Property="BackgroundColor" Value="White"/>
+                                                    <Setter Property="Stroke" Value="#EF9A9A"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                        </Border>
+
+                                        <!-- ➖ N/A -->
+                                        <Border Grid.Column="2"
+        Stroke="#BDBDBD"
+        StrokeThickness="1"
+        StrokeShape="RoundRectangle 14"
+        Padding="10">
+
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer
+                Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, 
+                                  Path=BindingContext.SelectNACommand}"
+                CommandParameter="{Binding Source={RelativeSource Self}, Path=BindingContext}" />
+                                            </Border.GestureRecognizers>
+
+                                            <Image Source="na.png" HeightRequest="60" />
+
+                                            <Border.Triggers>
+                                                <!-- SELECCIONADO -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="3">
+                                                    <Setter Property="BackgroundColor" Value="#EEEEEE"/>
+                                                    <Setter Property="Stroke" Value="#9E9E9E"/>
+                                                </DataTrigger>
+
+                                                <!-- NO SELECCIONADO -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="1">
+                                                    <Setter Property="BackgroundColor" Value="White"/>
+                                                    <Setter Property="Stroke" Value="#BDBDBD"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger TargetType="Border" Binding="{Binding Estado}" Value="2">
+                                                    <Setter Property="BackgroundColor" Value="White"/>
+                                                    <Setter Property="Stroke" Value="#BDBDBD"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                        </Border>
+                                                        <Label
+                                                            Grid.Row="1"
+                                                            Grid.Column="0"
+                                                            Grid.ColumnSpan="2"
+                                                            Text="Dispositivos por nivel:"
+                                                            TextColor="CadetBlue"
+                                                            VerticalOptions="Center"
+                                                            HorizontalOptions="End"
+                                                            FontSize="16"
+                                                            IsVisible="False">
+                                                            <Label.Triggers>
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IdSeccion}" Value="13">
+                                                                    <Setter Property="IsVisible" Value="True"/>
+                                                                </DataTrigger>
+
+                                                                <DataTrigger TargetType="Label" Binding="{Binding IdSeccion}" Value="15">
+                                                                    <Setter Property="IsVisible" Value="True"/>
+                                                                </DataTrigger>
+                                                            </Label.Triggers>
+                                                        </Label>
+                                                        <Border
+                                                            Grid.Row="1"
+                                                            Grid.Column="2"
+                                                            Margin="0,5,0,0"
+                                                            Stroke="#E0E0E0"
+                                                            StrokeThickness="1"
+                                                            StrokeShape="RoundRectangle 12"
+                                                            Padding="8"
+                                                            IsVisible="False">
+
+                                                            <Border.Triggers>
+                                                                <DataTrigger TargetType="Border" Binding="{Binding IdSeccion}" Value="13">
+                                                                    <Setter Property="IsVisible" Value="True"/>
+                                                                </DataTrigger>
+
+                                                                <DataTrigger TargetType="Border" Binding="{Binding IdSeccion}" Value="15">
+                                                                    <Setter Property="IsVisible" Value="True"/>
+                                                                </DataTrigger>
+                                                            </Border.Triggers>
+
+                                                            <Entry
+                                                                Keyboard="Telephone"
+                                                                Text="{Binding DispositivosPorNivel, Mode=TwoWay}"
+                                                                Placeholder="Dispositivos por nivel"
+                                                                FontSize="14"
+                                                                TextColor="#333"
+                                                                BackgroundColor="Transparent"
+                                                                
+                                                                MaxLength="300" />
+                                                        </Border>
+
+                                                        <Border
+                                            Grid.Row="2"
+                                            Grid.ColumnSpan="3"
+                                            Margin="0,5,0,0"
+                                            Stroke="#E0E0E0"
+                                            StrokeThickness="1"
+                                            StrokeShape="RoundRectangle 12"
+                                            Padding="8">
+
+                                            <Editor
+                                                Text="{Binding Comentarios, Mode=TwoWay}"
+                                                Placeholder="Comentarios y observaciones"
+                                                PlaceholderColor="Gray"
+                                                AutoSize="TextChanges"
+                                                FontSize="14"
+                                                TextColor="#333"
+                                                BackgroundColor="Transparent"
+                                                MaxLength="300" />
+                                        </Border>
+                                                        
+
+                                                    </Grid>
+
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                            </Grid>
+                            <Grid Grid.Row="2">
+                        <Grid 
+    Margin="20,0,20,20"
+    RowDefinitions="auto,auto,auto"
+    HeightRequest="250"
+    Grid.Row="1">
+                            <Button
+        Margin="10,20,10,10"
+        HorizontalOptions="Start"
+        HeightRequest="50"
+        WidthRequest="180"
+        Text="Capturar foto"
+        TextColor="White"
+        BackgroundColor="DodgerBlue"
+        Grid.Row="0"
+        ImageSource="camera.png"
+        ContentLayout="left, 10"
+        Command="{Binding TakePhotoCommand}"
+        ></Button>
+
+                            <Frame
+        HeightRequest="190"
+        Grid.Row="2"
+        Grid.ColumnSpan="2"
+        Padding="0"
+        BorderColor="White"
+        BackgroundColor="White">
+
+                                <ScrollView
+            Margin="0"
+            Orientation="Horizontal"
+            BackgroundColor="White">
+
+                                    <HorizontalStackLayout
+                                        HorizontalOptions="Center"
+                                        BindableLayout.ItemsSource="{Binding PhotoList}"
+                                        Spacing="10">
+
+
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Border HeightRequest="160"
+                                                        BackgroundColor="AliceBlue"
+                                                        Stroke="Transparent"
+                                                        StrokeThickness="0"
+                                                        Padding="0"
+                                                        Margin="5"
+                                                        StrokeShape="RoundRectangle 20">
+                                                        <Border.Shadow>
+                                                            <Shadow
+                                                                Brush="Black"
+                                                                Offset="2,2"
+                                                                Opacity="0.2"
+                                                                Radius="4" />
+                                                        </Border.Shadow>
+                                                        <Image
+                                                            Source="{Binding .}"
+                                                            Aspect="AspectFit"
+                                                            WidthRequest="{OnIdiom 120, Tablet=130}"/>
+                                                    </Border>
+
+                                                    <Border
+                                                        BackgroundColor="Red"
+                                                        Opacity="0.7"
+                                                        Stroke="Black"
+                                                        StrokeThickness="0"
+                                                        HorizontalOptions="End"
+                                                        VerticalOptions="Start"
+                                                        Margin="0"
+                                                        Padding="6"
+                                                        StrokeShape="RoundRectangle 10">
+                                                        <Border.Shadow>
+                                                            <Shadow
+                                        Brush="Black"
+                                        Offset="2,2"
+                                        Opacity="0.2"
+                                        Radius="4" />
+                                                        </Border.Shadow>
+                                                        <ImageButton
+                                    Style="{StaticResource ImageButtonIconStyle}"
+                                    Source="{StaticResource TrashIconWhite}"
+                                    Command="{Binding Source={x:Reference mainGrid}, Path=BindingContext.RemovePhotoCommand}"
+                                    CommandParameter="{Binding .}"
+                                    WidthRequest="{OnIdiom 10, Tablet=30}"
+                                    HeightRequest="{OnIdiom 10, Tablet=30}"
+                                    BackgroundColor="Transparent"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center" />
+                                                    </Border>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </HorizontalStackLayout>
+                                </ScrollView>
+                            </Frame>
+                        </Grid>
+
+                    </Grid>
+                        </Grid>
+                        
+                        
+                    </ScrollView>
+                    <Grid Grid.Row="1"
+                          BackgroundColor="Transparent">
+                        <Button
+                            Text="Guardar"
+                            BackgroundColor="DodgerBlue"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Margin="10"
+                            WidthRequest="200"
+                            Command="{Binding GuardarCommand}"></Button>
+                    </Grid>
+                    
+                </Grid>
+            </Grid>
+            <Grid
+            BackgroundColor="#88000000"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            IsVisible="{Binding IsLoading}">
+
+                <ActivityIndicator
+                Color="{StaticResource AzulOscuro}"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}" />
+            </Grid>
+        </Grid>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

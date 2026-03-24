@@ -1,0 +1,543 @@
+<controls:MasterPage
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.CheckListAparadores.CheckListAparadoresPreguntasResumenPage"
+    MasterPageTitle="CHECKLIST DE APARADORES"
+    ShowFloatingButton="False"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#f0f0f0">
+
+    <controls:MasterPage.MasterPageContent>
+        <ScrollView>
+            <Grid>
+                <Grid RowDefinitions="auto, auto, auto, auto,auto,auto">
+
+                    
+                    <Label
+                Grid.Row="0"
+                Text="Vista General"
+                HorizontalOptions="Center"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#2e3192"
+                Margin="0,10"/>
+                    <!--<Frame
+                        CornerRadius="15">
+                        
+                    </Frame>-->
+                    <!-- SECCIÓN 1: RESUMEN DE PREGUNTAS -->
+                    <Frame
+                        Grid.Row="1"
+                        HeightRequest="500"
+                        CornerRadius="15"
+                               BackgroundColor="AliceBlue">
+                        <ScrollView>
+                            <Grid RowDefinitions="auto,auto,auto" 
+                      Grid.Row="1">
+                                <Grid Grid.Row="0">
+                                    <CollectionView
+Grid.Row="1"
+ItemsSource="{Binding ListaResumen}"
+Margin="15"
+IsGrouped="True"
+SelectionMode="None">
+
+                                        <!-- HEADER DE SECCIÓN PERSONALIZADO -->
+                                        <CollectionView.GroupHeaderTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <!-- HEADER PARA SECCIONES 1,2,3 -->
+                                                    <Grid x:Name="headerTabla"
+                  IsVisible="False" 
+                  RowDefinitions="Auto, Auto">
+
+                                                        <!-- Título de la sección -->
+                                                        <Grid Grid.Row="0" Padding="10" BackgroundColor="#2e3192">
+                                                            <Label Text="{Binding Titulo}"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="White" />
+
+                                                        </Grid>
+
+                                                        <!-- Headers de tabla -->
+                                                        <Grid Grid.Row="1"
+                      BackgroundColor="White"
+                      Padding="12,8"
+                      ColumnDefinitions="*, Auto, Auto">
+                                                            <Label Grid.Column="0"
+                           Text="Línea"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="#666"/>
+
+                                                            <Label Grid.Column="1"
+                           Text="Aparador 1"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="#666"
+                           HorizontalOptions="Center"
+                           WidthRequest="70"/>
+
+                                                            <Label Grid.Column="2"
+                           Text="Aparador 2"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="#666"
+                           HorizontalOptions="Center"
+                           WidthRequest="70"/>
+                                                        </Grid>
+                                                    </Grid>
+
+                                                    <!-- HEADER PARA SECCIONES 4,5 -->
+                                                    <Grid x:Name="headerCheckbox"
+                  IsVisible="False"
+                  RowDefinitions="Auto, Auto">
+
+                                                        <!-- Título de la sección -->
+                                                        <Grid Grid.Row="0" Padding="10" BackgroundColor="#2e3192">
+                                                            <Label Text="{Binding Titulo}"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="White" />
+                                                        </Grid>
+
+                                                        <!-- Headers de checkbox -->
+                                                        <Grid Grid.Row="1"
+                      BackgroundColor="White"
+                      Padding="12,8"
+                      ColumnDefinitions="*, Auto">
+
+
+                                                            <Label Grid.Column="0"
+                           Text=""
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="#666"/>
+
+                                                            <Label Grid.Column="1"
+                           Text="Resultado"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           TextColor="#666"
+                           HorizontalOptions="Center"
+                           WidthRequest="80"/>
+                                                        </Grid>
+                                                    </Grid>
+
+                                                    <!-- TRIGGERS PARA HEADERS -->
+                                                    <Grid.Triggers>
+                                                        <!--SECCIONES 1,2,3 - Mostrar headers de tabla-->
+                                                        <DataTrigger TargetType="Grid" Binding="{Binding Titulo}" Value="Vestir">
+                                                            <Setter TargetName="headerTabla" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger TargetType="Grid" Binding="{Binding Titulo}" Value="Casual">
+                                                            <Setter TargetName="headerTabla" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger TargetType="Grid" Binding="{Binding Titulo}" Value="Accesorios">
+                                                            <Setter TargetName="headerTabla" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <!--SECCIONES 4,5 - Mostrar headers de checkbox-->
+                                                        <DataTrigger TargetType="Grid" Binding="{Binding Titulo}" Value="Estado de la tienda (inicio)">
+                                                            <Setter TargetName="headerCheckbox" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger TargetType="Grid" Binding="{Binding Titulo}" Value="Estado al finalizar">
+                                                            <Setter TargetName="headerCheckbox" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+                                                    </Grid.Triggers>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </CollectionView.GroupHeaderTemplate>
+
+                                        <!-- PREGUNTAS Y RESPUESTAS (MANTENER EL QUE YA FUNCIONA) -->
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Frame Padding="10" Margin="0,3" BorderColor="#ccc" CornerRadius="10" BackgroundColor="White">
+                                                    <Grid>
+
+                                                        <!-- DISEÑO PARA SECCIONES 1,2,3 (TABLA) -->
+                                                        <Grid x:Name="seccionTabla"
+                      IsVisible="False"
+                      ColumnDefinitions="*, Auto, Auto">
+
+                                                            <Label Grid.Column="0"
+                           Text="{Binding Pregunta}"
+                           FontSize="14"
+                           VerticalOptions="Center"/>
+
+                                                            <Label Grid.Column="1"
+                           Text="{Binding Valor1, StringFormat='{0}'}"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#2e3192"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           WidthRequest="60"/>
+
+                                                            <Label Grid.Column="2"
+                           Text="{Binding Valor2, StringFormat='{0}'}"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="#2e3192"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           WidthRequest="60"/>
+                                                        </Grid>
+
+                                                        <!-- DISEÑO PARA SECCIONES 4,5 (CHECKBOX) -->
+                                                        <Grid x:Name="seccionCheckbox"
+                      IsVisible="False"
+                                  RowDefinitions="Auto,auto"
+                      ColumnDefinitions="*, Auto">
+
+                                                            <Label Grid.Column="0"
+                                       Grid.Row="0"
+                           Text="{Binding Pregunta}"
+                           FontSize="14"
+                           VerticalOptions="Center"/>
+
+                                                            <CheckBox Grid.Column="1"
+                                          Grid.Row="0"
+                              IsEnabled="False" 
+                              IsChecked="{Binding Valor3}"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Center"
+                              Color="#2e3192"/>
+                                                            <Label
+                                    Grid.Row="1"
+                                    Grid.ColumnSpan="2"
+                                    TextColor="Gray"
+                                    Text="{Binding Comentarios}"
+                                    ></Label>
+                                                        </Grid>
+
+                                                    </Grid>
+
+                                                    <!-- TRIGGERS -->
+                                                    <Frame.Triggers>
+                                                        <!--SECCIONES 1,2,3 - Mostrar como tabla-->
+                                                        <DataTrigger TargetType="Frame" Binding="{Binding IdSeccion}" Value="1">
+                                                            <Setter TargetName="seccionTabla" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger TargetType="Frame" Binding="{Binding IdSeccion}" Value="2">
+                                                            <Setter TargetName="seccionTabla" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger TargetType="Frame" Binding="{Binding IdSeccion}" Value="3">
+                                                            <Setter TargetName="seccionTabla" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <!--SECCIONES 4,5 - Mostrar con checkbox-->
+                                                        <DataTrigger TargetType="Frame" Binding="{Binding IdSeccion}" Value="4">
+                                                            <Setter TargetName="seccionCheckbox" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+
+                                                        <DataTrigger TargetType="Frame" Binding="{Binding IdSeccion}" Value="5">
+                                                            <Setter TargetName="seccionCheckbox" Property="IsVisible" Value="True" />
+                                                        </DataTrigger>
+                                                    </Frame.Triggers>
+                                                </Frame>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+
+                                    </CollectionView>
+                                </Grid>
+                                <Label Grid.Row="1"
+                            Margin="20,0,20,10" 
+                               Text="FOTOS"
+                               FontSize="15"></Label>
+                                <Grid 
+                            BackgroundColor="Transparent"
+                            Margin="20,0,20,20"
+                            RowDefinitions="auto,auto,auto"
+                            Grid.Row="2">
+                                    <Frame
+                                BorderColor="Transparent"
+                                BackgroundColor="Transparent"
+                                HeightRequest="200"
+Padding="0">
+
+                                        <ScrollView
+    Orientation="Horizontal"
+    BackgroundColor="Transparent">
+
+                                            <HorizontalStackLayout
+        BindableLayout.ItemsSource="{Binding PhotoList}"
+        Spacing="10">
+
+
+                                                <BindableLayout.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Border
+                        BackgroundColor="Transparent"
+                        Stroke="Transparent"
+                        StrokeThickness="0"
+                        Padding="0"
+                        StrokeShape="RoundRectangle 10">
+                                                                <Image
+                            Source="{Binding .}"
+                            Aspect="AspectFit"
+                            WidthRequest="{OnIdiom 130, Tablet=160}"
+                            Margin="{OnIdiom '0, 10, 0, 15', Tablet='10, 15, 15, 20'}" />
+                                                            </Border>
+
+
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </BindableLayout.ItemTemplate>
+                                            </HorizontalStackLayout>
+                                        </ScrollView>
+                                    </Frame>
+                                </Grid>
+                            </Grid>
+                        </ScrollView>
+                    </Frame>
+                    <!--<ScrollView
+                         Grid.Row="1"
+                        HeightRequest="500">
+                        <Frame CornerRadius="15"
+                               BackgroundColor="AliceBlue">
+
+                            
+                        </Frame>
+                    </ScrollView>-->
+                    <!-- SECCIÓN 3: Comentarios -->
+                    <Grid
+    Grid.Row="3"
+    Margin="10,0,10,0">
+                        <Frame
+BorderColor="#3775B5"
+BackgroundColor="White"
+HeightRequest="50"
+CornerRadius="5"
+Padding="5,0,0,-10"
+Margin="0,10,0,0">
+                            <Entry
+    FontFamily="MontBold"
+    HorizontalTextAlignment="Start"
+    VerticalTextAlignment="Center"
+    FontSize="13"
+    TextColor="#3775B5"
+    x:Name="txt_ComentariosFinales"
+    Text="{Binding ComentariosFinales}"
+    Placeholder="Comentarios"
+    PlaceholderColor="#3775B5"
+    ClearButtonVisibility="WhileEditing" />
+                        </Frame>
+                    </Grid>
+                    <!-- SECCIÓN 4: FIRMAS -->
+                    <Frame Grid.Row="4" BackgroundColor="White" Padding="15" Margin="10">
+                        <ScrollView HeightRequest="500">
+                            <VerticalStackLayout Spacing="20">
+                                <Label Text="FIRMAS" 
+                               FontAttributes="Bold" 
+                               FontSize="18" 
+                               HorizontalOptions="Center"
+                               TextColor="Black"/>
+
+                                <!-- Firma Gerente -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label HorizontalOptions="Center" 
+                                    Text="Gerente" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="gerenteDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearGerenteSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                            <!--<Button Text="Guardar" 
+                                            Command="{Binding SaveGerenteSignatureCommand}"
+                                            BackgroundColor="#4CAF50"
+                                            TextColor="White"
+                                            WidthRequest="100"/>-->
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Aparadorista -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label 
+                                    HorizontalOptions="Center"
+                                    Text="Aparadorista" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="aparadoristaDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <Frame
+                                    BorderColor="#3775B5"
+                                    BackgroundColor="White"
+                                    HeightRequest="50"
+                                    CornerRadius="5"
+                                    Padding="5,0,0,-10"
+                                    Margin="0,10,0,0">
+                                            <Entry
+                                        FontFamily="MontBold"
+                                        HorizontalTextAlignment="Start"
+                                        VerticalTextAlignment="Center"
+                                        FontSize="13"
+                                        TextColor="#3775B5"
+                                        x:Name="txt_NombreAparadorista"
+                                        Text="{Binding NombreAparadorista}"
+                                        Placeholder="Nombre"
+                                        PlaceholderColor="#3775B5"
+                                        ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearAparadoristaSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                            <!--<Button Text="Guardar" 
+                                            Command="{Binding SaveAparadoristaSignatureCommand}"
+                                            BackgroundColor="#4CAF50"
+                                            TextColor="White"
+                                            WidthRequest="100"/>-->
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Encargado -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label 
+                                    HorizontalOptions="Center"
+                                    Text="Encargado" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="encargadoDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <Frame
+                                    BorderColor="#3775B5"
+                                    BackgroundColor="White"
+                                    HeightRequest="50"
+                                    CornerRadius="5"
+                                    Padding="5,0,0,-10"
+                                    Margin="0,10,0,0">
+                                            <Entry
+                                        FontFamily="MontBold"
+                                        HorizontalTextAlignment="Start"
+                                        VerticalTextAlignment="Center"
+                                        FontSize="13"
+                                        TextColor="#3775B5"
+                                        x:Name="txt_NombreEncargado"
+                                        Text="{Binding NombreEncargado}"
+                                        Placeholder="Nombre"
+                                        PlaceholderColor="#3775B5"
+                                        ClearButtonVisibility="WhileEditing" />
+                                        </Frame>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearEncargadoSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                            <!--<Button Text="Guardar" 
+                                            Command="{Binding SaveEncargadoSignatureCommand}"
+                                            BackgroundColor="#4CAF50"
+                                            TextColor="White"
+                                            WidthRequest="100"/>-->
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                                <!-- Firma Auditor -->
+                                <Frame BackgroundColor="AliceBlue" Padding="10" CornerRadius="15">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label
+                                    HorizontalOptions="Center"
+                                    Text="Auditor Interno" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                        <views:DrawingView
+                                    x:Name="auditorDrawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="120"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"/>
+                                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                                            <Button Text="Limpiar" 
+                                            Command="{Binding ClearAuditorSignatureCommand}"
+                                            BackgroundColor="#FF6B6B"
+                                            TextColor="White"
+                                            WidthRequest="100"/>
+                                            <!--<Button Text="Guardar" 
+                                            Command="{Binding SaveAuditorSignatureCommand}"
+                                            BackgroundColor="#4CAF50"
+                                            TextColor="White"
+                                            WidthRequest="100"/>-->
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Frame>
+                    <Button
+Margin="20,0,20,20"
+Grid.Row="5"
+BackgroundColor="#2e3192"
+TextColor="White"
+FontSize="18"
+Text="Enviar Registro"
+Command="{Binding EnviarRegistroCompletoCommand}" />
+                    <!--<Button
+                Grid.Row="3"
+                Text="Registrar CheckList"
+                Command="{Binding EnviarRegistroCompletoCommand}"></Button>-->
+
+                </Grid>
+                <Grid
+BackgroundColor="#88000000"
+HorizontalOptions="FillAndExpand"
+VerticalOptions="FillAndExpand"
+IsVisible="{Binding IsLoading}">
+
+                    <ActivityIndicator
+    Color="{StaticResource AzulOscuro}"
+    IsRunning="{Binding IsLoading}"
+    HeightRequest="{OnIdiom 70, Tablet=120}" />
+                </Grid>
+            </Grid>
+        </ScrollView>
+        
+        
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

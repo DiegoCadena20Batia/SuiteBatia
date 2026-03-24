@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.DeliveriesRoute"
+    xmlns:viewmodels="clr-namespace:BatiaSuite.ViewModel"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    Title="ENTREGAS"
+    NavigationPage.HasNavigationBar="True" 
+    BackgroundColor="#F5F5F5"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <Grid>
+    <ScrollView>
+            <Grid
+            RowDefinitions="auto,auto,auto,auto,*"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="5"
+            RowSpacing="5"
+            Margin="10">
+                <!--GRID DETALLE ENTREGA-->
+                <Grid
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2"
+                    RowDefinitions="auto,auto,auto,auto,auto"
+                    ColumnDefinitions="*, *">
+                    <!--FRAME NOMBRE INMUEBLE-->
+                    <Frame
+                        
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    BackgroundColor="#F5F5F5"
+                    HeightRequest="70"
+                    BorderColor="Transparent"
+                    Padding="0"
+                    CornerRadius="15">
+                        <Grid
+                            RowDefinitions="auto,auto"
+                            HorizontalOptions="Center"
+                            Grid.ColumnSpan="2">
+                            <Label
+                                HorizontalOptions="Center"
+                                Grid.Row="0"
+                                FontSize="18"
+                                FontFamily="MontSemibold"
+                                TextColor="Black"
+                                Text="Listados disponibles">
+                            </Label>
+                            <Label
+                                HorizontalOptions="Center"
+                                Grid.Row="1"
+                                FontSize="18"
+                                FontFamily="MontSemibold"
+                                TextColor="Black"
+                                Text="{Binding InmuebleText}">
+                            </Label>
+                        </Grid>
+                    </Frame>
+                    <!--FRAME LISTADOS-->
+                    <Frame
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    BackgroundColor="Transparent"
+                    BorderColor="LightGray"
+                    MinimumHeightRequest="200"
+                    MaximumHeightRequest="600"
+                    Padding="0"
+                    CornerRadius="10">
+                        <Grid 
+                        RowDefinitions="auto,auto"
+                        BackgroundColor="Transparent"
+                        ColumnDefinitions="*,*,*,*">
+                            <Frame
+                                Grid.Row="0"
+                                Grid.ColumnSpan="4"
+                                BackgroundColor="#4a92fe"
+                                HeightRequest="35"
+                                BorderColor="Transparent"
+                                Padding="0"
+                                CornerRadius="5"
+                                Margin="0,0,0,0">
+                                <Grid
+                                    ColumnDefinitions="*,*,*,*,*,*"
+                                    ColumnSpacing="5">
+                                    <Label
+                                        Grid.ColumnSpan="3"
+                                        Text="FOLIO"
+                                        FontSize="15"
+                                        TextColor="White"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center"
+                                        FontFamily="MontSemibold" />
+
+                                    <Label
+                                        Grid.ColumnSpan="5"
+                                        Grid.Column="1"
+                                        Text="TIPO"
+                                        FontSize="15"
+                                        TextColor="White"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center"
+                                        FontFamily="MontSemibold" />
+
+                                    <Label
+                                        Grid.Column="2"
+                                        Text=""
+                                        FontSize="15"
+                                        TextColor="White"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center"
+                                        FontFamily="MontSemibold" />
+                                </Grid>
+                            </Frame>
+                            <Frame
+                            
+                            Grid.Row="1"
+                            Grid.ColumnSpan="4"
+                            BackgroundColor="Transparent"
+                            BorderColor="Transparent"
+                            HasShadow="false"
+                            MinimumHeightRequest="200"
+                            MaximumHeightRequest="500"
+                            Padding="10">
+
+                                <CollectionView
+                                
+                                x:Name="lisApp"
+                                IsVisible="{Binding AvailableDeliveries}"
+                                ItemsSource="{Binding EntregasDisponibles}">
+
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout
+                                        Orientation="Vertical"
+                                        ItemSpacing="5" />
+                                    </CollectionView.ItemsLayout>
+
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Frame
+                                            BorderColor="LightGray"
+                                            HeightRequest="70"
+                                            Padding="0"
+                                            CornerRadius="10"
+                                            BackgroundColor="White">
+                                                <Frame.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                    Command="{Binding Path=BindingContext.ListadoSelectCommand, Source={x:Reference lisApp}}"
+                                                    CommandParameter="{Binding .}">
+                                                    </TapGestureRecognizer>
+                                                </Frame.GestureRecognizers>
+
+                                                <Grid
+                                                RowDefinitions="*"
+                                                ColumnDefinitions="*,*,*,*,*,*"
+                                                ColumnSpacing="5">
+                                                    <Label
+                                                        Grid.Column="0"
+                                                        HorizontalTextAlignment="Center"
+                                                        VerticalTextAlignment="Center"
+                                                        Style="{StaticResource ContentLabelStyle}"
+                                                        Text="{x:Static icons:Icons.PaperList}"
+                                                        FontFamily="{x:Static icons:Icons.Family}"
+                                                        TextColor="{StaticResource Gray}"
+
+                                                        FontSize="{OnIdiom 20, Tablet=60}"
+                                                        Margin="0, 10" />
+
+                                                    <Label
+                                                        Grid.Column="1"
+                                                        Grid.ColumnSpan="2"
+                                                        Text="{Binding idlistado}"
+                                                        FontSize="20"
+                                                        TextColor="Black"
+                                                        HorizontalTextAlignment="Start"
+                                                        VerticalTextAlignment="Center"
+                                                        FontFamily="MontSemibold" />
+
+                                                    <Label
+                                                    Grid.Column="2"
+                                                     Grid.ColumnSpan="3"
+                                                    Text="{Binding tipo}"
+                                                    FontSize="18"
+                                                    TextColor="Black"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalTextAlignment="Center"
+                                                    FontFamily="MontBold" />
+
+                                                    <!--<Label
+                                                    Grid.Column="2"
+                                                    Text="{Binding inmueble}"
+                                                    FontSize="15"
+                                                    TextColor="#3775B5"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalTextAlignment="Center"
+                                                    FontFamily="MontBold" />-->
+                                                    <Label
+                                                    Grid.Column="6"
+                                                    HorizontalTextAlignment="Center"
+                                                    VerticalTextAlignment="Center"
+                                                    Style="{StaticResource ContentLabelStyle}"
+                                                    Text="{x:Static icons:Icons.RightOpen}"
+                                                    FontFamily="{x:Static icons:Icons.Family}"
+                                                    TextColor="{StaticResource Gray}"
+
+                                                    FontSize="{OnIdiom 35, Tablet=60}"
+                                                    Margin="0, 10" />
+                                                </Grid>
+                                            </Frame>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Frame>
+                        </Grid>
+                    </Frame>
+                    <!--GRID BUTTONS-->
+                    <Grid
+                        HeightRequest="300"
+                        RowDefinitions="auto, *,*"
+                        ColumnDefinitions="*,*"
+                        Grid.Row="3"
+                        Grid.ColumnSpan="2">
+                        <!--LABEL COMENZAR-->
+                        <Label
+                            Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Text="Ver ruta en:"
+                            FontFamily="MontSemibold"
+                            FontSize="20"
+                            HorizontalOptions="Center"
+                            VerticalOptions="End"
+                            Margin="0,30,0,10"
+                        ></Label>
+                        <!--ABRIR MAPS-->
+                        <Button
+                            VerticalOptions="End"
+                            Grid.RowSpan="1"
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="10,0,10,00"
+                            HeightRequest="80"
+                            BackgroundColor="White"
+                            Text="" 
+                            TextColor="White"
+                            ImageSource="googlemapsicon.png"
+                            ContentLayout="Right,10" 
+                            Command="{Binding AbrirGoogleMapsCommand}">
+                            <Button.Shadow>
+                                <Shadow
+                                Brush="Black"
+                                Radius="8"
+                                Opacity="0.3" />
+                            </Button.Shadow>
+                        </Button>
+
+                        <!--ABRIR WAZE-->
+                        <Button 
+                            Grid.RowSpan="1"
+                            VerticalOptions="End"
+                            HeightRequest="80"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            BackgroundColor="#38cefe"
+                            Text="" 
+                            TextColor="White"
+                            ImageSource="wazeicon.png"
+                            ContentLayout="Right,10" 
+                            Command="{Binding AbrirWazeCommand}"
+                            IsVisible="{Binding AvailableDeliveries}">
+                            <Button.Shadow>
+                                <Shadow
+                                Brush="Black"
+                                Radius="8"
+                                Opacity="0.3" />
+                            </Button.Shadow>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Grid>
+    </ScrollView>
+        <Grid
+            RowDefinitions="*,*"
+            BackgroundColor="#88000000"
+            IsVisible="{Binding IsLoading}">
+            <ActivityIndicator
+                Grid.Row="0"
+                VerticalOptions="End"
+                Color="White"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}"/>
+                    <Label
+                         VerticalOptions="Start"
+                         HorizontalOptions="Center"
+                         Grid.Row="1"
+                         TextColor="White"
+                         Text="{Binding TextLoading}"
+                    ></Label>
+        </Grid>
+        </Grid>
+</ContentPage>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.OrdenesTrabajo.OrdenTrabajo"
+    xmlns:vm="clr-namespace:BatiaSuite.ViewModel.OrdenesTrabajo"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    Title="Mantenimiento"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <ContentPage.BindingContext>
+        <vm:OrdenTrabajoViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid
+        RowDefinitions="auto,*,auto"
+        Margin="0"
+        x:Name="mainGrid">
+        <Label
+            Grid.Row="0"
+            Text="Órdenes de trabajo"
+            FontSize="20"
+            FontAttributes="Bold"
+            TextColor="Black"
+            Margin="10,0,0,10" />
+        <!--<Label
+            Grid.Row="1"
+            HeightRequest="1"
+            VerticalOptions="End"
+            BackgroundColor="LightGray"
+            Margin="10,0,10,10"
+            
+            ></Label>-->
+        <Grid
+            Grid.Row="1">
+            
+        
+        <CollectionView
+            Grid.Row="1"
+            x:Name="collectionView"
+            ItemsSource="{Binding ListOrdenes}"
+            Margin="0"
+            IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+
+            <CollectionView.EmptyView>
+                <Label
+                    Text="{x:Static const:Constants.NO_HAY_ORDENES_MANTENIMIENTO}"
+                    VerticalOptions="Start"
+                    HorizontalOptions="CenterAndExpand"
+                    Style="{StaticResource TitleLabelStyle}"
+                    FontSize="{OnIdiom 16, Tablet=20}"
+                    Margin="30, 100, 30, 0" />
+            </CollectionView.EmptyView>
+           
+
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout
+                    Orientation="Vertical"
+                    ItemSpacing="5" />
+            </CollectionView.ItemsLayout>
+            
+            <CollectionView.ItemTemplate>
+                
+                <DataTemplate>
+
+                    <Frame
+                        
+                        Margin="5"
+                        BorderColor="LightBlue" 
+                        
+                        CornerRadius="20"
+                        Style="{StaticResource FrameStyle}"
+                        IsEnabled="{Binding Path=BindingContext.IsBusy, Source={x:Reference collectionView}, Converter={StaticResource InvertedBoolConverter}}">
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                Command="{Binding Path=BindingContext.SelectedOrdenCommand, Source={x:Reference collectionView}}"
+                                CommandParameter="{Binding .}"
+                                Tapped="TapGestureRecognizer_Tapped">
+                                </TapGestureRecognizer>
+                        </Frame.GestureRecognizers>
+
+                        <Grid
+                            RowDefinitions="auto, auto, auto, auto, auto"
+                            Margin="10,5,10,0">
+                                
+
+                            
+
+                            <Label
+                                
+                                Text="{Binding cliente, StringFormat='{0}'}"
+                                Style="{StaticResource ContentLabelStyle}"
+                                FontFamily="MontSemibold"
+                                FontSize="16"
+                                Margin="0,0,0,2" />
+
+                            <Label
+                                Grid.Row="1"
+                                TextColor="{StaticResource AzulClaro}"
+                                Text="{Binding sucursal, StringFormat='{0}'}"
+                                Style="{StaticResource ContentLabelStyle}"
+                                FontSize="14"
+                                Margin="0,0,0,5"/>
+                            <Label
+                                Grid.Row="0"
+                                HeightRequest="1"
+                                VerticalOptions="End"
+                                BackgroundColor="LightGray"
+                                Margin="0,1,52,0"
+                                ></Label>
+
+                            
+
+                            <Label
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
+                                Style="{StaticResource ContentLabelStyle}"
+                                VerticalOptions="Start"
+                                HorizontalOptions="End"
+                                Text="{x:Static icons:Icons.RightOpen}"
+                                FontFamily="{x:Static icons:Icons.Family}"
+                                TextColor="{StaticResource DarkGray}"
+                                FontSize="36" />
+
+                            <Label
+                                Grid.Row="2"
+                                Text="{Binding tipomanto, StringFormat='Tipo: {0}'}"
+                                Style="{StaticResource ContentLabelStyle}"
+                                Margin="0,5,0,0" />
+
+                            <!--<Label
+                            BackgroundColor="#f5f5f5"
+                                Grid.Row="4"
+                                Text="{Binding tipoOrden, StringFormat='Tipo de orden: {0}'}"
+                                Style="{StaticResource ContentLabelStyle}" />-->
+                            <!--<Label
+                                
+                                Grid.Row="3"
+                                Text="{Binding descripcion, StringFormat='{0}'}"
+                                TextColor="Black">
+                                
+                            </Label>-->
+                            <Frame
+                                BackgroundColor="#f5f5f5"
+                                BorderColor="White"
+                                Grid.Row="3"
+                                CornerRadius="25"
+                                Margin="0,0,0,0"
+                                InputTransparent="True">
+
+                                    <Grid RowDefinitions="auto,auto">
+                                        <Label Grid.Row="0"
+                                               TextColor="{StaticResource AzulClaro}"
+                                                Margin="0,0,0,0"
+                                                Text="Descripcion:"
+                                                Style="{StaticResource ContentLabelStyle}" />
+                                        <Label
+                                                Grid.Row="1"
+                                                Margin="10,0,0,0"
+                                                Text="{Binding descripcion, StringFormat='{0}'}"
+                                                Style="{StaticResource ContentLabelStyle}" />
+                                    </Grid>
+                                </Frame>
+
+                            <Label
+                                Grid.Row="4"
+                                Margin="0,10,0,5"
+                                Text="{Binding idOrden, StringFormat='Id : {0}'}"
+                                FontSize="15"
+                                Style="{StaticResource ContentLabelStyle}"
+                                VerticalOptions="Center"
+                                FontFamily="MontSemibold"/>
+
+                            <Label
+                                Grid.Row="4"
+                                FontSize="13"
+                                Margin="0,0,0,5"
+                                Text="{Binding falta}"
+                                TextColor="{StaticResource AzulClaro}"
+                                Style="{StaticResource ContentLabelStyle}"
+                                HorizontalOptions="End"
+                                VerticalOptions="Center"/>
+                            
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        </Grid>
+        <Grid
+            Grid.RowSpan="3"
+            RowDefinitions="*,*"
+            BackgroundColor="#88000000"
+            IsVisible="{Binding IsLoading}">
+            <ActivityIndicator
+                Grid.Row="0"
+                VerticalOptions="End"
+                Color="White"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            <Label
+                 VerticalOptions="Start"
+                 HorizontalOptions="Center"
+                 Grid.Row="1"
+                 TextColor="White"
+                 Text="{Binding TextLoading}"
+            ></Label>
+        </Grid>
+    </Grid>
+</ContentPage>

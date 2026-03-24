@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts">
+
+    <FontImageSource
+        x:Key="CameraIcon"
+        Glyph="{x:Static icons:Icons.Camera}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"
+        Size="50" />
+
+    <FontImageSource
+        x:Key="GalleryIcon"
+        Glyph="{x:Static icons:Icons.Picture}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"
+        Size="50" />
+
+    <FontImageSource
+        x:Key="AttachIcon"
+        Glyph="{x:Static icons:Icons.Attach}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"
+        Size="50" />
+
+    <FontImageSource
+        x:Key="PlusIcon"
+        Glyph="{x:Static icons:Icons.PlusCircled}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"
+        Size="50" />
+
+    <FontImageSource
+        x:Key="GreenPlusIcon"
+        Glyph="{x:Static icons:Icons.PlusCircled}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="Green"
+        Size="{OnIdiom 50, Tablet=75}" />
+
+    <FontImageSource
+        x:Key="TrashIcon"
+        Glyph="{x:Static icons:Icons.Trash}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="Red"
+        Size="50" />
+
+    <FontImageSource
+        x:Key="TrashIconWhite"
+        Glyph="{x:Static icons:Icons.Trash}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="White"
+        Size="50" />
+
+    <FontImageSource
+        x:Key="SearchIcon"
+        Glyph="{x:Static icons:Icons.Search}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"
+        Size="50" />
+
+    <FontImageSource
+        x:Key="ArrowIcon"
+        Glyph="{x:Static icons:Icons.RightCircle}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulAuxiliar}"
+        Size="{OnIdiom 50, Tablet=75}"/>
+
+    <FontImageSource
+        x:Key="SendIcon"
+        Glyph="{x:Static icons:Icons.Send2}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulAuxiliar}"
+        Size="{OnIdiom 40, Tablet=75}" />
+
+    <FontImageSource
+        x:Key="MenuIcon"
+        Glyph="{x:Static icons:Icons.Menu}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"
+        Size="{OnIdiom 30, Tablet=75}" />
+
+    <FontImageSource
+        x:Key="LeftIcon"
+        Glyph="{OnPlatform Android={x:Static icons:Icons.Left}, iOS={x:Static icons:Icons.RightOpen}}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"        
+        Size="{OnIdiom 30, Tablet=75}" />
+
+    <FontImageSource
+        x:Key="CancelIcon"
+        Glyph="{x:Static icons:Icons.CancelCircle}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="White"
+        Size="{OnIdiom 30, Tablet=75}" />
+
+    <FontImageSource
+        x:Key="VideoIcon"
+        Glyph="{x:Static icons:Icons.Videocam}"
+        FontFamily="{x:Static icons:Icons.Family}"
+        Color="{StaticResource AzulClaro}"
+        Size="{OnIdiom 30, Tablet=75}" />
+</ResourceDictionary>

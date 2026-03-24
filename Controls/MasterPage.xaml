@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Controls.MasterPage"
+    BackgroundColor="{StaticResource BackgroundPage}"
+    Shell.NavBarIsVisible="False">
+
+    <Grid
+        RowDefinitions="auto, *"
+        VerticalOptions="FillAndExpand"
+        HorizontalOptions="FillAndExpand">
+
+        <Grid
+            ColumnDefinitions="auto, *"
+            RowDefinitions="auto"
+            ColumnSpacing="{OnPlatform Android='15', iOS='5'}"
+            VerticalOptions="Start"
+            Padding="{OnPlatform Android='10, 5', iOS='10, 0'}">
+
+            <ImageButton
+                Source="{StaticResource LeftIcon}"
+                HeightRequest="30"
+                WidthRequest="30"
+                Rotation="{OnPlatform Android=0, iOS=180}"
+                Clicked="menuIcon_Clicked"
+                Margin="0, 6">
+
+                <ImageButton.Triggers>
+                    <DataTrigger
+                        TargetType="ImageButton"
+                        Binding="{Binding IsBackButton}"
+                        Value="False">
+
+                        <Setter
+                            Property="Source"
+                            Value="{StaticResource MenuIcon}" />
+                    </DataTrigger>
+                </ImageButton.Triggers>
+            </ImageButton>
+
+            <Label
+                Grid.Column="1"
+                Text="{Binding MasterPageTitle}"
+                TextColor="{StaticResource AzulClaro}"
+                VerticalTextAlignment="Center"
+                FontSize="20"
+                FontFamily="OpenSansSemibold" />
+        </Grid>
+
+        <ContentView
+            Content="{Binding MasterPageContent}"
+            Grid.Row="1" />
+
+        <ImageButton
+            Grid.Row="1"
+            Source="{StaticResource ArrowIcon}"
+            Style="{StaticResource FloatingButtonStyle}"
+            Command="{Binding FloatingButtonCommand}"
+            IsVisible="{Binding ShowFloatingButton}">
+
+            <ImageButton.Triggers>
+                <DataTrigger
+                    TargetType="ImageButton"
+                    Binding="{Binding IsLastPage}"
+                    Value="True">
+
+                    <Setter
+                        Property="Source"
+                        Value="{StaticResource SendIcon}" />
+                </DataTrigger>
+            </ImageButton.Triggers>
+        </ImageButton>
+
+        <Grid
+            Grid.RowSpan="2"
+            BackgroundColor="#BB000000"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            IsVisible="{Binding IsLoading}">
+
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer
+                    NumberOfTapsRequired="1"
+                    Command="{Binding .}" />
+            </Grid.GestureRecognizers>
+
+            <ActivityIndicator
+                Color="#99fffFFF"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}" />
+
+            <Label
+                Text="{Binding LoadingText}"
+                TextColor="#99fffFFF"
+                FontSize="18"
+                VerticalTextAlignment="Center"
+                HorizontalTextAlignment="Center"
+                Margin="{OnIdiom '0, 130, 0, 0', Tablet='0, 160, 0, 0'}" />
+        </Grid>
+    </Grid>
+</ContentPage>

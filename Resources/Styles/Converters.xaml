@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+    
+    <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+    <toolkit:IsNullConverter x:Key="IsNullConverter" />
+    <toolkit:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpaceConverter" />
+    <toolkit:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpaceConverter" />
+    <toolkit:IntToBoolConverter x:Key="IntToBoolConverter" />
+    <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter"/>
+    <toolkit:BoolToObjectConverter x:Key="BoolToColorConverter" TrueObject="Black" FalseObject="{StaticResource Gray}"/>
+</ResourceDictionary>

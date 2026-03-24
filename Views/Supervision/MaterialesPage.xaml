@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="BatiaSuite.Views.Supervision.MaterialesPage"
+    MasterPageTitle="{Binding PageTitle}"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding LoadingText}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled"
+    x:Name="contentView">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                x:Name="scrollView">
+
+                <Grid
+                    RowDefinitions="auto, auto, *">
+
+                    <CollectionView
+                        ItemsSource="{Binding MaterialList}"
+                        Margin="10,0">
+
+                        <CollectionView.EmptyView>
+                            <Label
+                                Text="{x:Static utils:Constants.NO_HAY_INVENTARIO_MATERIALES}"
+                                VerticalOptions="Start"
+                                HorizontalOptions="CenterAndExpand"
+                                Style="{StaticResource TitleLabelStyle}"
+                                FontSize="{OnIdiom 16, Tablet=20}"
+                                Margin="30, 30, 30, 0" />
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout
+                                Orientation="Vertical"
+                                ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Padding="0"
+                                    Stroke="Transparent"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 10">
+                                    <Border.Shadow>
+                                        <Shadow
+                                            Brush="Black"
+                                            Offset="2,2"
+                                            Opacity="0.2"
+                                            Radius="4" />
+                                    </Border.Shadow>
+                                    <Frame
+                                        BackgroundColor="White"
+                                        Style="{StaticResource FrameStyle}">
+
+                                        <Grid
+                                            RowDefinitions="auto, auto, auto, auto"
+                                            ColumnDefinitions="*, auto">
+
+                                            <Label
+                                                Grid.ColumnSpan="2"
+                                                Text="{Binding Descripcion}"
+                                                Style="{StaticResource ContentLabelStyle}"
+                                                FontFamily="MontSemibold" />
+
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.ColumnSpan="2"
+                                                Text="{Binding Cantidad, StringFormat='Cantidad : {0}'}"
+                                                TextColor="{StaticResource DarkGray}"
+                                                FontFamily="MontSemibold"
+                                                Style="{StaticResource ContentLabelStyle}"
+                                                Margin="0, 10, 0, 0" />
+
+                                            <Label
+                                                Grid.Row="2"
+                                                Grid.ColumnSpan="2"
+                                                Text="{Binding Entregado, StringFormat='Entregado : {0}'}"
+                                                TextColor="{StaticResource DarkGray}"
+                                                FontFamily="MontSemibold"
+                                                Style="{StaticResource ContentLabelStyle}"
+                                                Margin="0, 10, 0, 0" />
+
+                                            <Label
+                                                Grid.Row="3"
+                                                Text="Cantidad sugerida próximo mes : "
+                                                HorizontalTextAlignment="End"
+                                                Style="{StaticResource ContentLabelStyle}" />
+
+                                            <controls:BordererEntry
+                                                Grid.Row="3"
+                                                Grid.Column="1"
+                                                Text="{Binding Sugerido}"
+                                                Keyboard="Numeric"
+                                                BordererEntryFontAttributes="Bold"
+                                                WidthRequest="70" />
+                                        </Grid>
+                                    </Frame>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <CollectionView
+                        Grid.Row="1"
+                        ItemsSource="{Binding ExtraMaterialList}"
+                        Margin="10, 10, 10, 0">
+
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout
+                                Orientation="Vertical"
+                                ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemTemplate>
+                            
+                            <DataTemplate>
+                                <SwipeView>
+
+                                    <SwipeView.RightItems>
+                                        <SwipeItem
+                                            BackgroundColor="Red"
+                                            Command="{Binding BindingContext.EliminarExtraMaterialCommand, Source={x:Reference Name=contentView}}"
+                                            CommandParameter="{Binding .}"
+                                            IconImageSource="{StaticResource TrashIconWhite}" />
+                                    </SwipeView.RightItems>
+
+                                    <Frame
+                                        Style="{StaticResource FrameStyle}">
+
+                                        <Grid
+                                            RowDefinitions="auto, auto, auto, auto"
+                                            ColumnDefinitions="*, auto">
+
+                                            <Label
+                                                Grid.ColumnSpan="2"
+                                                Text="{Binding Descripcion}"
+                                                Style="{StaticResource ContentLabelStyle}"
+                                                FontFamily="MontSemibold" />
+
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.ColumnSpan="2"
+                                                Text="{Binding Cantidad, StringFormat='Cantidad : {0}'}"
+                                                TextColor="{StaticResource DarkGray}"
+                                                FontFamily="MontSemibold"
+                                                Style="{StaticResource ContentLabelStyle}"
+                                                Margin="0, 10, 0, 0" />
+
+                                            <Label
+                                                Grid.Row="2"
+                                                Grid.ColumnSpan="2"
+                                                Text="{Binding Entregado, StringFormat='Entregado : {0}'}"
+                                                TextColor="{StaticResource DarkGray}"
+                                                FontFamily="MontSemibold"
+                                                Style="{StaticResource ContentLabelStyle}"
+                                                Margin="0, 10, 0, 0" />
+
+                                            <Label
+                                                Grid.Row="3"
+                                                Text="Cantidad sugerida próximo mes : "
+                                                HorizontalTextAlignment="End"
+                                                Style="{StaticResource ContentLabelStyle}" />
+
+                                            <controls:BordererEntry
+                                                Grid.Row="3"
+                                                Grid.Column="1"
+                                                Text="{Binding Sugerido}"
+                                                Keyboard="Numeric"
+                                                BordererEntryFontAttributes="Bold"
+                                                WidthRequest="70" />
+                                        </Grid>
+                                    </Frame>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Grid
+                        Grid.Row="1"
+                        RowDefinitions="auto, auto, auto, * "
+                        ColumnDefinitions="auto, *"
+                        ColumnSpacing="15"
+                        VerticalOptions="EndAndExpand"
+                        HorizontalOptions="Fill"
+                        Margin="{OnIdiom '10, 5, 10, 70', Tablet='10, 5, 10, 105'}">
+
+                        <Frame
+                            Grid.ColumnSpan="2"
+                            BackgroundColor="Green"
+                            BorderColor="Transparent"
+                            CornerRadius="10"
+                            Padding="0"
+                            IsVisible="{Binding MaterialList, Converter={StaticResource IsListNotNullOrEmptyConverter}}"
+                            Margin="0, 0, 0, 50">
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    NumberOfTapsRequired="1"
+                                    Command="{Binding AddExtraMaterialCommand}" />
+                            </Frame.GestureRecognizers>
+
+                            <Label
+                                Text="+"
+                                TextColor="White"
+                                FontSize="{OnIdiom 30, Tablet=60}"
+                                FontAttributes="Bold"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center" />
+                        </Frame>
+
+                        <!--<Label
+                            Grid.Row="1"
+                            x:Name="labelVideo"
+                            Text="{x:Static utils:Constants.GRABAR_VIDEO}"
+                            HorizontalOptions="Center"
+                            VerticalTextAlignment="Center"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            FontSize="16" />
+
+                        <ImageButton
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Style="{StaticResource ImageButtonIconStyle}"
+                            Source="{StaticResource VideoIcon}"
+                            Command="{Binding CapturarVideoCommand}"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center" />
+
+                        <Grid
+                            Grid.Row="2"
+                            Grid.ColumnSpan="2"
+                            HeightRequest="400"
+                            Margin="0, 5, 0, 0">
+
+                            <Frame
+                                x:Name="labelNoVideo"
+                                BorderColor="{StaticResource LightGray}"
+                                IsVisible="{Binding VideoMediaSource, Converter={StaticResource IsNullConverter}}">
+                                
+                                <Label
+                                    Text="{x:Static utils:Constants.VIDEO_NO_GRABADO}"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="{StaticResource Gray}"
+                                    VerticalTextAlignment="Center"
+                                    HorizontalTextAlignment="Center"/>
+                            </Frame>
+
+                            <Frame
+                                BorderColor="{StaticResource LightGray}"
+                                CornerRadius="15"
+                                IsVisible="{Binding Source={x:Reference labelNoVideo}, Path=IsVisible, Converter={StaticResource InvertedBoolConverter}}"
+                                Padding="-25, 0">
+                                <toolkit:MediaElement
+                                    x:Name="mediaElement"
+                                    Source="{Binding VideoMediaSource}"
+                                    ShouldShowPlaybackControls="True"
+                                    Aspect="AspectFit"
+                                    WidthRequest="300"
+                                    HeightRequest="350"
+                                    HorizontalOptions="Center"/>
+                                
+                            </Frame>
+                        </Grid>-->
+
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

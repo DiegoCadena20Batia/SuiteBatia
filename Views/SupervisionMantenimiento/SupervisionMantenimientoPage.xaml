@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    xmlns:converters="clr-namespace:BatiaSuite.Converters"
+    x:Class="BatiaSuite.Views.SupervisionMantenimiento.SupervisionMantenimientoPage"
+    Title="{x:Static const:Constants.SUPERVISIONES_MANTENIMIENTO}"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#F5F5F5"
+    >
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:OrdenFechaConverter x:Key="OrdenFechaConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="{Binding SelectedMonth}"
+            Command="{Binding GetMonthCommand}" />
+
+        <ToolbarItem
+            Text="{Binding FilterYear}"
+            Command="{Binding GetYearCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid
+        RowDefinitions="*,auto">
+
+        <Grid
+            Grid.Row="0"
+            
+                RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto"
+                Margin="10,0"
+                IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+
+                <controls:BordererEntry
+                    HeightRequest="50"
+                    Grid.Row="0"
+                    Text="{Binding Query}"
+                    Placeholder="{x:Static const:Constants.BUSCAR_SUCURSAL}"
+                    Command="{Binding FiltarInmuebleCommand}"
+                    CommandParameter="{Binding Query}" />
+            <Label
+                
+                Grid.Row="1"
+                HeightRequest="50"
+                Padding="0,10,10,0"
+                Style="{StaticResource TitleLabelStyle}"
+                HorizontalOptions="Center"
+                Text="No hay supervisiones programadas"
+                IsVisible="{Binding ExisteProgramadas, Converter={StaticResource InvertedBoolConverter}}">
+                
+            </Label>
+
+            <Label
+                IsVisible="{Binding ExisteProgramadas}"
+                Grid.Row="2"
+                Padding="5"
+                HeightRequest="35"
+                Style="{StaticResource ContentMediumLabelStyle}"
+                HorizontalOptions="Center"
+                Text="Programadas">
+
+            </Label>
+            <RefreshView
+                x:Name="RefreshViewProgramadas"
+                IsVisible="{Binding ExisteProgramadas}"
+                MinimumHeightRequest="250"
+                MaximumHeightRequest="500"
+                Grid.Row="3"
+                IsRefreshing="{Binding IsRefreshing}"
+                Command="{Binding RefreshPageCommand}"
+                RefreshColor="{StaticResource AzulClaro}">
+                <RefreshView.Triggers>
+                    <DataTrigger TargetType="RefreshView"
+                     Binding="{Binding ExisteLocal}"
+                     Value="False">
+                        <Setter Property="MaximumHeightRequest" Value="500"/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="RefreshView"
+                     Binding="{Binding ExisteLocal}"
+                     Value="True">
+                        <Setter Property="MaximumHeightRequest" Value="250"/>
+                    </DataTrigger>
+                </RefreshView.Triggers>
+                <ScrollView
+                    x:Name="ScrollViewProgramadas"
+                    VerticalScrollBarVisibility="Always">
+                    <ScrollView.Triggers>
+                        <DataTrigger TargetType="ScrollView"
+                         Binding="{Binding ExisteLocal}"
+                         Value="False">
+                            <Setter Property="MaximumHeightRequest" Value="500"/>
+                        </DataTrigger>
+                        <DataTrigger TargetType="ScrollView"
+                             Binding="{Binding ExisteLocal}"
+                             Value="True">
+                            <Setter Property="MaximumHeightRequest" Value="250"/>
+                        </DataTrigger>
+                    </ScrollView.Triggers>
+                    <VerticalStackLayout Padding="5">
+                        <Grid>
+                            <CollectionView
+                                Grid.Row="1"
+                                x:Name="collectionView"
+                                VerticalOptions="Start"
+                                HorizontalOptions="Center"
+                                ItemsSource="{Binding OrdenSupervisionList}"
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                                VerticalScrollBarVisibility="Never">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout
+                                        Orientation="Vertical"
+                                        ItemSpacing="5" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame
+                                            CornerRadius="15"
+                                            IsEnabled="{Binding IsEnabled}">
+                                            <Frame.Style>
+                                                <Style TargetType="Frame" BasedOn="{StaticResource FrameStyle}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger TargetType="Frame" Binding="{Binding IsEnabled}" Value="False">
+                                                            <Setter Property="Opacity" Value="0.5" />
+                                                            <Setter Property="BackgroundColor" Value="#E0E0E0" />
+                                                            <!-- Color gris claro -->
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Frame.Style>
+
+                                            <Frame.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Path=BindingContext.SelectedOrdenCommand, Source={x:Reference collectionView}}"
+                                                    CommandParameter="{Binding .}"
+                                                    Tapped="Frame_Tapped">
+                                                </TapGestureRecognizer>
+                                            </Frame.GestureRecognizers>
+                                            <Grid
+                                                RowDefinitions="auto, auto, auto"
+                                                ColumnDefinitions="*, auto">
+
+                                                <Label
+                                                    Grid.Row="0"
+                                                    Text="{Binding Orden, StringFormat='Orden : {0}'}"/>
+
+                                                <Label
+                                                    Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    Text="{Binding Fecha, StringFormat='{0:dd-MM-yyyy}'}"
+                                                    Style="{StaticResource ContentLabelStyle}"
+                                                    HorizontalTextAlignment="Start"
+                                                    Padding="0,0,30,0"
+                                                    />
+
+                                                <Label
+                                                    FontSize="15"
+                                                    Grid.Row="1"
+                                                    Text="{Binding Cliente}"
+                                                    Style="{StaticResource ContentLabelStyle}"
+                                                    FontFamily="MontSemibold" />
+
+                                                <Label
+                                                    FontSize="13"
+                                                    Grid.Row="2"
+                                                    Text="{Binding Inmueble}"
+                                                    Style="{StaticResource ContentLabelStyle}" />
+
+                                                <Label
+                                                    IsVisible="{Binding IsEnabled}"
+                                                    Grid.RowSpan="3"
+                                                    Grid.Column="1"
+                                                    Style="{StaticResource ContentLabelStyle}"
+                                                    VerticalOptions="Center"
+                                                    HorizontalOptions="End"
+                                                    Text="{x:Static icons:Icons.RightOpen}"
+                                                    FontFamily="{x:Static icons:Icons.Family}"
+                                                    TextColor="{StaticResource Gray}"
+                                                    FontSize="{OnIdiom 35, Tablet=50}"
+                                                    Margin="10, 0, 0, 0" />
+                                                <Label
+                                                    IsVisible="{Binding IsEnabled, Converter={StaticResource InvertedBoolConverter}}"
+                                                    Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    Text="Realizada"
+                                                    TextColor="Green"
+                                                    FontAttributes="Bold"
+                                                    BackgroundColor="#DDFFDD"
+                                                    Padding="5,2"
+                                                    HorizontalOptions="Start"
+                                                    VerticalOptions="Start">
+                                                    
+                                                </Label>
+
+
+                                            </Grid>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </RefreshView>
+
+            <BoxView 
+                Grid.Row="4"
+                HeightRequest="2"
+                Margin="0,10" />
+
+            <Label
+                Grid.Row="5"
+                Padding="5"
+                HeightRequest="35"
+                IsVisible="{Binding ExisteLocal}"
+                Style="{StaticResource ContentMediumLabelStyle}"
+                HorizontalOptions="Center"
+                Text="Pendientes de envío">
+            </Label>
+            <RefreshView
+                
+                IsVisible="{Binding ExisteLocal}"
+                MinimumHeightRequest="250"
+                MaximumHeightRequest="250"
+                Grid.Row="6"
+                IsRefreshing="{Binding IsRefreshing}"
+                Command="{Binding RefreshPageCommand}"
+                RefreshColor="{StaticResource AzulClaro}">
+                <ScrollView
+                    VerticalScrollBarVisibility="Always">
+                    <VerticalStackLayout Padding="5">
+                        <Grid>
+                            <CollectionView
+                                Grid.Row="2"
+                                x:Name="collectionViewLocal"
+                                VerticalOptions="Start"
+                                HorizontalOptions="Center"
+                                ItemsSource="{Binding OrdenSupervisionListP}"
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                                VerticalScrollBarVisibility="Never">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout
+                                    Orientation="Vertical"
+                                    ItemSpacing="5" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame
+                                            CornerRadius="15"
+                                        Style="{StaticResource FrameStyle}"
+                                        >
+                                            <Frame.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                Command="{Binding Path=BindingContext.SelectedOrdenLocalCommand, Source={x:Reference collectionView}}"
+                                                CommandParameter="{Binding .}"
+                                                Tapped="Frame_Tapped">
+                                                </TapGestureRecognizer>
+                                            </Frame.GestureRecognizers>
+
+                                            <Grid
+                                                RowDefinitions="auto, auto, auto,auto"
+                                                ColumnDefinitions="*,auto">
+                                                <Label
+                                                    
+                                                    Grid.Row="0"
+                                                    Text="{Binding IdOrden, Converter={StaticResource OrdenFechaConverter}}"/>
+                                                <Label
+                                                    Grid.Row="1"
+                                                    FontSize="15"
+                                                    Text="{Binding Cliente}"
+                                                    Style="{StaticResource ContentLabelStyle}"
+                                                    FontFamily="MontSemibold" />
+                                                
+                                                    <Label
+                                                        FontSize="13"
+                                                        Grid.Row="2"
+                                                        Text="{Binding Inmueble}"
+                                                        Style="{StaticResource ContentLabelStyle}"/>
+                                                    <Label
+                                                        Grid.RowSpan="4"
+                                                        Grid.Row="0"
+                                                        Grid.Column="2"
+                                                        Style="{StaticResource ContentLabelStyle}"
+                                                        Text="{x:Static icons:Icons.Send}"
+                                                        FontFamily="{x:Static icons:Icons.Family}"
+                                                        TextColor="{StaticResource AzulClaro}"
+                                                        VerticalOptions="Center"
+                                                        HorizontalOptions="End"
+                                                        FontSize="{OnIdiom 35, Tablet=50}"
+                                                        Margin="0, 0,10,0" />
+                                                    <Label
+                                                        
+                                                        Grid.Row="4"
+                                                        Grid.Column="0"
+                                                        Padding="0"
+                                                        Text="{Binding Fechafin, StringFormat='Finalizada: {0:dd-MM-yyyy hh:mm}'}"
+                                                        Style="{StaticResource ContentLabelStyle}"/>
+                                            </Grid>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </RefreshView>
+
+            <!--<Grid
+                RowDefinitions="auto,auto"
+                HorizontalOptions="Start"
+                VerticalOptions="End"
+                HeightRequest="250"
+                WidthRequest="150"
+                Grid.Row="7"
+                Margin="0, 5, 0, 0">
+                <Button 
+                        Grid.Row="0"
+                        BackgroundColor="Green"
+                        Text="Precargar datos" 
+                        TextColor="White"
+                        Command="{Binding PregargarDatosSupervisionCommand}"/>
+
+                <Label 
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        Grid.Row="1"
+                        IsVisible="{Binding FechaCargaValida}"
+                        Text="{Binding FechaCarga}"
+                        TextColor="Black"
+                        ></Label>
+            </Grid>-->
+        </Grid>
+
+        <!--<ImageButton
+            Source="{StaticResource GreenPlusIcon}"
+            Style="{StaticResource FloatingButtonStyle}"
+            Command="{Binding NewSupervisionCommand}" />-->
+        <Button
+            Grid.Row="1"
+            BackgroundColor="DodgerBlue"
+            HeightRequest="50"
+            WidthRequest="200"
+            Text="Continuar"
+            TextColor="White"
+            FontAttributes="Bold"
+            FontSize="18"
+            Command="{Binding NewSupervisionCommand}"
+            Margin="10">
+            
+        </Button>
+
+        <Grid
+            RowDefinitions="*,*"
+            BackgroundColor="#88000000"
+            IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+                Grid.Row="0"
+                VerticalOptions="End"
+                Color="White"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}"/>
+             <Label
+                 VerticalOptions="Start"
+                 HorizontalOptions="Center"
+                 Grid.Row="1"
+                 TextColor="White"
+                 Text="{Binding TextLoading}"
+            ></Label>
+        </Grid>
+    </Grid>
+
+
+</ContentPage>

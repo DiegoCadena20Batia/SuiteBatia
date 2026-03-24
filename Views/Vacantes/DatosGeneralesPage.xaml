@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Vacantes.DatosGeneralesPage"
+    MasterPageTitle="{x:Static const:Constants.DATOS_GENERALES}"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding LoadingText}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                Padding="{OnIdiom '10, 0, 10, 70', Tablet='10, 0, 10, 105'}"
+                VerticalScrollBarVisibility="Never">
+
+                <VerticalStackLayout
+                    Spacing="10">
+
+                    <controls:BordererEntry
+                        Placeholder="{x:Static const:Constants.APELLIDO_PATERNO}"
+                        Text="{Binding Vacante.ApellidoPaterno}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Placeholder="{x:Static const:Constants.APELLIDO_MATERNO}"
+                        Text="{Binding Vacante.ApellidoMaterno}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Placeholder="{x:Static const:Constants.NOMBRE}"
+                        Text="{Binding Vacante.Nombre}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:BordererDatePicker
+                        Placeholder="{x:Static const:Constants.FECHA_NACIMIENTO}"
+                        Date="{Binding SelectedFechaNacimiento}"/>
+
+                    <controls:BordererLabel
+                        Placeholder="{x:Static const:Constants.LUGAR_NACIMIENTO}"
+                        Text="{Binding SelectedEstado.descripcion}"
+                        Command="{Binding SelectEstadoCommand}" />
+
+                    <controls:BordererEntry
+                        Placeholder="{x:Static const:Constants.NACIONALIDAD}"
+                        Text="{Binding Vacante.Nacionalidad}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:BordererLabel
+                        Placeholder="{x:Static const:Constants.GENERO}"
+                        Text="{Binding SelectedGenero.Descripcion}"
+                        Command="{Binding SelectGeneroCommand}" />
+
+                    <controls:BordererLabel
+                        Placeholder="{x:Static const:Constants.ESTADO_CIVIL}"
+                        Text="{Binding SelectedEstadoCivil.Descripcion}"
+                        Command="{Binding SelectEstadoCivilCommand}" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:BordererEntry
+                        Placeholder="{x:Static const:Constants.CURP}"
+                        Text="{Binding Vacante.Curp}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next"
+                        MaxLength="18"/>
+
+                    <controls:BordererEntry
+                        Placeholder="{x:Static const:Constants.RFC}"
+                        Text="{Binding Vacante.Rfc}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next"
+                        MaxLength="13" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:CheckBoxView
+                        x:Name="chBoxPensionado"
+                        Text="{x:Static const:Constants.ES_PENSIONADO}"
+                        IsChecked="{Binding Vacante.Pensionado}"
+                        Command="{Binding CheckBoxIsCheckedCommand}"
+                        CommandParameter="{Binding IsChecked, Source={x:Reference chBoxPensionado}}" />
+
+                    <controls:BordererEntry
+                        Placeholder="{x:Static const:Constants.NSS}"
+                        Text="{Binding Vacante.SeguroSocial}"
+                        ReturnType="Next"
+                        Keyboard="Numeric"
+                        MaxLength="11"
+                        IsVisible="{Binding IsChecked, Source={x:Reference chBoxPensionado}, Converter={StaticResource InvertedBoolConverter}}" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.TallaUniforme}"
+                        Placeholder="{x:Static const:Constants.TALLA_UNIFORME}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.TallaCalzado}"
+                        Placeholder="{x:Static const:Constants.TALLA_CALZADO}"
+                        Keyboard="Numeric"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.FuenteReclutamiento}"
+                        Placeholder="{x:Static const:Constants.FUENTE_RECLUTAMIENTO}"
+                        TextTransform="Uppercase" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

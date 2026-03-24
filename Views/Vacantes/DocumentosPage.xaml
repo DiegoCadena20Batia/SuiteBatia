@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Vacantes.DocumentosPage"
+    MasterPageTitle="{x:Static utils:Constants.DOCUMENTOS}"
+    IsLastPage="True"
+    LoadingText="{Binding LoadingText}"
+    IsLoading="{Binding IsLoading}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <controls:MasterPage.MasterPageContent>
+
+        <ContentView>
+
+            <Grid
+                RowDefinitions="auto, auto"
+                RowSpacing="20"
+                Margin="10, 20, 10, 0">
+
+                <HorizontalStackLayout>
+                    <Label
+                        Text="{Binding ArchivoDocumentos.Nombre}"
+                        Style="{StaticResource ContentBoldLabelStyle}" />
+
+                    <ImageButton
+                        Style="{StaticResource ImageButtonIconStyle}"
+                        Command="{Binding SelectDocumentsCommand}"
+                        CommandParameter="{Binding ArchivoDocumentos}"
+                        Source="{StaticResource AttachIcon}"
+                        Margin="30, 0, 0, 0" />
+
+                </HorizontalStackLayout>
+               
+                <SwipeView
+                    Grid.Row="1"
+                    IsVisible="{Binding SelectedFile, Converter={StaticResource IsStringNotNullOrWhiteSpaceConverter}}">
+                    
+                    <SwipeView.RightItems>
+                        <SwipeItem
+                            BackgroundColor="Red"
+                            IconImageSource="{StaticResource TrashIcon}"
+                            Command="{Binding DeleteDocumentoCommand}"
+                            CommandParameter="{Binding ArchivoDocumentos}" />
+                    </SwipeView.RightItems>
+
+                    <Frame
+                        Style="{StaticResource FrameStyle}"
+                        Padding="15">
+
+                        <Label
+                            Text="{Binding SelectedFile}"
+                            LineBreakMode="MiddleTruncation"
+                            Style="{StaticResource ContentLabelStyle}" />
+                    </Frame>
+                </SwipeView>
+
+            </Grid>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

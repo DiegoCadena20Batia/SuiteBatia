@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Supervision.ChecklistOperadorPage"
+    MasterPageTitle="{x:Static utils:Constants.CHECKLIST_OPERADOR}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding TextLoading}">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                x:Name="collectionView"
+                ios:ScrollView.ShouldDelayContentTouches="false">
+
+                <Grid
+                    RowDefinitions="*, auto"
+                    Padding="10, 0">
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding Preguntas}"
+                        Spacing="15">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Padding="0"
+                                    Stroke="Transparent"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 10">
+                                    <Border.Shadow>
+                                        <Shadow
+                                            Brush="Black"
+                                            Offset="2,2"
+                                            Opacity="0.2"
+                                            Radius="4" />
+                                    </Border.Shadow>
+                                    <Frame
+                                        Padding="10"
+                                        BackgroundColor="White"
+                                        BorderColor="Transparent">
+
+                                        <VerticalStackLayout
+                                            Spacing="15">
+
+                                            <controls:CustomCheckBox
+                                                IsChecked="{Binding Valor}"
+                                                Text="{Binding Descripcion}" />
+
+                                            <controls:BordererEditor
+                                                Placeholder="{x:Static utils:Constants.OBSERVACIONES}"
+                                                Text="{Binding Observaciones}"
+                                                IsVisible="{Binding Valor, Converter={StaticResource InvertedBoolConverter}}" />
+                                        </VerticalStackLayout>
+                                    </Frame>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+
+                    <Grid
+                        Grid.Row="1"
+                        ColumnDefinitions="auto, *"
+                        RowDefinitions="{OnIdiom 'auto, auto, auto, 180, auto', Tablet='auto, auto, auto, 220, auto'}"
+                        RowSpacing="5"
+                        ColumnSpacing="10"
+                        Padding="{OnIdiom '0, 0, 0, 65', Tablet='0, 0, 0, 105'}"
+                        Margin="0, 20, 0, 0">
+
+                        <!-- Elementos dinámicos (se muestran al inicio) -->
+                        <controls:BordererEntry
+                            IsVisible="{Binding MostrarElemento}"
+                            Grid.Row="0"
+                            Grid.ColumnSpan="2"
+                            Text="{Binding NombreOperador}"
+                            Placeholder="{x:Static utils:Constants.PERSONAL_QUE_RECIBIO_CAPACITACION}"
+                            Margin="0, 15" />
+
+                        <Frame
+                            IsVisible="{Binding MostrarElemento}"
+                            Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Style="{StaticResource FrameStyle}">
+
+                            <Grid>
+                                <views:DrawingView
+                                    x:Name="drawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="200"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"
+                                    DrawingLineCompletedCommand="{Binding DrawCommand}" />
+
+                                <ImageButton
+                                    x:Name="iconClear"
+                                    IsVisible="{Binding ShowCleaner}"
+                                    Source="{StaticResource TrashIcon}"
+                                    Style="{StaticResource ImageButtonIconStyle}"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start"
+                                    Command="{Binding ClearDrawingViewCommand}" />
+
+                                <Label
+                                    Text="{x:Static utils:Constants.FIRME_AQUI}"
+                                    TextColor="{StaticResource Gray}"
+                                    FontSize="{OnIdiom 18, Tablet=24}"
+                                    VerticalOptions="CenterAndExpand"
+                                    HorizontalOptions="CenterAndExpand"
+                                    IsVisible="{Binding Source={x:Reference iconClear}, Path=IsVisible, Converter={StaticResource InvertedBoolConverter}}" />
+                            </Grid>
+                        </Frame>
+
+                        <!-- Resto de los elementos -->
+                        <Label
+                            Grid.Row="2"
+                            Text="{x:Static utils:Constants.CAPTURAR_FOTOGRAFIAS}"
+                            HorizontalOptions="Center"
+                            VerticalTextAlignment="Center"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            FontSize="16" />
+
+                        <ImageButton
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Style="{StaticResource ImageButtonIconStyle}"
+                            Source="{StaticResource CameraIcon}"
+                            Command="{Binding TakePhotoCommand}"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center" />
+
+                        <Frame
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            Padding="0"
+                            BorderColor="{StaticResource LightGray}">
+
+                            <ScrollView
+                                Orientation="Horizontal"
+                                BackgroundColor="White">
+
+                                <HorizontalStackLayout
+                                    BindableLayout.ItemsSource="{Binding PhotoList}"
+                                    Spacing="10">
+
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <!-- Imagen con sombra tenue -->
+                                                <Border
+                                                    BackgroundColor="Transparent"
+                                                    Stroke="Transparent"
+                                                    StrokeThickness="0"
+                                                    Padding="0"
+                                                    StrokeShape="RoundRectangle 10">
+                                                    <Border.Shadow>
+                                                        <Shadow
+                                                            Brush="Black"
+                                                            Offset="2,2"
+                                                            Opacity="0.2"
+                                                            Radius="4" />
+                                                    </Border.Shadow>
+                                                    <Image
+                                                        Source="{Binding .}"
+                                                        Aspect="AspectFit"
+                                                        WidthRequest="{OnIdiom 130, Tablet=160}"
+                                                        Margin="{OnIdiom '10, 10, 10, 15', Tablet='10, 15, 15, 20'}" />
+                                                </Border>
+
+                                                <!-- Botón de eliminar con sombra tenue -->
+                                                <Border
+                                                    BackgroundColor="Red"
+                                                    Stroke="Transparent"
+                                                    StrokeThickness="0"
+                                                    HorizontalOptions="End"
+                                                    VerticalOptions="Start"
+                                                    Margin="5"
+                                                    Padding="5"
+                                                    StrokeShape="RoundRectangle 20">
+                                                    <Border.Shadow>
+                                                        <Shadow
+                                                            Brush="Black"
+                                                            Offset="2,2"
+                                                            Opacity="0.2"
+                                                            Radius="4" />
+                                                    </Border.Shadow>
+                                                    <ImageButton
+                                                        Style="{StaticResource ImageButtonIconStyle}"
+                                                        Source="{StaticResource TrashIconWhite}"
+                                                        Command="{Binding Source={x:Reference collectionView}, Path=BindingContext.RemovePhotoCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        WidthRequest="{OnIdiom 20, Tablet=30}"
+                                                        HeightRequest="{OnIdiom 20, Tablet=30}"
+                                                        BackgroundColor="Transparent"
+                                                        HorizontalOptions="Center"
+                                                        VerticalOptions="Center" />
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                        </Frame>
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

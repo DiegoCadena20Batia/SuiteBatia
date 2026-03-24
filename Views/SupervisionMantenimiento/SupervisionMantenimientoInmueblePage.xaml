@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils" 
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.SupervisionMantenimiento.SupervisionMantenimientoInmueblePage"
+    MasterPageTitle="SUPERVISIÓN MANTENIMIENTO"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#F5F5F5"
+    ShowFloatingButton="False">
+
+    <!--<ContentPage.BindingContext>
+        <viewModel:SupervisionMantenimientoInmuebleViewModel />
+    </ContentPage.BindingContext>-->
+    <controls:MasterPage.MasterPageContent>
+        <Grid x:Name="mainGrid"
+              RowDefinitions="*, auto">
+
+        <Grid 
+            Grid.Row="0"
+            RowDefinitions="auto, auto, auto"
+            RowSpacing="{OnIdiom 20, Tablet=30}"
+            Margin="10, 0">
+
+            <controls:BordererLabel
+                Text="{Binding SelectedCliente.nombre}"
+                Placeholder="{x:Static const:Constants.SELECCIONE_CLIENTE}"
+                Command="{Binding SelectClienteCommand}" />
+
+            <controls:BordererLabel
+                Grid.Row="1"
+                Text="{Binding SelectedEstado.descripcion}"
+                Placeholder="{x:Static const:Constants.SELECCIONE_ESTADO}"
+                Command="{Binding SelectEstadoCommand}" />
+
+            <controls:BordererLabel
+                Grid.Row="2"
+                Text="{Binding SelectedInmueble.Nombre}"
+                Placeholder="{x:Static const:Constants.SELECCIONE_PUNTO_ATENCION}"
+                Command="{Binding SelectInmuebleCommand}" />
+        </Grid>
+            <Button
+    Grid.Row="1"
+    BackgroundColor="DodgerBlue"
+    HeightRequest="50"
+    WidthRequest="200"
+    Text="Continuar"
+    TextColor="White"
+    FontAttributes="Bold"
+    FontSize="18"
+    Command="{Binding ContinuarCommand}"
+    Margin="10">
+
+            </Button>
+
+            <!--<ImageButton
+            Source="{StaticResource ArrowIcon}"
+            Style="{StaticResource FloatingButtonStyle}"
+            Command="{Binding ContinuarCommand}" />-->
+
+        <Grid
+            Grid.RowSpan="2"
+            BackgroundColor="#88000000"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+                Color="{StaticResource AzulOscuro}"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}" />
+        </Grid>
+    </Grid>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

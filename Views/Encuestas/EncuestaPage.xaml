@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Encuestas.EncuestaPage"
+    Title="{x:Static const:Constants.TITULO_ENCUESTA}"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <Grid>
+
+        <Grid
+            IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+
+            <ScrollView
+                Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}"
+                ios:ScrollView.ShouldDelayContentTouches="false">
+
+                <Grid
+                    RowDefinitions="auto, auto"
+                    ColumnDefinitions="*, auto"
+                    Margin="10,0">
+
+                    <Label
+                        Text="{x:Static const:Constants.PREGUNTA_0}"
+                        Style="{StaticResource ContentBoldLabelStyle}" />
+
+                    <CheckBox
+                        Grid.Column="1"
+                        x:Name="mainCheckBox"
+                        IsChecked="{Binding HayEncuesta}"
+                        Color="{StaticResource AzulClaro}"
+                        VerticalOptions="Center" />
+
+                    <Grid
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        RowDefinitions="auto, auto, auto, auto, auto, auto"
+                        IsVisible="{Binding Source={x:Reference mainCheckBox}, Path=IsChecked}">
+
+                        <Frame
+                            CornerRadius="20"
+                            Style="{StaticResource FrameStyle}"
+                            Margin="0,10">
+
+                            <VerticalStackLayout>
+                                <Label
+                                    Text="{x:Static const:Constants.GENERAL}"
+                                    Style="{StaticResource TitleLabelStyle}" />
+
+                                <Label
+                                    Text="{x:Static const:Constants.PREGUNTA_1}"
+                                    Style="{StaticResource ContentBoldLabelStyle}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="1"
+                                    Content="{x:Static const:Constants.BUENO}"
+                                    Value="3"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="1"
+                                    Content="{x:Static const:Constants.REGULAR}"
+                                    Value="2"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="1"
+                                    Content="{x:Static const:Constants.MALO}"
+                                    Value="1"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Frame
+                            CornerRadius="20"
+                            Grid.Row="1"
+                            Style="{StaticResource FrameStyle}">
+                            <VerticalStackLayout>
+
+                                <Label
+                                    Text="{x:Static const:Constants.PERSONAL_ASIGNADO}"
+                                    Style="{StaticResource TitleLabelStyle}" />
+
+                                <Label
+                                    Text="{x:Static const:Constants.PREGUNTA_2}"
+                                    Style="{StaticResource ContentBoldLabelStyle}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="2"
+                                    Content="{x:Static const:Constants.SI}"
+                                    Value="2"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="2"
+                                    Content="{x:Static const:Constants.NO}"
+                                    Value="1"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <Label
+                                    Text="{x:Static const:Constants.PREGUNTA_3}"
+                                    Style="{StaticResource ContentBoldLabelStyle}"
+                                    Margin="0,20,0,0" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="3"
+                                    Content="{x:Static const:Constants.BUENO}"
+                                    Value="3"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="3"
+                                    Content="{x:Static const:Constants.REGULAR}"
+                                    Value="2"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="3"
+                                    Content="{x:Static const:Constants.MALO}"
+                                    Value="1"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Frame
+                            CornerRadius="20"
+                            Grid.Row="2"
+                            Style="{StaticResource FrameStyle}"
+                            Margin="0,10,0,30">
+                            <VerticalStackLayout>
+                                <Label
+                                    Text="{x:Static const:Constants.CALIDAD_TRABAJOS}"
+                                    Style="{StaticResource TitleLabelStyle}" />
+
+                                <Label
+                                    Text="{x:Static const:Constants.PREGUNTA_4}"
+                                    Style="{StaticResource ContentBoldLabelStyle}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="4"
+                                    Content="{x:Static const:Constants.SI}"
+                                    Value="2"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="4"
+                                    Content="{x:Static const:Constants.NO}"
+                                    Value="1"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <Label
+                                    Text="{x:Static const:Constants.PREGUNTA_5}"
+                                    Style="{StaticResource ContentBoldLabelStyle}"
+                                    Margin="0,20,0,0" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="5"
+                                    Content="{x:Static const:Constants.SI}"
+                                    Value="2"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+
+                                <controls:RadioButtonEncuesta
+                                    GroupName="5"
+                                    Content="{x:Static const:Constants.NO}"
+                                    Value="1"
+                                    CheckedChangedCommand="{Binding CheckedChangedCommand}" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Label
+                            Grid.Row="3"
+                            Text="{x:Static const:Constants.AGRADECIMIENTOS}"
+                            Style="{StaticResource ContentBoldLabelStyle}"
+                            HorizontalTextAlignment="Center" />
+
+                        <controls:BordererEntry
+                            Grid.Row="4"
+                            Text="{Binding NombreEncuestado}"
+                            Placeholder="{x:Static const:Constants.INGRESE_ENCUESTADO}"
+                            Margin="0,30,0,10" />
+
+                        <Frame
+                            CornerRadius="20"
+                            Grid.Row="5"
+                            Style="{StaticResource FrameStyle}">
+
+                            <Grid>
+                                <views:DrawingView
+                                    x:Name="drawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="200"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"
+                                    DrawingLineCompletedCommand="{Binding DrawCommand}" />
+
+                                <ImageButton
+                                    x:Name="iconClear"
+                                    IsVisible="{Binding ShowCleaner}"
+                                    Source="{StaticResource TrashIcon}"
+                                    Style="{StaticResource ImageButtonIconStyle}"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start"
+                                    Command="{Binding ClearDrawingViewCommand}" />
+
+                                <Label
+                                    Text="{x:Static const:Constants.FIRME_AQUI}"
+                                    TextColor="{StaticResource Gray}"
+                                    FontSize="{OnIdiom 18, Tablet=24}"
+                                    VerticalOptions="CenterAndExpand"
+                                    HorizontalOptions="CenterAndExpand"
+                                    IsVisible="{Binding Source={x:Reference iconClear}, Path=IsVisible, Converter={StaticResource InvertedBoolConverter}}" />
+                            </Grid>
+                        </Frame>
+                    </Grid>
+                </Grid>
+            </ScrollView>
+
+            <ImageButton
+                Source="{StaticResource SendIcon}"
+                Style="{StaticResource FloatingButtonStyle}"
+                Command="{Binding EnviarOrdenTrabajoEjecutadaCommand}" />
+        </Grid>
+
+        <Grid
+    Grid.RowSpan="3"
+    RowDefinitions="*,*"
+    BackgroundColor="#88000000"
+    IsVisible="{Binding IsLoading}">
+            <ActivityIndicator
+        Grid.Row="0"
+        VerticalOptions="End"
+        Color="White"
+        IsRunning="{Binding IsLoading}"
+        HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            <Label
+         VerticalOptions="Start"
+         HorizontalOptions="Center"
+         Grid.Row="1"
+         TextColor="White"
+         Text="{Binding TextLoading}"
+    ></Label>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Popups.ObjectPicker"
+    BackgroundColor="{StaticResource BackgroundPopup}"
+    Style="{StaticResource PopupStyle}">
+
+    <Frame
+        Style="{StaticResource PopupFrameStyle}"
+        VerticalOptions="Center"
+        HeightRequest="{Binding PopupHeight}">
+
+        <Grid
+            RowDefinitions="auto, *, auto"
+            Margin="{OnIdiom '10, 10, 10, 0', Tablet='20, 20, 20, 0'}">
+
+            <Entry
+                x:Name="entryQuery"
+                Placeholder="{x:Static const:Constants.BUSCAR}"
+                TextColor="Black"
+                PlaceholderColor="{StaticResource DarkGray}"
+                IsVisible="{Binding ShowSearching}"
+                Margin="{OnPlatform Android='0, 0, 0, 0', iOS='0, 0, 0, 5'}">
+
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior
+                        EventName="TextChanged"
+                        Command="{Binding FiltrarListaCommand}"
+                        CommandParameter="{Binding Text, Source={x:Reference entryQuery}}" />
+                </Entry.Behaviors>
+            </Entry>
+
+            <CollectionView
+                Grid.Row="1"
+                x:Name="collectionView"
+                ItemsSource="{Binding PartialList}"
+                VerticalScrollBarVisibility="Never">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        Orientation="Vertical"
+                        ItemSpacing="{OnIdiom 10, Tablet=15}" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.EmptyView>
+                    <Label
+                        Text="{x:Static const:Constants.NO_HAY_REGISTROS}"
+                        VerticalOptions="Start"
+                        HorizontalOptions="CenterAndExpand"
+                        Style="{StaticResource TitleLabelStyle}"
+                        FontSize="{OnIdiom 14, Tablet=20}"
+                        Margin="30" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame
+                            Style="{StaticResource FrameStyle}">
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    NumberOfTapsRequired="1"
+                                    Command="{Binding Source={x:Reference collectionView}, Path=BindingContext.SelectValueCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <Label
+                                Text="{Binding .}"
+                                Style="{StaticResource ContentLabelStyle}"
+                                FontAttributes="Bold" />
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button
+                Grid.Row="2"
+                Text="{x:Static const:Constants.CANCELAR}"
+                Style="{StaticResource ButtonPopupStyle}"
+                Command="{Binding CancelCommand}"
+                Margin="{OnIdiom 10, Tablet=20}" />
+        </Grid>
+    </Frame>
+</mopup:PopupPage>

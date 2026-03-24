@@ -1,0 +1,624 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<!--COMENTADO PARA BUILD IOS-->
+	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
+		<UseMauiMaps>true</UseMauiMaps>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-ios'">
+		<UseMauiMaps>true</UseMauiMaps>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">
+		<UseMauiMaps>true</UseMauiMaps>
+	</PropertyGroup>-->
+
+
+
+	<!--<AndroidProguardConfig>proguard.cfg</AndroidProguardConfig>-->
+
+	<!--<AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>-->
+	<!--<DebugSymbols>true</DebugSymbols>-->
+
+	<PropertyGroup>
+		
+		
+		<!--USAR SOLO PARA COMPILACION REMOTA EN MAC-->
+		<!--<TargetFrameworks>net9.0-ios</TargetFrameworks>-->
+		
+		
+		
+		<!--USAR SOLO PARA COMPILACION ANDOID-->
+		<TargetFrameworks>net9.0-android;</TargetFrameworks>
+		
+		
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
+		<OutputType>Exe</OutputType>
+		<RootNamespace>BatiaSuite</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Display name -->
+		<ApplicationTitle>BatiaSuite</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.companyname.batiasuite</ApplicationId>
+		<ApplicationIdGuid>c32f8002-8c0d-47c2-a53b-d2a8e250d3db</ApplicationIdGuid>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
+		<!--COMENTADO PARA BUILD IOS-->
+		<!--<TargetFramework>net8.0-android35.0</TargetFramework>
+		<AndroidTargetSdkVersion>35</AndroidTargetSdkVersion>
+		<AndroidCompileSdkVersion>35</AndroidCompileSdkVersion>
+		<AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>-->
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+	</PropertyGroup>
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net9.0-android'">
+		<PublishTrimmed>true</PublishTrimmed>
+		-->
+	<!-- Recorta código no usado -->
+	<!--
+		-->
+	<!--<PublishAot>true</PublishAot>-->
+	<!--
+		-->
+	<!-- Ahead-of-Time compilation -->
+	<!--
+		<EnableLLVM>true</EnableLLVM>
+		-->
+	<!-- Optimización nativa -->
+	<!--
+		<AndroidLinkMode>SdkOnly</AndroidLinkMode>
+		-->
+	<!-- O Full para más recorte -->
+	<!--
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+	  <AndroidLinkTool>r8</AndroidLinkTool>
+	  <AndroidUseAapt2>True</AndroidUseAapt2>
+	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+	</PropertyGroup>-->
+	<!-- ✅ Compatibilidad con 32 y 64 bits en .NET 9 -->
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<AndroidUseAapt2>True</AndroidUseAapt2>
+		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<AndroidLinkTool>r8</AndroidLinkTool>
+
+		<!-- ABI y RuntimeIdentifiers -->
+		<RuntimeIdentifiers>android-arm64;android-arm;android-x64;android-x86</RuntimeIdentifiers>
+
+		<!-- Optimización -->
+		<PublishTrimmed>true</PublishTrimmed>
+		<!--<PublishAot>true</PublishAot>-->
+		<!-- Si activas AOT, tarda más y aumenta tamaño, opcional -->
+	</PropertyGroup>
+
+
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	  <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+	</PropertyGroup>-->
+
+	
+
+
+	<!--DESCOMENTAR PARA COMPILACION REMOTA EN LA MAC-->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<ServerAddress>192.168.11.117</ServerAddress>
+		<ServerUser>ricardoberistain</ServerUser>
+		<ServerTcpPort>52852</ServerTcpPort>
+
+		<ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
+		<ApplicationTitle>Suite Batia</ApplicationTitle>
+
+		<ProvisioningType>manual</ProvisioningType>
+		<CodesignKey>iPhone Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
+		<CodesignProvision>SuiteBatiaRelease</CodesignProvision>
+
+		<BuildIpa>true</BuildIpa>
+		<ArchiveOnBuild>true</ArchiveOnBuild>
+		<ProvisioningType>manual</ProvisioningType>
+	</PropertyGroup>
+
+	<!--COMENTAR PARA RELEASE IOS-->
+	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+		<ProvisioningType>automatic</ProvisioningType>
+		<CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
+		<CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
+		<SkipStaticLibraryValidation>true</SkipStaticLibraryValidation>
+	</PropertyGroup>-->
+	
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
+		<MtouchLink>SdkOnly</MtouchLink>
+		<MtouchUseLlvm>False</MtouchUseLlvm>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+		<!--<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+		<PublishAot>false</PublishAot>
+		<RunAOTCompilation>false</RunAOTCompilation>
+		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+		<PublishTrimmed>false</PublishTrimmed>
+		<AndroidUseAapt2>True</AndroidUseAapt2>
+		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>-->
+	</PropertyGroup>
+
+	<!--COMENTAR PARA TESTEO DE IOS EN VISUAL STUDIO FIN-->
+	<PropertyGroup>
+		<SkipStaticLibraryValidation>true</SkipStaticLibraryValidation>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
+		<MtouchLink>SdkOnly</MtouchLink>
+		<MtouchUseLlvm>False</MtouchUseLlvm>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+		<AndroidUseAapt2>True</AndroidUseAapt2>
+		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<!--<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+		<PublishAot>false</PublishAot>
+		<RunAOTCompilation>false</RunAOTCompilation>
+		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+		<PublishTrimmed>false</PublishTrimmed>
+		<AndroidUseAapt2>True</AndroidUseAapt2>
+		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>-->
+	</PropertyGroup>
+
+	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
+	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
+	</PropertyGroup>-->
+
+	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
+	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
+	</PropertyGroup>-->
+
+	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
+	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
+	</PropertyGroup>-->
+
+	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
+	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
+	</PropertyGroup>-->
+
+	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
+	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
+	</PropertyGroup>-->
+
+
+
+
+
+	<!--COMENTADO PARA BUILD IOS-->
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android34.0|AnyCPU'">
+	  <AndroidUseAapt2>True</AndroidUseAapt2>
+	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+	  <AndroidPackageFormat>aab</AndroidPackageFormat>
+	</PropertyGroup>-->
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appiconandroid.svg" ForegroundFile="Resources\AppIcon\appiconfgandroid.svg" />
+
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#53c7e0" BaseSize="200,200" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Custom Icons Fonts -->
+		<MauiFont Include="Resources\IconFonts\*" />
+		<MauiFont Include="Resources\IconFonts\icons.ttf" Alias="Icon fonts family" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Resources\IconFonts\FontAwesome.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Resources\IconFonts\icons.ttf" />
+		<None Remove="Resources\Images\bien.png" />
+		<None Remove="Resources\Images\ch_f.png" />
+		<None Remove="Resources\Images\ch_t.png" />
+		<None Remove="Resources\Images\eye_off.png" />
+		<None Remove="Resources\Images\eye_on.png" />
+		<None Remove="Resources\Images\logo_correctivos.png" />
+		<None Remove="Resources\Images\mal.png" />
+		<None Remove="Resources\Images\na.png" />
+		<None Remove="Resources\Images\regular.png" />
+		<None Remove="Resources\Images\sanitizacion.png" />
+		<None Remove="Resources\Images\supervision.png" />
+		<None Remove="Resources\Images\vacantes.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\IconFonts\icons.ttf" />
+	</ItemGroup>
+	<!--<ItemGroup>
+		<MauiAsset Include="Platforms\iOS\Info.plist" />
+	</ItemGroup>-->
+	<ItemGroup>
+		<PackageReference Include="Camera.MAUI" Version="1.5.1" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="4.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="4.1.2" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="8.0.100" />
+		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.111" />
+		<PackageReference Include="Mopups" Version="1.3.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
+		<PackageReference Include="Shiny.Core" Version="3.3.4" />
+		<PackageReference Include="Shiny.Framework" Version="4.1.0" />
+		<PackageReference Include="Shiny.Hosting.Maui" Version="3.3.4" />
+		<PackageReference Include="Shiny.Jobs" Version="3.3.4" />
+		<PackageReference Include="Shiny.Locations" Version="3.3.4" />
+		<PackageReference Include="SlackAPI" Version="1.1.14" />
+		<PackageReference Include="SQLitePCLRaw.core" Version="3.0.2" />
+		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.2" />
+	</ItemGroup>
+	<!--COMENTADO PARA BUILD IOS-->
+	<!--<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+		<BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
+	</ItemGroup>-->
+	<ItemGroup>
+		<Compile Update="Controls\OptionsViewMantenimiento.xaml.cs">
+			<DependentUpon>OptionsViewMantenimiento.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Popups\AgregarProductoPopup.xaml.cs">
+			<DependentUpon>AgregarProductoPopup.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Popups\MatSumClientePopup.xaml.cs">
+			<DependentUpon>MatSumClientePopup.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Popups\LocationUsePopup.xaml.cs">
+			<DependentUpon>LocationUsePopup.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasResumenPage.xaml.cs">
+			<DependentUpon>CheckListAparadoresPreguntasResumenPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasDosPage.xaml.cs">
+			<DependentUpon>CheckListAparadoresPreguntasDosPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasCuatroPage.xaml.cs">
+			<DependentUpon>CheckListAparadoresPreguntasCuatroPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasCincoPage.xaml.cs">
+			<DependentUpon>CheckListAparadoresPreguntasCincoPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasTresPage.xaml.cs">
+			<DependentUpon>CheckListAparadoresPreguntasTresPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasUnoPage.xaml.cs">
+			<DependentUpon>CheckListAparadoresPreguntasUnoPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CheckListAparadores\CheckListAparadoresInmueblePage.xaml.cs">
+			<DependentUpon>CheckListAparadoresInmueblePage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\DeliveriesRoute.xaml.cs">
+			<DependentUpon>DeliveriesRoute.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\EntregasInteligentes\EntregasInteligentesPage.xaml.cs">
+			<DependentUpon>EntregasInteligentesPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\IncidenciasBiometa\IncidenciasBiometaPage.xaml.cs">
+			<DependentUpon>IncidenciasBiometaPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\OrdenesTrabajo\GenerarOrdenTrabajo.xaml.cs">
+			<DependentUpon>GenerarOrdenTrabajo.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SolicitudCotizacion\SolicitudCotizacionPage.xaml.cs">
+			<DependentUpon>SolicitudCotizacionPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml.cs">
+		  <DependentUpon>SupervisionMantenimientoFirmasPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoEvaluacionPage.xaml.cs">
+			<DependentUpon>SupervisionMantenimientoEvaluacionPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoExtintoresObjectPage.xaml.cs">
+		  <DependentUpon>SupervisionMantenimientoExtintoresObjectPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoHidrantesObjectPage.xaml.cs">
+		  <DependentUpon>SupervisionMantenimientoHidrantesObjectPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionPage.xaml.cs">
+		  <DependentUpon>SupervisionMantenimientoSeccionPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionesPage.xaml.cs">
+		  <DependentUpon>SupervisionMantenimientoSeccionesPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPreguntasPage.xaml.cs">
+			<DependentUpon>SupervisionMantenimientoPreguntasPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoInmueblePage.xaml.cs">
+			<DependentUpon>SupervisionMantenimientoInmueblePage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPage.xaml.cs">
+			<DependentUpon>SupervisionMantenimientoPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Supervision\EvaluacionPage.xaml.cs">
+			<DependentUpon>EvaluacionPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Supervision\VideoPage.xaml.cs">
+			<DependentUpon>VideoPage.xaml</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<MauiXaml Update="Controls\BordererDatePicker.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\BordererEditor.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\BordererEntry.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\BordererLabel.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\BordererPicker.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\CheckBoxView.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\CustomCheckBox.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\ItemView.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\MasterPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\OptionsViewMantenimiento.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\OptionsView.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\RadioButtonEncuesta.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\AlmacenPicker.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\AgregarProductoPopup.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\MaterialPicker.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\MatSumClientePopup.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\ObjectPicker.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\PersonalPicker.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Popups\LocationUsePopup.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Resources\Styles\Converters.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Resources\Styles\Resources.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasResumenPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasDosPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasCuatroPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasCincoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasTresPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasUnoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\DeliveriesRoute.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Deliveries.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\DeliveriesDetail.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Encuestas\EncuestaPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\EntregasInteligentes\EntregasInteligentesPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\IncidenciasBiometa\IncidenciasBiometaPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ListaCorrectivosM.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ListadoMateriales.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ListasOrdenesTGuardadas.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Logueo.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\OrdenesTrabajo\FotoEvidenciaPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\OrdenesTrabajo\ManoObra.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\OrdenesTrabajo\MaterialesUtilizados.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\OrdenesTrabajo\GenerarOrdenTrabajo.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\OrdenesTrabajo\OrdenTrabajo.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\RegisterDelivery.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\RegistrosCorrctivosM.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Sanitizacion\EvidenciasPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Sanitizacion\SanitizacionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SolicitudCotizacion\SolicitudCotizacionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresInmueblePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoEvaluacionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoExtintoresObjectPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoHidrantesObjectPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionesPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPreguntasPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoInmueblePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\ChecklistOperadorPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\EncuestaSupervisionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\VideoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\MaterialesPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\EvaluacionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\PreguntasPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\SupervisionInmueblePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Supervision\SupervisionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupplierDeliveries\SupplierDeliveries.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupplierDeliveries\SupplierDeliveriesDetail.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupplierDeliveries\SupplierListadoMateriales.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupplierDeliveries\SupplierRegisterDelivery.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Vacantes\DatosComplementariosPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Vacantes\DatosGeneralesPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Vacantes\DatosSueldoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Vacantes\DireccionFiscalPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Vacantes\DireccionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Vacantes\DocumentosPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Vacantes\VacantesPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+		<PackageReference Include="Xamarin.AndroidX.LocalBroadcastManager">
+			<Version>1.1.0.22</Version>
+		</PackageReference>
+	</ItemGroup>
+
+
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties XamarinHotReloadDebuggerTimeoutExceptionBatiaSuiteHideInfoBar="True" XamarinHotReloadGenericExceptionInfoBarBatiaSuiteHideInfoBar="True" />
+		</VisualStudio>
+	</ProjectExtensions>
+
+</Project>

@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.Deliveries"
+    xmlns:viewmodels="clr-namespace:BatiaSuite.ViewModel"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    Title="ENTREGAS"
+    NavigationPage.HasNavigationBar="True" 
+    BackgroundColor="#F5F5F5"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <Grid>
+        
+    
+    <ScrollView>
+        <Grid
+            RowDefinitions="auto,auto,auto,auto,*,auto,auto,auto,auto"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="5"
+            RowSpacing="5"
+            Margin="10">
+            <!--LABEL MONITOREO-->
+            <!--<Label
+                Grid.Column="0"
+                Grid.Row="0"
+                HeightRequest="30"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                FontSize="20"
+                FontFamily="MontBold"
+
+                Text="!Ruta iniciada!"
+                IsVisible="{Binding IsTracking}">
+            </Label>-->
+            <!--IMAGE MONITOREO-->
+            <!--<Image
+                Grid.Row="0"
+                Grid.Column="1"
+                Source="tracking.png"
+                WidthRequest="60"
+                HeightRequest="30"
+                VerticalOptions="Center"
+                HorizontalOptions="Start"
+                IsVisible="{Binding IsTracking}">
+            </Image>-->
+
+
+            <!--BUTTON INICIAR RUTA-->
+                <Button
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
+                IsVisible="{Binding IsTracking, Converter={StaticResource InvertedBoolConverter}}"
+                FontFamily="MontSemibold"
+                FontSize="20"
+                Margin="10,30,10,0"
+                HeightRequest="70"
+                BackgroundColor="#4a92fe" 
+                Text="Iniciar Ruta" 
+                TextColor="White" 
+                ImageSource="startdelivery.png" 
+                ContentLayout="Right,20" 
+                Command="{Binding IniciarRutaCommand}">
+                    <Button.Shadow>
+                        <Shadow
+                            Brush="Black"
+                            Radius="8"
+                            Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+
+
+             <!--<Grid
+                 Grid.Row="1"
+                 Grid.ColumnSpan="2">
+                <BoxView
+                    Color="Gray"
+                    HeightRequest="1"/>
+             </Grid>-->
+            
+            <!--GRID SELECCIONAR INMUEBLE-->
+            <Grid
+                RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto"
+                ColumnDefinitions="*,*"
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                
+                IsVisible="{Binding IsTracking}">
+                    <Frame
+                        BorderColor="LightGray"
+                        CornerRadius="20"
+                        Grid.ColumnSpan="2">
+                        <Grid
+                            RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto"
+ColumnDefinitions="*,*"
+                            >
+                            <Label
+    Grid.Row="0"
+    Grid.ColumnSpan="2"
+    Margin="15"
+    Text="Selecciona los siguiente campos:"
+    HorizontalTextAlignment="Center"
+    VerticalTextAlignment="End"
+    FontSize="20"
+    FontFamily="MontBold" 
+    TextColor="Black" 
+    Opacity="{Binding IsTracking, Converter={StaticResource BooleanToOpacityConverter}}"
+    />
+
+                            <Frame
+    Grid.Row="1"
+    Grid.ColumnSpan="2"
+    Margin="0,10"
+    Padding="0,2,0,0"
+    BorderColor="LightGray"
+    HorizontalOptions="FillAndExpand"    
+    VerticalOptions="Center"
+    HeightRequest="55"
+    BackgroundColor="White"
+    CornerRadius="5"
+    
+
+    Opacity="{Binding IsTracking, Converter={StaticResource BooleanToOpacityConverter}}">
+
+                                <Picker
+        Margin="0,0,0,-12"
+        TitleColor="#3775B5"
+        Title="Cliente"
+        CharacterSpacing="2"
+        FontFamily="MontRegular"
+        FontSize="16"
+        FontAutoScalingEnabled="True"
+        VerticalTextAlignment="Center"
+        HorizontalTextAlignment="Center" 
+        ItemsSource="{Binding Clients}"
+        ItemDisplayBinding="{Binding nombre}"
+        SelectedItem="{Binding IdClientSelected}" />
+                            </Frame>
+                            <!--ANDROID Padding="0,5,0,-10"-->
+                            <Frame
+    Grid.Row="2"
+    Grid.ColumnSpan="2"
+    Margin="0,10"
+    Padding="0,2,0,0"
+    BorderColor="LightGray"
+    HorizontalOptions="FillAndExpand"               
+    HeightRequest="55"
+    BackgroundColor="White"
+    CornerRadius="5"
+    Opacity="{Binding IsTracking, Converter={StaticResource BooleanToOpacityConverter}}">
+
+                                <Picker
+        Margin="0,0,0,-12"
+        Title="Estado"
+        TitleColor="#3775B5"
+        CharacterSpacing="2"
+        FontFamily="MontRegular"
+        FontSize="16"
+        FontAutoScalingEnabled="True"
+        VerticalTextAlignment="Center"
+        HorizontalTextAlignment="Center"
+        ItemsSource="{Binding EstadoList}"
+        ItemDisplayBinding="{Binding descripcion}"
+        SelectedItem="{Binding IdEstadoSelected}" />
+                            </Frame>
+
+                            <Frame
+    Grid.Row="3"
+    Grid.ColumnSpan="2"
+    Margin="0,10"
+    Padding="0,2,0,0"
+    BorderColor="LightGray"
+    HorizontalOptions="FillAndExpand"                
+    HeightRequest="55"
+    BackgroundColor="White"
+    CornerRadius="5"
+    Opacity="{Binding IsTracking, Converter={StaticResource BooleanToOpacityConverter}}">
+
+                                <Picker
+        Margin="0,0,0,-12"
+        Title="Sucursal"
+        TitleColor="#3775B5"
+        CharacterSpacing="2"
+        FontFamily="MontRegular"
+        FontSize="16"
+        FontAutoScalingEnabled="True"
+        VerticalTextAlignment="Center"
+        HorizontalTextAlignment="Center"
+        ItemsSource="{Binding Inmueble}"
+        ItemDisplayBinding="{Binding nombre}"
+        SelectedItem="{Binding IdInmubleSelected}" />
+                            </Frame>
+
+                            <Frame
+    Grid.Row="4"
+    Margin="10,10"
+    Padding="0,2,0,0"
+    BorderColor="LightGray"
+    HorizontalOptions="FillAndExpand"
+    HeightRequest="55"
+    BackgroundColor="White"
+    CornerRadius="5"
+    Opacity="{Binding IsTracking, Converter={StaticResource BooleanToOpacityConverter}}">
+
+                                <Picker
+        Margin="0,0,0,-12"
+        Title="Mes"
+        TitleColor="#3775B5"
+        CharacterSpacing="2"
+        FontFamily="MontRegular"
+        FontSize="16"
+        FontAutoScalingEnabled="True"
+        VerticalTextAlignment="Center"
+        HorizontalTextAlignment="Center"
+        ItemsSource="{Binding MesList}"
+        ItemDisplayBinding="{Binding mes}"
+        SelectedItem="{Binding IdMesSelected}" />
+                            </Frame>
+
+                            <Frame
+    Grid.Row="4"
+    Grid.Column="1"
+    Margin="10,10"
+    Padding="0,2,0,0"
+    BorderColor="LightGray"
+    HorizontalOptions="FillAndExpand"
+    HeightRequest="55"
+    BackgroundColor="White"
+    CornerRadius="5"
+    Opacity="{Binding IsTracking, Converter={StaticResource BooleanToOpacityConverter}}">
+
+                                <Entry
+        Margin="0,0,0,-12"
+        Text="{Binding Year}"
+        TextColor="#3775B5"
+        FontFamily="MontRegular"
+        FontSize="16"
+        Placeholder="Ingrese el año"
+        ClearButtonVisibility="WhileEditing"
+        VerticalTextAlignment="Center"
+        HorizontalTextAlignment="Center" />
+                            </Frame>
+                            <Button
+    Grid.Row="5"
+    Grid.ColumnSpan="2"
+    BackgroundColor="#4a92fe"
+    x:Name="bntNext2"
+    Text="Cargar listados"
+    Command="{Binding RegisterCommand}"
+    FontFamily="MontSemibold"
+    TextColor="White"
+    CornerRadius="5"
+    FontSize="15"
+    Background="#4a92fe"
+    HeightRequest="50"
+    Margin="100,20,100,50"
+    VerticalOptions="EndAndExpand"
+    IsEnabled="{Binding IsTracking}"
+    Opacity="{Binding IsTracking, Converter={StaticResource BooleanToOpacityConverter}}">
+                                <Button.Shadow>
+                                    <Shadow
+            Brush="Black"
+            Radius="8"
+            Opacity="0.3" />
+                                </Button.Shadow>
+
+                            </Button>
+
+                            <Button 
+    FontFamily="MontSemibold"
+    FontSize="20"
+    Grid.ColumnSpan="2"
+    Margin="15"
+    HeightRequest="60"
+    Grid.Row="7"
+    BackgroundColor="Red"
+    Text="Finalizar Ruta" 
+    TextColor="White"
+    ImageSource="deliveriecomplete.png"
+    ContentLayout="Right,20" 
+    Command="{Binding FinalizarRutaCommand}"
+    IsVisible="{Binding IsTracking}">
+                                <Button.Shadow>
+                                    <Shadow
+                Brush="Black"
+                Radius="8"
+                Opacity="0.3" />
+                                </Button.Shadow>
+                            </Button>
+
+                        </Grid>
+                        
+                    </Frame>
+                
+                </Grid>
+
+            <!--<Grid
+                Grid.Row="3"
+                Grid.ColumnSpan="2">
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="10,0,10,00"
+                    HeightRequest="100"
+                    BackgroundColor="White"
+                    Text="" 
+                    TextColor="White"
+                    ImageSource="googlemapsicon.png"
+                    ContentLayout="Right,10" 
+                    Command="{Binding PrecargarDatosCommand}">
+                    <Button.Shadow>
+                        <Shadow
+                            Brush="Black"
+                            Radius="8"
+                            Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+            </Grid>-->
+
+
+                <Grid
+                
+                IsVisible="{Binding ExisteLocal}"
+                MinimumHeightRequest="150"
+                MaximumHeightRequest="450"
+                Grid.Row="7"
+                Grid.ColumnSpan="2"
+                >
+                    <Frame
+                    BackgroundColor="White"
+                    BorderColor="LightGray"
+                    CornerRadius="30">
+                        <Grid
+                            Margin="0,-5,0,0"
+                            RowDefinitions="auto,auto,auto"
+                            ColumnDefinitions="auto, *">
+                            <Grid
+                            Margin="0,0,0,10"
+                            Grid.Row="0"
+                            Grid.ColumnSpan="2">
+                                <Label
+                                VerticalOptions="Center"
+                                Margin="10"
+                                Grid.Row="0"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                    TextColor="Black"
+                                Text="⚠️ Entregas pendientes de envío"/>
+                                <Label
+                                    Margin="20,0,20,0"
+                                    HeightRequest="1"
+                                    VerticalOptions="End"
+                                    BackgroundColor="LightBlue"/>
+                            </Grid>
+                            <CollectionView
+                                Grid.ColumnSpan="2"
+                                HeightRequest="150"
+                                Grid.Row="1"
+                                x:Name="collectionEntregasViewLocal"
+                                VerticalOptions="Start"
+                                HorizontalOptions="Center"
+                                ItemsSource="{Binding EntregasLocalList}"
+                                VerticalScrollBarVisibility="Never">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout
+                                        Orientation="Vertical"
+                                        ItemSpacing="5" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame
+                                            BackgroundColor="White"
+                                BorderColor="LightBlue"
+                                            CornerRadius="15"
+                                            Style="{StaticResource FrameStyle}"
+                                            >
+                                            <Frame.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={x:Reference collectionEntregasViewLocal}, Path=BindingContext.SelectedEntregaLocalCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    Tapped="Frame_Tapped">
+                                                </TapGestureRecognizer>
+                                            </Frame.GestureRecognizers>
+
+                                            <Grid
+                                     RowDefinitions="auto,auto"
+                                     ColumnDefinitions="auto,auto,*">
+                                                <Label
+                                        VerticalOptions="Center"
+                                        Grid.Row="0"
+                                        FontSize="15"
+                                        Text="Listado"
+                                        TextColor="Gray"
+                                        Margin="0,0,50,0"/>
+                                                <Label
+                                        VerticalOptions="Center"
+                                        Grid.Column="1"
+                                        Grid.Row="0"
+                                        FontSize="15"
+                                        TextColor="Gray"
+                                        Text="Fecha de entrega"/>
+                                                <Label
+                                        VerticalOptions="Center"
+                                                    Grid.Row="1"
+                                                    FontSize="15"
+                                                    Text="{Binding IdListado}"/>
+                                                <Label
+                                        VerticalOptions="Center"
+                                                    Grid.Row="1"
+                                        Grid.Column="1"
+                                                    FontSize="15"
+                                                    Text="{Binding Fentrega}"/>
+                                                <!--<Label
+                                    Grid.Row="1"
+                                    FontSize="15"
+                                    Text="{Binding Cliente}"
+                                    Style="{StaticResource ContentLabelStyle}"
+                                    FontFamily="MontSemibold" />
+
+                                                <Label
+                                        FontSize="13"
+                                        Grid.Row="2"
+                                        Text="{Binding Inmueble}"
+                                        Style="{StaticResource ContentLabelStyle}"/>-->
+                                                <Label
+                                        Grid.Row="0"
+                                        Grid.RowSpan="2"
+                                        Grid.Column="2"
+                                        Style="{StaticResource ContentLabelStyle}"
+                                        Text="{x:Static icons:Icons.Send}"
+                                        FontFamily="{x:Static icons:Icons.Family}"
+                                        TextColor="{StaticResource AzulClaro}"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="End"
+                                        FontSize="{OnIdiom 35, Tablet=50}"
+                                        Margin="0, 0,10,0" />
+                                                <Label
+                                        
+                                        Grid.Row="4"
+                                        Grid.Column="0"
+                                        Padding="0"
+                                        Text="{Binding Fechafin, StringFormat='Finalizada: {0:dd-MM-yyyy hh:mm}'}"
+                                        Style="{StaticResource ContentLabelStyle}"/>
+                                            </Grid>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <Grid
+                                Grid.ColumnSpan="2"
+                                Grid.Row="2"
+                                RowDefinitions="auto,auto"
+                                ColumnDefinitions="*, *"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Margin="0, 10, 0, 0">
+                                <Button 
+                                    Grid.Column="0"
+                                    WidthRequest="150"
+                                    HeightRequest="20"
+                                    Grid.Row="0"
+                                    BackgroundColor="#6da7fe"
+                                    Text="Precargar Datos" 
+                                    TextColor="White"
+                                    Command="{Binding PrecargarDatosEntregasCommand}"/>
+                                
+                                <Label 
+                                     Grid.Column="0"
+                                    Margin="0,10,0,0"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    Grid.Row="1"
+                                    IsVisible="{Binding FechaCargaValida}"
+                                    Text="{Binding FechaCarga , StringFormat='💾 {0:dd-MM-yyyy}'}"
+                                    TextColor="Gray"
+                                ></Label>
+                                <Button 
+                                    HorizontalOptions="Center"
+                                    Grid.Column="1"
+                                    WidthRequest="120"
+                                    Margin="50,0,0,0"
+                                    Grid.Row="0"
+                                    BackgroundColor="LightSeaGreen"
+                                    Text="Enviar todo" 
+                                    TextColor="White"
+                                    Command="{Binding EnviarTodoLocalCommand}"/>
+                            </Grid>
+                        </Grid>
+                    </Frame>
+                </Grid>
+
+                <Frame
+                    Grid.ColumnSpan="2"
+                    Grid.Row="8"
+                    BackgroundColor="White"
+                    CornerRadius="30"
+                    BorderColor="AliceBlue"
+                    HeightRequest="100"
+                    WidthRequest="300"
+                    IsVisible="{Binding ExisteLocal, Converter={StaticResource InvertedBoolConverter}}">
+                    <Grid
+                        RowDefinitions="auto,auto"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        Margin="0, 5, 0, 0">
+                        <Button 
+            WidthRequest="180"
+            Grid.Row="0"
+            BackgroundColor="#6da7fe"
+            Text="Precargar datos" 
+            TextColor="White"
+            Command="{Binding PrecargarDatosEntregasCommand}"/>
+                        <Label 
+                            Margin="0,5,0,0"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Grid.Row="1"
+            IsVisible="{Binding FechaCargaValida}"
+            Text="{Binding FechaCarga, StringFormat='Última carga: {0}'}"
+            TextColor="Gray"
+        ></Label>
+                    </Grid>
+                </Frame>
+
+
+
+
+            </Grid>
+        
+    </ScrollView>
+        <Grid
+            RowDefinitions="*,*"
+            BackgroundColor="#88000000"
+            IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+                Grid.Row="0"
+                VerticalOptions="End"
+                Color="White"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}"/>
+                    <Label
+                 VerticalOptions="Start"
+                 HorizontalOptions="Center"
+                 Grid.Row="1"
+                 TextColor="White"
+                 Text="{Binding TextLoading}"
+                    ></Label>
+        </Grid>
+        </Grid>
+</ContentPage>

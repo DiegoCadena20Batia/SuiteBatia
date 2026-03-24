@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.SupplierDeliveries.SupplierListadoMateriales"
+    Title="Detalle de Materiales"
+    BackgroundColor="#F5F5F5"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <Grid
+        RowDefinitions="auto, auto, auto, *, auto, auto, auto"
+        ColumnDefinitions="*,*"
+        VerticalOptions="FillAndExpand"
+        ColumnSpacing="5"
+        RowSpacing="5"
+        Margin="10, 0">
+
+        <Label
+            Text="{Binding FolioEntry}"
+            FontFamily="MontBold"
+            HorizontalTextAlignment="Start"
+            VerticalTextAlignment="Center"
+            FontSize="15"
+            TextColor="#3775B5"
+            Padding="0" />
+
+        <Label
+            Grid.Column="1"
+            Text="{Binding  ClienteEntry}"
+            FontFamily="MontBold"
+            HorizontalTextAlignment="Start"
+            VerticalTextAlignment="Center"
+            FontSize="15"
+            TextColor="#3775B5"
+            Padding="0" />
+
+        <Label
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Text="{Binding  SucursalEntry}"
+            FontFamily="MontBold"
+            HorizontalTextAlignment="Start"
+            VerticalTextAlignment="Start"
+            FontSize="15"
+            TextColor="#3775B5"
+            Padding="0" />
+
+        <Frame
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            BackgroundColor="#2E3192"
+            HeightRequest="35"
+            BorderColor="Transparent"
+            Padding="0"
+            CornerRadius="5"
+            Margin="0,0,0,0">
+
+            <Grid
+                ColumnDefinitions="*,*,*"
+                ColumnSpacing="5">
+                <Label
+                    Text="PRODUCTO"
+                    FontSize="15"
+                    TextColor="White"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    FontFamily="MontSemibold" />
+
+                <Label
+                    Grid.Column="1"
+                    Text="CANTIDAD"
+                    FontSize="15"
+                    TextColor="White"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    FontFamily="MontSemibold" />
+
+                <Label
+                    Grid.Column="2"
+                    Text="RECIBIDO"
+                    FontSize="15"
+                    TextColor="White"
+                    HorizontalTextAlignment="Center"
+                    VerticalTextAlignment="Center"
+                    FontFamily="MontSemibold" />
+            </Grid>
+        </Frame>
+
+        <ScrollView
+            Grid.Row="3"
+            Grid.ColumnSpan="2">
+            
+            <CollectionView               
+                x:Name="lisApp"
+                ItemsSource="{Binding ListMateriales}">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        Orientation="Vertical"
+                        ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame
+                            Padding="10"
+                            CornerRadius="5"
+                            BackgroundColor="{StaticResource AzulClaro}">
+
+                            <Grid
+                                ColumnDefinitions="*,*,*"
+                                ColumnSpacing="5">
+
+                                <Label
+                                    Text="{Binding descripcion}"
+                                    FontSize="10"
+                                    TextColor="White"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"
+                                    FontFamily="MontSemibold" />
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding cantidad}"
+                                    FontSize="15"
+                                    TextColor="White"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"
+                                    FontFamily="MontBold" />
+                                <Frame
+                                    Grid.Column="2"
+                                    WidthRequest="80"
+                                    HorizontalOptions="End"
+                                    Padding="0,0,0,-10"
+                                    CornerRadius="5"
+                                    BackgroundColor="White">
+                                    
+                                    <Entry
+                                        x:Name="txt_Entregado"
+                                        FontSize="15"
+                                        TextColor="#3775B5"
+                                        HorizontalTextAlignment="Center"
+                                        VerticalTextAlignment="Center"
+                                        FontFamily="MontBold"
+                                        Completed="txt_Entregado_Completed"
+                                        Text="{Binding EntregadoEntry, Mode=TwoWay}"
+                                        Keyboard="Numeric" />
+                                </Frame>
+
+                            </Grid>
+                        </Frame>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>     
+
+        <Frame
+            Grid.Row="4"
+            BorderColor="#3775B5"
+            HeightRequest="40"
+            CornerRadius="5"
+            Padding="5,0,0,-10"
+            BackgroundColor="Transparent">
+            <Entry
+                FontFamily="MontBold"
+                HorizontalTextAlignment="Start"
+                VerticalTextAlignment="Center"
+                FontSize="12"
+                TextColor="#3775B5"
+                Text="{Binding NombreRecibe}"
+                Placeholder="Quien recibe:"
+                ClearButtonVisibility="WhileEditing" />
+
+        </Frame>
+
+        <Frame
+            Grid.Row="4"
+            Grid.Column="1"
+            BorderColor="#3775B5"
+            HeightRequest="40"
+            CornerRadius="5"
+            Padding="5,0,0,-10"
+            BackgroundColor="Transparent">
+            <Entry
+                FontFamily="MontBold"
+                HorizontalTextAlignment="Start"
+                VerticalTextAlignment="Center"
+                FontSize="12"
+                TextColor="#3775B5"
+                x:Name="txt_Bidones"
+                Keyboard="Numeric"
+                Text="{Binding Bidones}"
+                Placeholder="Bidones recuperados"
+                ClearButtonVisibility="WhileEditing" />
+
+        </Frame>
+
+        <Frame
+            Grid.Row="5"
+            BorderColor="#3775B5"
+            HeightRequest="40"
+            CornerRadius="5"
+            Padding="5,0,0,-10"
+            BackgroundColor="Transparent"
+            Margin="0,10,0,0">
+            <Entry
+                FontFamily="MontBold"
+                HorizontalTextAlignment="Start"
+                VerticalTextAlignment="Center"
+                FontSize="12"
+                TextColor="#3775B5"
+                x:Name="txt_Comentarios"
+                Text="{Binding Comentarios}"
+                Placeholder="Comentarios (opcional)"
+                ClearButtonVisibility="WhileEditing" />
+
+        </Frame>
+
+        <Button
+            Grid.Row="6"
+            Grid.ColumnSpan="2"
+            Text="SIGUIENTE"
+            Command="{Binding GuardarDatosCommand}"
+            BackgroundColor="LightBlue"
+            BorderColor="Black"
+            FontFamily="MontSemibold"
+            FontSize="25"
+            FontAttributes="Bold"
+            TextColor="White"
+            CornerRadius="5"
+            Background="#2E3192"
+            HeightRequest="50"
+            Margin="50,10">
+            <Button.Shadow>
+                <Shadow
+                    Brush="Black"
+                    Radius="15"
+                    Opacity="0.3" />
+            </Button.Shadow>
+        </Button>
+    </Grid>
+</ContentPage>

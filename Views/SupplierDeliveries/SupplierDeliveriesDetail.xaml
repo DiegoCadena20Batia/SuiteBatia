@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.SupplierDeliveries.SupplierDeliveriesDetail"
+    Title="Listados Disponibles"
+    BackgroundColor="#F5F5F5"
+    Style="{StaticResource PageStyle}"
+    NavigationPage.HasNavigationBar="True"
+    Shell.FlyoutBehavior="Disabled">
+    <Grid>
+       <ScrollView>
+        <VerticalStackLayout>
+
+            <Grid
+                
+                RowDefinitions="auto,auto,*"
+                VerticalOptions="CenterAndExpand"
+                ColumnSpacing="5"
+                RowSpacing="5"
+                Margin="15">
+
+                <Frame
+                    Margin="5"
+                    Padding="0"
+                    BackgroundColor="Transparent"   >
+
+                    <Label
+                        Padding="5"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding UserName}"
+                        FontSize="20" />
+                </Frame>
+
+                <Frame
+                    Grid.Row="1"
+                    BackgroundColor="#2E3192"
+                    HeightRequest="45"
+                    BorderColor="Transparent"
+                    Padding="10"
+                    CornerRadius="5">
+                    
+                    <Grid
+                        RowDefinitions="*"
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="5">
+                        
+                        <Label
+                            Text="FOLIO"
+                            FontSize="16"
+                            TextColor="White"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            FontFamily="MontSemibold" />
+                        <Label
+                            Grid.Column="1"
+                            Text="TIPO"
+                            FontSize="16"
+                            TextColor="White"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            FontFamily="MontSemibold" />
+                        <Label
+                            Grid.Column="3"
+                            Text="SUCURSAL"
+                            FontSize="16"
+                            TextColor="White"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            FontFamily="MontSemibold" />
+                    </Grid>
+                </Frame>
+
+                <Frame
+                    Grid.Row="2"
+                    BackgroundColor="Transparent"
+                    BorderColor="#3775B5"
+                    HeightRequest="550"
+                    Padding="10">
+
+                    <CollectionView
+                        x:Name="lisApp"
+                        ItemsSource="{Binding ListApps}">
+
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout
+                                Orientation="Vertical"
+                                ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                        
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame
+                                    Padding="10"
+                                    CornerRadius="5"
+                                    BackgroundColor="Transparent">
+
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Path=BindingContext.CommandListadoSelec, Source={x:Reference lisApp}}"
+                                            CommandParameter="{Binding .}">
+                                        </TapGestureRecognizer>
+                                    </Frame.GestureRecognizers>
+
+                                    <Grid
+                                        RowDefinitions="*"
+                                        ColumnDefinitions="*,*,*"
+                                        ColumnSpacing="5">
+                                        
+                                        <Label
+                                            Text="{Binding idlistado}"
+                                            FontSize="20"
+                                            TextColor="#3775B5"
+                                            HorizontalTextAlignment="Center"
+                                            VerticalTextAlignment="Center"
+                                            FontFamily="MontSemibold" />
+                                        
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding tipo}"
+                                            FontSize="15"
+                                            TextColor="#3775B5"
+                                            HorizontalTextAlignment="Center"
+                                            VerticalTextAlignment="Center"
+                                            FontFamily="MontBold" />
+                                        
+                                        <Label
+                                            Grid.Column="2"
+                                            Text="{Binding inmueble}"
+                                            FontSize="15"
+                                            TextColor="#3775B5"
+                                            HorizontalTextAlignment="Center"
+                                            VerticalTextAlignment="Center"
+                                            FontFamily="MontBold" />
+                                    </Grid>   
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Frame>
+                
+            </Grid>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+        <Grid
+    RowDefinitions="*,*"
+    BackgroundColor="#88000000"
+    IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+        Grid.Row="0"
+        VerticalOptions="End"
+        Color="White"
+        IsRunning="{Binding IsLoading}"
+        HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            <Label
+         VerticalOptions="Start"
+         HorizontalOptions="Center"
+         Grid.Row="1"
+         TextColor="White"
+         Text="Cargando listado..."
+            ></Label>
+        </Grid>
+    </Grid>
+    
+    
+</ContentPage>

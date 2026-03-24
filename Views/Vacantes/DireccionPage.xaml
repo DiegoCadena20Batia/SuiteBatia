@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Vacantes.DireccionPage"
+    MasterPageTitle="{x:Static utils:Constants.DIRECCION}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            
+            <ScrollView
+                Padding="{OnIdiom '10, 0, 10, 70', Tablet='10, 0, 10, 105'}"
+                VerticalScrollBarVisibility="Never">
+
+                <VerticalStackLayout
+                    Spacing="10">                  
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.Calle}"
+                        Placeholder="{x:Static utils:Constants.CALLE}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+                    
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.NumeroExterior}"
+                        Placeholder="{x:Static utils:Constants.NO_EXTERIOR}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.NumeroInterior}"
+                        Placeholder="{x:Static utils:Constants.NO_INTERIOR}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.Colonia}"
+                        Placeholder="{x:Static utils:Constants.COLONIA}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.CodigoPostal}"
+                        Placeholder="{x:Static utils:Constants.CODIGO_POSTAL}"
+                        Keyboard="Numeric"
+                        MaxLength="5"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.Municipio}"
+                        Placeholder="{x:Static utils:Constants.MUNICIPIO}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererLabel
+                        Placeholder="{x:Static utils:Constants.ESTADO}"
+                        Text="{Binding SelectedEstado.descripcion}"
+                        Command="{Binding SelectEstadoCommand}"/>
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.Telefono}"
+                        Placeholder="{x:Static utils:Constants.TELEFONO}"
+                        Keyboard="Numeric"
+                        MaxLength="16"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.CorreoPersonal}"
+                        Placeholder="{x:Static utils:Constants.CORREO_ELECTRONICO}"
+                        Keyboard="Email"
+                        MaxLength="30"
+                        ReturnType="Next" />
+
+                    <BoxView
+                        HeightRequest="2"
+                        Margin="0, 20" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.ContactoEmergencia}"
+                        Placeholder="{x:Static utils:Constants.CONTACTO_EMERGENCIA}"
+                        TextTransform="Uppercase"
+                        ReturnType="Next" />
+
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.TelefonoEmergencia}"
+                        Placeholder="{x:Static utils:Constants.TELEFONO_EMERGENCIA}"
+                        Keyboard="Numeric"
+                        MaxLength="16"/>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>
+  

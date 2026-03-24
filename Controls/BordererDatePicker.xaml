@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Controls.BordererDatePicker">
+
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <myConverters:DateToBoolConverter
+                x:Key="DateToBoolConverter" />
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <Frame
+        Style="{StaticResource FrameStyle}"
+        Padding="{OnPlatform Android={OnIdiom 5, Tablet=10}, iOS={OnIdiom 15, Tablet=20}}">
+
+        <Frame.GestureRecognizers>
+            <TapGestureRecognizer
+                NumberOfTapsRequired="1"
+                Tapped="TapGestureRecognizer_Tapped" />
+        </Frame.GestureRecognizers>
+
+        <Grid>
+            <controls:TransparentDatePicker
+                x:Name="datePicker"
+                Date="{Binding Date}"
+                Format="dd / MM / yyyy"
+                TextColor="Black"
+                FontSize="{OnIdiom 16, Tablet=20}"
+                VerticalOptions="Center"
+                IsVisible="{Binding Date, Converter={StaticResource DateToBoolConverter}}" />
+
+            <Label
+                Text="{Binding Placeholder}"
+                Style="{StaticResource LabelStyleBase}"
+                TextColor="{StaticResource Gray}"
+                FontSize="{OnIdiom 16, Tablet=20}"
+                VerticalOptions="Center"
+                Margin="5, 10"
+                IsVisible="{Binding IsVisible, Source={x:Reference datePicker}, Converter={StaticResource InvertedBoolConverter}}" />
+        </Grid>
+    </Frame>
+</ContentView>

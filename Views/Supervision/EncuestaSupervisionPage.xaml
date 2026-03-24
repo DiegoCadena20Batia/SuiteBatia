@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Supervision.EncuestaSupervisionPage"
+    MasterPageTitle="{x:Static const:Constants.ENCUESTA_SATISFACCION}"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding TextLoading}"
+    FloatingButtonCommand="{Binding SendDataCommand}"
+    IsLastPage="True"
+    Shell.FlyoutBehavior="Disabled">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}"
+                IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                ios:ScrollView.ShouldDelayContentTouches="false">
+
+                <Grid
+                    x:Name="mainGrid"
+                    RowDefinitions="auto, auto"
+                    Margin="10, 0">
+
+                    <controls:CustomCheckBox
+                        x:Name="mainCheckBox"
+                        Text="{x:Static const:Constants.PREGUNTA_0}"
+                        IsChecked="{Binding SupervisionRequestData.Clienteentrevista}"
+                        Command="{Binding IsCheckedCommand}"
+                        CommandParameter="{Binding SupervisionRequestData.Clienteentrevista}" />
+
+                    <Grid
+                        Grid.Row="1"
+                        ColumnDefinitions="auto, *"
+                        RowDefinitions="{OnIdiom 'auto, auto, auto, auto, auto, auto, auto, 180, auto, auto', Tablet='auto, auto, auto, auto, auto, auto, auto, 220, auto, auto'}"
+                        IsVisible="{Binding Source={x:Reference mainCheckBox}, Path=IsChecked}">
+                        
+                            <Frame
+                                Grid.ColumnSpan="2"
+                                Style="{StaticResource FrameStyle}"
+                                Margin="0,10">
+
+                                <VerticalStackLayout>
+                                    <Label
+                                        Text="{x:Static const:Constants.GENERAL}"
+                                        Style="{StaticResource TitleLabelStyle}" />
+
+                                    <controls:OptionsView
+                                        Text="{x:Static const:Constants.PREGUNTA_1}"
+                                        Valor="{Binding SupervisionRequestData.Evalua}" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        
+                        
+                            <Frame
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Style="{StaticResource FrameStyle}"
+                                Margin="0, 10">
+
+                                <VerticalStackLayout>
+                                    <Label
+                                        Text="{x:Static const:Constants.PERSONAL_ASIGNADDO_SERVICIO}"
+                                        Style="{StaticResource TitleLabelStyle}" />
+
+                                    <controls:OptionsView
+                                        Text="{x:Static const:Constants.SUP_PREGUNTA_2}"
+                                        Valor="{Binding SupervisionRequestData.Trabrealizados}" />
+
+                                    <controls:OptionsView
+                                        Text="{x:Static const:Constants.SUP_PREGUNTA_4}"
+                                        Valor="{Binding SupervisionRequestData.Tratopersonal}"
+                                        Margin="0, 35" />
+
+                                    <controls:CustomCheckBox
+                                        Text="{x:Static const:Constants.SUP_PREGUNTA_3}"
+                                        IsChecked="{Binding SupervisionRequestData.Uniformcompleto}" />
+                                </VerticalStackLayout>
+                            </Frame>
+
+
+                        <Frame
+                            Grid.Row="2"
+                            Grid.ColumnSpan="2"
+                            Style="{StaticResource FrameStyle}"
+                            Margin="0, 10">
+
+                            <VerticalStackLayout>
+                                <Label
+                                    Text="{x:Static const:Constants.OPERACIONES}"
+                                    Style="{StaticResource TitleLabelStyle}" />
+
+                                <controls:CustomCheckBox
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_5}"
+                                    IsChecked="{Binding SupervisionRequestData.Suprecorrido}" />
+
+                                <controls:CustomCheckBox
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_6}"
+                                    IsChecked="{Binding SupervisionRequestData.Areaoportunidad}"
+                                    Margin="0, 35" />
+
+                                <controls:CustomCheckBox
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_7}"
+                                    IsChecked="{Binding SupervisionRequestData.Plancorrectivo}" />
+
+                                <controls:OptionsView
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_8}"
+                                    Valor="{Binding SupervisionRequestData.Calificasup}"
+                                    Margin="0, 35, 0, 0" />
+                            </VerticalStackLayout>
+                        </Frame>
+                        <Frame
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            Style="{StaticResource FrameStyle}"
+                            Margin="0, 10">
+
+                            <VerticalStackLayout>
+                                <!--<Label
+                                    Text="{x:Static const:Constants.CGO}"
+                                    Style="{StaticResource TitleLabelStyle}" />-->
+
+                                <!--<controls:OptionsView
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_9}"
+                                    Valor="{Binding SupervisionRequestData.Ejecutivocgo}"/>-->
+
+                                <controls:CustomCheckBox
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_10}"
+                                    IsChecked="{Binding SupervisionRequestData.Reporteasiscgo}"
+                                    Margin="0, 35, 0, 0" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Frame
+                            Grid.Row="4"
+                            Grid.ColumnSpan="2"
+                            Style="{StaticResource FrameStyle}"
+                            Margin="0, 10">
+
+                            <VerticalStackLayout>
+                                <Label
+                                    Text="{x:Static const:Constants.MATERIALES}"
+                                    Style="{StaticResource TitleLabelStyle}" />
+
+                                <controls:CustomCheckBox
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_11}"
+                                    IsChecked="{Binding SupervisionRequestData.Matetiquetados}" />
+
+                                <controls:CustomCheckBox
+                                    Text="{x:Static const:Constants.SUP_PREGUNTA_12}"
+                                    IsChecked="{Binding SupervisionRequestData.Matrequerimientos}"
+                                    Margin="0, 35, 0, 0" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <controls:BordererEditor
+                            Grid.Row="5"
+                            Grid.ColumnSpan="2"
+                            Placeholder="{x:Static const:Constants.COMENTARIOS}"
+                            Text="{Binding SupervisionRequestData.Clientecomentario}"
+                            Margin="0,10,0,40" />
+
+                        <Label
+                            Grid.Row="6"
+                            Text="{x:Static const:Constants.CAPTURAR_FOTOGRAFIAS}"
+                            Style="{StaticResource ContentBoldLabelStyle}"
+                            Margin="0,10" />
+
+                        <ImageButton
+                            Grid.Row="6"
+                            Grid.Column="1"
+                            Style="{StaticResource ImageButtonIconStyle}"
+                            Source="{StaticResource CameraIcon}"
+                            Command="{Binding TakePhotoCommand}"
+                            HorizontalOptions="Start"
+                            Margin="20,0,0,0" />
+
+                        <ScrollView
+                            Grid.Row="7"
+                            Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            BackgroundColor="White">
+
+                            <HorizontalStackLayout
+                                BindableLayout.ItemsSource="{Binding PhotoList}"
+                                Spacing="0">
+
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Image
+                                                Source="{Binding .}"
+                                                Aspect="AspectFit"
+                                                WidthRequest="{OnIdiom 130, Tablet=160}"
+                                                Margin="{OnIdiom '10, 10, 10, 15', Tablet='10, 15, 15, 20'}" />
+
+                                            <ImageButton
+                                                Style="{StaticResource ImageButtonIconStyle}"
+                                                Source="{StaticResource TrashIcon}"
+                                                Command="{Binding Source={x:Reference mainGrid}, Path=BindingContext.RemovePhotoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                WidthRequest="{OnIdiom 15, Tablet=25}"
+                                                HorizontalOptions="End"
+                                                VerticalOptions="End"
+                                                Margin="0"
+                                                Scale="{OnPlatform Android=1, iOS=.5}"
+                                                TranslationX="{OnPlatform Android=0, iOS=15}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+
+                            </HorizontalStackLayout>
+                        </ScrollView>
+
+                        <controls:BordererEntry
+                            Grid.Row="8"
+                            Grid.ColumnSpan="2"
+                            Placeholder="{x:Static const:Constants.INGRESE_ENCUESTADO}"
+                            Text="{Binding SupervisionRequestData.Clientenombre}"
+                            Margin="0,40, 0, 20" />
+
+                        <Frame
+                            Grid.Row="9"
+                            Grid.ColumnSpan="2"
+                            Style="{StaticResource FrameStyle}">
+
+                            <Grid>
+                                <views:DrawingView
+                                    x:Name="drawingView"
+                                    LineColor="Black"
+                                    LineWidth="3"
+                                    HeightRequest="200"
+                                    IsMultiLineModeEnabled="True"
+                                    ShouldClearOnFinish="False"
+                                    BackgroundColor="White"
+                                    DrawingLineCompletedCommand="{Binding DrawCommand}" />
+
+                                <ImageButton
+                                    x:Name="iconClear"
+                                    IsVisible="{Binding ShowCleaner}"
+                                    Source="{StaticResource TrashIcon}"
+                                    Style="{StaticResource ImageButtonIconStyle}"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start"
+                                    Command="{Binding ClearDrawingViewCommand}" />
+
+                                <Label
+                                    Text="{x:Static const:Constants.FIRME_AQUI}"
+                                    TextColor="{StaticResource Gray}"
+                                    FontSize="{OnIdiom 18, Tablet=24}"
+                                    VerticalOptions="CenterAndExpand"
+                                    HorizontalOptions="CenterAndExpand"
+                                    IsVisible="{Binding Source={x:Reference iconClear}, Path=IsVisible, Converter={StaticResource InvertedBoolConverter}}" />
+                            </Grid>
+                        </Frame>
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

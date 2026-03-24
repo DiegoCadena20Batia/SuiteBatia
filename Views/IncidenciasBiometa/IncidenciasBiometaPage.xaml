@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+     xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.IncidenciasBiometa"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.IncidenciasBiometa.IncidenciasBiometaPage"
+    MasterPageTitle="INCIDENCIAS DIARIAS"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#f0f0f0"
+    ShowFloatingButton="false"
+    >
+    <!--<controls:MasterPage.MasterPageContent
+        InputTransparent="False"
+        >-->
+    <Grid>
+        <Grid
+            RowDefinitions="auto,*">
+            <Grid RowDefinitions="60, *">
+
+                <!-- 🔵 BARRA SUPERIOR -->
+                <Grid
+                    
+                    Grid.Row="0"
+                    BackgroundColor="Transparent"
+                    Padding="10"
+                    ColumnDefinitions="50, *, 50">
+
+                    <!-- Botón atrás -->
+                    <ImageButton
+                        Margin="8,0,0,0"
+                        Grid.Column="0"
+                            HeightRequest="10"
+                            WidthRequest="20"
+                        Source="leftarrowicon.png"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        BackgroundColor="Transparent"
+                        Command="{Binding GoBackCommand}" />
+
+                    <!-- Título -->
+                    <Label 
+                        Grid.Column="1"
+                        Text="INCIDENCIAS DIARIAS"
+                        TextColor="{StaticResource AzulOscuro}"
+                        FontSize="20"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center" />
+
+                    <!-- Espacio derecho (vacío) -->
+                    
+                </Grid>
+            </Grid>
+            <Frame
+                Grid.Row="1"
+                BackgroundColor="Transparent"
+                Padding="5"
+                BorderColor="Transparent"
+                Margin="0,0,0,0">
+                <RefreshView
+                    IsRefreshing="{Binding IsRefreshing}"
+                    Command="{Binding RefreshCommand}"
+                    RefreshColor="{StaticResource AzulOscuro}"> 
+                    <CollectionView
+    BackgroundColor="Transparent"
+    ItemsSource="{Binding Incidencias}"
+    Margin="0,0,0,0">
+
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout
+            Orientation="Vertical"
+            ItemSpacing="1" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Margin="5,5,5,5" BackgroundColor="White" BorderColor="AliceBlue" Padding="20" CornerRadius="20">
+                                    <Grid RowDefinitions="auto, auto, auto,auto,auto,auto" ColumnDefinitions="*,*,*,*" RowSpacing="5" ColumnSpacing="10">
+                                        <!-- Fila 1 -->
+                                        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
+                    Text="{Binding Cliente}" FontSize="18" FontAttributes="Bold" TextColor="Black"/>
+                                        <Label Grid.Row="0" HeightRequest="1" BackgroundColor="LightGray" VerticalOptions="End" Grid.ColumnSpan="4"></Label>
+
+                                        <!-- Fila 2 -->
+                                        <!--<Label Grid.Row="1" Grid.Column="0" Text="Inmueble:" FontSize="12" TextColor="Gray"/>-->
+                                        <Label Grid.Row="1" Grid.Column="0" Text="{Binding Inmueble}" FontSize="14" Grid.ColumnSpan="4" TextColor="{StaticResource AzulClaro}" Margin="0,0,0,10"/>
+
+                                        <!-- Fila 3 -->
+                                        <Label Grid.Row="2" Grid.Column="0" Text="Empleado:" FontSize="12" TextColor="Gray"/>
+                                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding Empleado}" FontSize="14" Grid.ColumnSpan="3" TextColor="Black"/>
+                                        <!-- Fila 4 -->
+                                        <Label Grid.Row="3" Grid.Column="0" Text="Turno:" FontSize="12" TextColor="Gray"/>
+                                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding IdTurno, Converter={StaticResource TurnoConverter}}" FontSize="14" Grid.ColumnSpan="2" TextColor="Black"/>
+                                        <!-- Fila 5 -->
+                                        <Label Grid.Row="4" Grid.Column="0" Text="Incidencia:" FontSize="12" TextColor="Gray"/>
+                                        <Label Grid.Row="4" Grid.Column="1" Text="{Binding Movimiento, Converter={StaticResource NomenclaturaConverter}}" FontSize="14" Grid.ColumnSpan="2" TextColor="Black"/>
+                                        <!-- Fila 6 -->
+                                        <Label Grid.Row="5" Grid.Column="0" Text="Codigo:" FontSize="12" TextColor="Gray"/>
+                                        <Label Grid.Row="5" Grid.Column="1" Text="{Binding CodigoDoblete}" FontSize="14" Grid.ColumnSpan="2" TextColor="Black"/>
+
+                                        <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding FechaFormat, StringFormat='{0:dd-MMMM}'}" BackgroundColor="Transparent" TextColor="{StaticResource AzulClaro}" HorizontalOptions="End"></Label>
+
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </RefreshView>
+
+                
+            </Frame>
+        </Grid>
+    <Grid
+                BackgroundColor="#88000000"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand"
+                IsVisible="{Binding IsLoading}">
+
+                <ActivityIndicator
+                    Color="{StaticResource AzulOscuro}"
+                    IsRunning="{Binding IsLoading}"
+                    HeightRequest="{OnIdiom 70, Tablet=120}" />
+            </Grid>
+    </Grid>
+    <!--</controls:MasterPage.MasterPageContent>-->
+</controls:MasterPage>

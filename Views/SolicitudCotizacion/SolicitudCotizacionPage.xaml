@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.SolicitudCotizacion"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    xmlns:converters="clr-namespace:BatiaSuite.Converters"
+    x:Class="BatiaSuite.Views.SolicitudCotizacion.SolicitudCotizacionPage"
+    Title="Solicitud de cotización"
+    Style="{StaticResource PageStyle}"
+    Shell.FlyoutBehavior="Disabled">
+    <ContentPage.BindingContext>
+        <viewModel:SolicitudCotizacionViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid>
+
+        <Grid
+        RowDefinitions="auto, auto, auto, auto,auto,*"
+        RowSpacing="{OnIdiom 20, Tablet=30}"
+        Margin="10, 0">
+            <!-- Sección Tipo de Solicitud -->
+            <Frame Grid.Row="0" 
+               BackgroundColor="#F8FAFC" 
+               BorderColor="#E2E8F0"
+               CornerRadius="12"
+               Padding="20"
+               Margin="0,10,0,0">
+
+                <Grid RowDefinitions="auto, auto" RowSpacing="15">
+
+                    <!-- Título -->
+                    <Label Grid.Row="0" 
+               Text="🔧 Tipo de Solicitud *" 
+               FontSize="16" 
+               FontAttributes="Bold"
+               TextColor="{StaticResource Primary}"/>
+
+                    <!-- CheckBox en horizontal -->
+                    <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="15">
+
+                        <!-- CheckBox Limpieza -->
+                        <Frame Grid.Column="0" 
+                   BackgroundColor="{Binding EsLimpieza, Converter={StaticResource BoolToBackgroundColorConverter}}"
+                   BorderColor="{Binding EsLimpieza, Converter={StaticResource BoolToBorderColorConverter}}"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="False">
+
+                            <Grid ColumnDefinitions="auto, *" ColumnSpacing="12">
+                                <CheckBox Grid.Column="0" 
+                              IsChecked="{Binding EsLimpieza}"
+                              Color="{StaticResource Primary}"
+                              VerticalOptions="Center"/>
+
+                                <StackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="🧹 Limpieza" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="{Binding EsLimpieza, Converter={StaticResource BoolToTextColorConverter}}"/>
+                                    <Label Text="Solicitud de servicios de limpieza" 
+                               FontSize="11" 
+                               TextColor="#64748B"/>
+                                </StackLayout>
+                            </Grid>
+
+                            <!-- Hacer todo el Frame clickeable -->
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SeleccionarLimpiezaCommand}"/>
+                            </Frame.GestureRecognizers>
+                        </Frame>
+
+                        <!-- CheckBox Mantenimiento -->
+                        <Frame Grid.Column="1" 
+                   BackgroundColor="{Binding EsMantenimiento, Converter={StaticResource BoolToBackgroundColorConverter}}"
+                   BorderColor="{Binding EsMantenimiento, Converter={StaticResource BoolToBorderColorConverter}}"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="False">
+
+                            <Grid ColumnDefinitions="auto, *" ColumnSpacing="12">
+                                <CheckBox Grid.Column="0" 
+                              IsChecked="{Binding EsMantenimiento}"
+                              Color="{StaticResource Primary}"
+                              VerticalOptions="Center"/>
+
+                                <StackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="🔧 Mantenimiento" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="{Binding EsMantenimiento, Converter={StaticResource BoolToTextColorConverter}}"/>
+                                    <Label Text="Solicitud de servicios de mantenimiento" 
+                               FontSize="11" 
+                               TextColor="#64748B"/>
+                                </StackLayout>
+                            </Grid>
+
+                            <!-- Hacer todo el Frame clickeable -->
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SeleccionarMantenimientoCommand}"/>
+                            </Frame.GestureRecognizers>
+                        </Frame>
+                    </Grid>
+                </Grid>
+            </Frame>
+
+            <controls:BordererLabel
+                Grid.Row="1"
+            Text="{Binding SelectedCliente.nombre}"
+            Placeholder="{x:Static const:Constants.SELECCIONE_CLIENTE}"
+            Command="{Binding SelectClienteCommand}" />
+
+            <controls:BordererLabel
+            Grid.Row="2"
+            Text="{Binding SelectedInmueble.Nombre}"
+            Placeholder="{x:Static const:Constants.SELECCIONE_PUNTO_ATENCION}"
+            Command="{Binding SelectInmuebleCommand}" />
+        
+            <!-- Botón para agregar producto -->
+            <Button Grid.Row="3" 
+                    HorizontalOptions="End"
+                    Text="Agregar Producto" 
+                    Command="{Binding AgregarProductoCommand}" 
+                    BackgroundColor="Green" 
+                    TextColor="White" 
+                    Margin="0,0,0,0"
+                    HeightRequest="45"
+                    WidthRequest="200"
+                    ImageSource="plus.png"
+                    ContentLayout="Left ,10" />
+
+            <!-- Lista de productos -->
+            <CollectionView ItemsSource="{Binding Productos}" 
+                    Grid.Row="4"
+                    Margin="0,10,0,0"
+                    HeightRequest="550"
+                            >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame
+                            CornerRadius="25"
+                            BorderColor="AliceBlue"
+                            Margin="0,0,0,5">
+                        <Grid
+                            Padding="5" 
+                            RowDefinitions="auto,auto, auto, auto"
+                            ColumnDefinitions="*, *, auto, auto, auto, auto" 
+                            ColumnSpacing="8"
+                            BackgroundColor="White"
+                            Margin="0,0,0,5">
+                            <Label
+                                HeightRequest="20"
+                                Margin="0"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Text="Clave"
+                                >
+                            </Label>
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Text="Descripción"
+                                ></Label>
+
+                            <Label 
+                                TextColor="Black"
+                                Grid.Row="1"
+                                Grid.Column="0" 
+                               Text="{Binding Clave}" 
+                               FontSize="14" 
+                               VerticalOptions="Center"/>
+
+                            <Label
+                                TextColor="Black"
+                                Grid.Row="1"
+                                Grid.Column="1" 
+                               Text="{Binding Nombre}" 
+                               FontSize="14" 
+                               VerticalOptions="Center"/>
+
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                Text="Unidad">
+                            </Label>
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Text="Cantidad"></Label>
+
+                            <Label 
+                                Grid.Row="3"
+                                Grid.Column="0" 
+                               Text="{Binding Unidad}" 
+                               FontSize="12" 
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                                TextColor="Black"/>
+
+                            <Label 
+                                 Grid.Row="3"
+                                 Grid.Column="1" 
+                                Text="{Binding Cantidad}" 
+                                FontSize="12" 
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                TextColor="Black"/>
+                            <Image
+                                Grid.RowSpan="4"
+                                Grid.Column="3" 
+                                   Source="{Binding FotoPath}" 
+                                   HeightRequest="90" 
+                                   WidthRequest="90" 
+                                   Aspect="AspectFit" 
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End"/>
+                            <!--IsVisible="{Binding FotoPath, Converter={x:Static converters:IsNotNullConverter.Instance}}"-->
+
+                            <ImageButton 
+                                
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
+                                Grid.Column="4" 
+                                 Source="edit.png" 
+                                 HeightRequest="25" 
+                                 WidthRequest="25"
+                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarProductoCommand}"
+                                 CommandParameter="{Binding .}"
+                                 VerticalOptions="Center"
+                                HorizontalOptions="Center"/>
+
+                            <ImageButton 
+                                Grid.Row="2"
+                                Grid.RowSpan="2"
+                                Grid.Column="4" 
+                                 Source="delete.png" 
+                                 HeightRequest="25" 
+                                 WidthRequest="25"
+                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EliminarProductoCommand}"
+                                 CommandParameter="{Binding .}"
+                                 VerticalOptions="Center"/>
+                        </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        <ImageButton
+            Grid.Row="5"
+        Source="{StaticResource ArrowIcon}"
+        Style="{StaticResource FloatingButtonStyle}"
+        Command="{Binding ContinuarCommand}" />
+
+        
+        </Grid>
+        <Grid
+            BackgroundColor="#88000000"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+                Color="{StaticResource AzulOscuro}"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}" />
+        </Grid>
+    </Grid>
+</ContentPage>

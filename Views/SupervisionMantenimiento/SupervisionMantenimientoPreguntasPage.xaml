@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.SupervisionMantenimiento.SupervisionMantenimientoPreguntasPage"
+    MasterPageTitle="{Binding TituloSeccion}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding TextLoading}"
+    ShowFloatingButton="False"
+    BackgroundColor="#F5F5F5">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView>
+                <Grid
+                    RowDefinitions="auto,auto,auto">
+                    <VerticalStackLayout
+                        Grid.Row="0"
+    BindableLayout.ItemsSource="{Binding Preguntas}"
+    Spacing="15"
+    Padding="10">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                Stroke="#E0E0E0"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 10"
+                Padding="0"
+                BackgroundColor="White">
+
+                                    <Border.Shadow>
+                                        <Shadow Brush="#20000000" Offset="0,2" Radius="4" />
+                                    </Border.Shadow>
+
+                                    <VerticalStackLayout Spacing="12" Padding="16">
+
+                                        <!-- Texto de la pregunta -->
+                                        <Label Text="{Binding Pregunta}"
+                           FontSize="16"
+                           TextColor="#333333"
+                           LineBreakMode="WordWrap"
+                           FontAttributes="Bold" />
+
+                                        <!-- Contenedor para las 3 opciones -->
+                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+
+                                            <!-- Botón APLICA -->
+                                            <Button Grid.Column="0"
+                                HeightRequest="80"
+                                BackgroundColor="Transparent"
+                                TextColor="#4CAF50"
+                                BorderColor="LightGreen"
+                                BorderWidth="1"
+                                CornerRadius="15"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, 
+                                         Path=BindingContext.SelectAplicaCommand}"
+                                CommandParameter="{Binding Source={RelativeSource Self}, Path=BindingContext}"
+                                ImageSource="respuestacumplenew.png">
+
+                                                <Button.Triggers>
+                                                    <!-- Resaltar cuando Valor = 1 -->
+                                                    <DataTrigger TargetType="Button"
+                                             Binding="{Binding Estado}"
+                                             Value="1">
+                                                        <Setter Property="BackgroundColor" Value="LightBlue" />
+                                                        <Setter Property="BorderColor" Value="LightBlue" />
+                                                        <Setter Property="TextColor" Value="White" />
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+
+                                            <!-- Botón NO APLICA -->
+                                            <Button Grid.Column="1"
+                                BackgroundColor="Transparent"
+                                TextColor="#F44336"
+                                BorderColor="Red"
+                                BorderWidth="1"
+                                CornerRadius="15"
+                                HeightRequest="80"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, 
+                                         Path=BindingContext.SelectNoAplicaCommand}"
+                                CommandParameter="{Binding Source={RelativeSource Self}, Path=BindingContext}"
+                                ImageSource="respuestanocumplenew.png">
+                                                <Button.Triggers>
+                                                    <!-- Resaltar cuando Valor = 2 -->
+                                                    <DataTrigger TargetType="Button"
+                                             Binding="{Binding Estado}"
+                                             Value="2">
+                                                        <Setter Property="BackgroundColor" Value="LightBlue" />
+                                                        <Setter Property="BorderColor" Value="LightBlue" />
+                                                        <Setter Property="TextColor" Value="White" />
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+
+                                            <!-- Botón N/A -->
+                                            <Button Grid.Column="2"
+                                BackgroundColor="Transparent"
+                                TextColor="#FF9800"
+                                BorderColor="Black"
+                                BorderWidth="1"
+                                CornerRadius="15"
+                                HeightRequest="80"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, 
+                                         Path=BindingContext.SelectNACommand}"
+                                CommandParameter="{Binding Source={RelativeSource Self}, Path=BindingContext}"
+                                ImageSource="na.png">
+
+                                                <Button.Triggers>
+                                                    <!-- Resaltar cuando Valor = 3 -->
+                                                    <DataTrigger TargetType="Button"
+                                             Binding="{Binding Estado}"
+                                             Value="3">
+                                                        <Setter Property="BackgroundColor" Value="LightBlue" />
+                                                        <Setter Property="BorderColor" Value="LightBlue" />
+                                                        <Setter Property="TextColor" Value="White" />
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+
+                                        </Grid>
+
+                                        <!-- Campo de comentarios -->
+                                        <controls:BordererEditor
+                        Placeholder="Comentarios y observaciones"
+                        Text="{Binding Comentarios, Mode=TwoWay}"
+                        IsVisible="{Binding Valor, Converter={StaticResource ShowCommentsConverter}}"/>
+
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+
+
+
+                        <!-- Espacio al final -->
+                        <BoxView HeightRequest="20" Color="Transparent" />
+
+                    </VerticalStackLayout>
+                    <!-- Botones de navegación minimalistas -->
+                    <Grid ColumnDefinitions="*,*,*,*" 
+                          Grid.Row="1"
+                          ColumnSpacing="10" 
+                          Margin="0,20,0,10"
+                          IsVisible="{Binding IsLastSection, Converter={StaticResource InvertedBoolConverter}}">
+
+                        <!-- Espaciador izquierdo -->
+                        <BoxView Grid.Column="0" Color="Transparent"/>
+
+                        <!-- Botón Anterior (centro-izquierda) -->
+                        <Button 
+                            Grid.Column="1"
+                            Text="Anterior"
+                            Command="{Binding AnteriorCommand}"
+                            IsEnabled="{Binding CanGoBack}"
+                            WidthRequest="150"
+                            HeightRequest="50"
+                            CornerRadius="25"
+                            BackgroundColor="#F5F5F5"
+                            TextColor="#666666"
+                            FontSize="20"
+                            HorizontalOptions="End">
+
+                            <Button.Triggers>
+                                <DataTrigger 
+                                    TargetType="Button" 
+                                     Binding="{Binding CanGoBack}" 
+                                     Value="False">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+
+                        <!-- Botón Siguiente (centro-derecha) -->
+                        <Button 
+                            Grid.Column="2"
+                            Text="Siguiente"
+                            Command="{Binding ContinuarCommand}"
+                            IsEnabled="{Binding CanGoForward}"
+                            WidthRequest="150"
+                            HeightRequest="50"
+                            CornerRadius="25"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            FontSize="20"
+                            HorizontalOptions="Start">
+
+                            <Button.Triggers>
+                                <DataTrigger 
+                                    TargetType="Button" 
+                                     Binding="{Binding CanGoForward}" 
+                                     Value="False">
+                                    <Setter Property="BackgroundColor" Value="#E0E0E0" />
+                                    <Setter Property="TextColor" Value="#999999" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

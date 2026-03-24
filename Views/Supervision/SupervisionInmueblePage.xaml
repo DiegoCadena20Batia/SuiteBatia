@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.Supervision"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Supervision.SupervisionInmueblePage"
+    Style="{StaticResource PageStyle}"
+    Title="{x:Static const:Constants.SUPERVISION_NO_PROGRAMADA}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <ContentPage.BindingContext>
+        <viewModel:SupervisionInmuebleViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid>
+
+        <Grid
+            RowDefinitions="auto, auto, auto"
+            RowSpacing="{OnIdiom 20, Tablet=30}"
+            Margin="10, 0">
+
+            <controls:BordererLabel
+                Text="{Binding SelectedCliente.nombre}"
+                Placeholder="{x:Static const:Constants.SELECCIONE_CLIENTE}"
+                Command="{Binding SelectClienteCommand}" />
+
+            <controls:BordererLabel
+                Grid.Row="1"
+                Text="{Binding SelectedEstado.descripcion}"
+                Placeholder="{x:Static const:Constants.SELECCIONE_ESTADO}"
+                Command="{Binding SelectEstadoCommand}" />
+
+            <controls:BordererLabel
+                Grid.Row="2"
+                Text="{Binding SelectedInmueble.Nombre}"
+                Placeholder="{x:Static const:Constants.SELECCIONE_PUNTO_ATENCION}"
+                Command="{Binding SelectInmuebleCommand}" />
+        </Grid>
+
+        <ImageButton
+            Source="{StaticResource ArrowIcon}"
+            Style="{StaticResource FloatingButtonStyle}"
+            Command="{Binding ContinuarCommand}" />
+
+        <Grid
+            BackgroundColor="#88000000"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="FillAndExpand"
+            IsVisible="{Binding IsLoading}">
+
+            <ActivityIndicator
+                Color="{StaticResource AzulOscuro}"
+                IsRunning="{Binding IsLoading}"
+                HeightRequest="{OnIdiom 70, Tablet=120}" />
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.SupervisionMantenimiento.SupervisionMantenimientoEvaluacionPage"
+    MasterPageTitle="Acta de entrega-recepción"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding TextLoading}">
+
+    <controls:MasterPage.Resources>
+        <ResourceDictionary>
+            <myConverters:ValueToBoolConverter
+                x:Key="ValueToBoolConverter" />
+        </ResourceDictionary>
+    </controls:MasterPage.Resources>
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                x:Name="scrollView"
+                Orientation="Vertical">
+
+                <Grid
+                    RowDefinitions="auto, auto"
+                    Padding="10, 0">
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding Preguntas}"
+                        Spacing="15">
+                        
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Padding="0"
+                                    Stroke="Transparent"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 10">
+                                    <Border.Shadow>
+                                        <Shadow
+                                            Brush="Black"
+                                            Offset="2,2"
+                                            Opacity="0.2"
+                                            Radius="4" />
+                                    </Border.Shadow>
+                                    <Frame
+                                    Padding="10"
+                                        BackgroundColor="White"
+                                    BorderColor="Transparent">
+
+                                    <VerticalStackLayout
+                                        Spacing="15"
+                                        >
+
+                                        <controls:OptionsView
+                                            Text="{Binding Descripcion}"
+                                            Valor="{Binding Valor}"
+                                            IsFloatValue="True" />
+
+                                        <controls:BordererEditor
+                                            Placeholder="{x:Static utils:Constants.OBSERVACIONES}"
+                                            Text="{Binding Observaciones}"
+                                            IsVisible="{Binding Valor, Converter={StaticResource ValueToBoolConverter}}" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>                        
+                    </VerticalStackLayout>
+
+                    <Grid
+                        Grid.Row="1"
+                        ColumnDefinitions="auto, *"
+                        RowSpacing="5"
+                        ColumnSpacing="10"
+                        Padding="{OnIdiom '0, 0, 0, 65', Tablet='0, 0, 0, 105'}"
+                        Margin="0, 20, 0, 0">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition
+                                Height="auto" />
+                            <RowDefinition
+                                Height="{OnIdiom 180, Tablet = 220}" />
+                        </Grid.RowDefinitions>
+
+                        <Label
+                            Text="{x:Static utils:Constants.CAPTURAR_FOTOGRAFIAS}"
+                            HorizontalOptions="Center"
+                            VerticalTextAlignment="Center"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            FontSize="16" />
+
+                        <Border
+                            Grid.Column="1"
+                            BackgroundColor="Transparent"
+                            Stroke="Transparent"
+                            StrokeThickness="0"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 20">
+                            <Border.Shadow>
+                                <Shadow
+                                    Brush="Black"
+                                    Offset="2,2"
+                                    Opacity="0.2"
+                                    Radius="3" />
+                            </Border.Shadow>
+                            <Grid>
+                                <!-- Ícono de la cámara -->
+                                <ImageButton
+                                    Style="{StaticResource ImageButtonIconStyle}"
+                                    Source="{StaticResource CameraIcon}"
+                                    Command="{Binding TakePhotoCommand}"
+                                    WidthRequest="30"
+                                    HeightRequest="30"
+                                    BackgroundColor="Transparent"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center" />
+
+                                <!-- Símbolo "+" superpuesto -->
+                                <Label
+                                    Text="+"
+                                    TextColor="Black"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Start"
+                                    Margin="0, -10, -10, 0" />
+                            </Grid>
+                        </Border>
+
+                        <Frame
+                            Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Padding="0"
+                            BorderColor="{StaticResource LightGray}">
+
+                            <ScrollView
+                                Orientation="Horizontal"
+                                BackgroundColor="White">
+
+                                <HorizontalStackLayout
+                                    BindableLayout.ItemsSource="{Binding PhotoList}"
+                                    Spacing="10">
+
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Border
+                                                    BackgroundColor="Transparent"
+                                                    Stroke="Transparent"
+                                                    StrokeThickness="0"
+                                                    Padding="0"
+                                                    StrokeShape="RoundRectangle 10">
+                                                    <Border.Shadow>
+                                                        <Shadow
+                                                            Brush="Black"
+                                                            Offset="2,2"
+                                                            Opacity="0.2"
+                                                            Radius="4" />
+                                                    </Border.Shadow>
+                                                    <Image
+                                                        Source="{Binding .}"
+                                                        Aspect="AspectFit"
+                                                        WidthRequest="{OnIdiom 130, Tablet=160}"
+                                                        Margin="{OnIdiom '0, 10, 0, 10', Tablet='10, 15, 15, 20'}" />
+                                                </Border>
+
+                                                <Border
+                                                    BackgroundColor="Red"
+                                                    Opacity="0.7"
+                                                    Stroke="Transparent"
+                                                    StrokeThickness="0"
+                                                    HorizontalOptions="End"
+                                                    VerticalOptions="Start"
+                                                    Margin="0"
+                                                    Padding="3"
+                                                    StrokeShape="RoundRectangle 20">
+                                                    <Border.Shadow>
+                                                        <Shadow
+                                                            Brush="Black"
+                                                            Offset="2,2"
+                                                            Opacity="0.2"
+                                                            Radius="4" />
+                                                    </Border.Shadow>
+                                                    <ImageButton
+                                                        Style="{StaticResource ImageButtonIconStyle}"
+                                                        Source="{StaticResource TrashIconWhite}"
+                                                        Command="{Binding Source={x:Reference scrollView}, Path=BindingContext.RemovePhotoCommand}"
+                                                        CommandParameter="{Binding .}"
+                                                        WidthRequest="{OnIdiom 15, Tablet=30}"
+                                                        HeightRequest="{OnIdiom 15, Tablet=30}"
+                                                        BackgroundColor="Transparent"
+                                                        HorizontalOptions="Center"
+                                                        VerticalOptions="Center" />
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                        </Frame>
+                    </Grid>
+                </Grid>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

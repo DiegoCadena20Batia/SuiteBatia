@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:utils="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.Vacantes.DatosSueldoPage"
+    MasterPageTitle="{x:Static utils:Constants.DATOS_SUELDO}"
+    IsLoading="{Binding IsLoading}"
+    LoadingText="{Binding LoadingText}"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    Shell.FlyoutBehavior="Disabled">
+
+    <controls:MasterPage.MasterPageContent>
+        <ContentView>
+            <ScrollView
+                Padding="{OnIdiom '10, 0, 10, 70', Tablet='10, 0, 10, 105'}">
+                
+                <VerticalStackLayout
+                    Spacing="10">
+
+                    <controls:BordererEntry
+                        Text="{Binding SueldoMensual}"
+                        Placeholder="{x:Static utils:Constants.SALARIO_MENSUAL}" 
+                        Keyboard="Numeric"
+                        MaxLength="18"
+                        ReturnType="Next"/>                   
+
+                    <controls:BordererDatePicker
+                        Placeholder="{x:Static utils:Constants.FECHA_INGRESO}"
+                        Date="{Binding SelectedfechaIngreso}"/>
+
+                    <controls:BordererLabel
+                        Placeholder="{x:Static utils:Constants.BANCO}"
+                        Text="{Binding SelectedBanco.Descripcion}"
+                        Command="{Binding SelectBancoCommand}"/>
+                    
+                    <controls:BordererEntry
+                        Placeholder="{x:Static utils:Constants.CLABE}"
+                        Text="{Binding Vacante.Clabe}"
+                        Keyboard="Numeric"
+                        MaxLength="18"
+                        ReturnType="Next"/>
+                    
+                    <controls:BordererEntry
+                        Placeholder="{x:Static utils:Constants.NO_CUENTA}"
+                        Text="{Binding Vacante.Cuenta}"                        
+                        TextTransform="Uppercase"
+                        MaxLength="24"
+                        ReturnType="Next" />
+                    
+                    <controls:BordererEntry
+                        Text="{Binding Vacante.Tarjeta}"
+                        Placeholder="{x:Static utils:Constants.NO_TARJETA}"
+                        MaxLength="19"
+                        Keyboard="Numeric"/>
+                    
+                </VerticalStackLayout>
+            </ScrollView>
+        </ContentView>
+    </controls:MasterPage.MasterPageContent>
+</controls:MasterPage>

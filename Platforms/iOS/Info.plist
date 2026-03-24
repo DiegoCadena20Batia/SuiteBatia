@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+		<integer>2</integer>
+	</array>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string> 
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>XSAppIconAssets</key>
+	<string>Assets.xcassets/appicon.appiconset</string>
+	<key>CFBundleDisplayName</key>
+	<string>Suite Batia</string>
+	<key>CFBundleVersion</key>
+	<string>18</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.3.0</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Suite Batia necesita acceder a la cámara para capturar fotos como evidencia. Estas se agregarán a cada registro realizado.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Suite Batia necesita acceder al micrófono para tomar videos como evidencia.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Suite Batia necesita acceder a la galería para seleccionar fotos y/o archivos PDF como evidencia. Estos se agregarán a cada registro realizado.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Suite Batia necesita acceder a la galería para seleccionar fotos y/o archivos PDF como evidencia. Estos se agregarán a cada registro realizado.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Suite Batia necesita acceder a la ubicación para validar la zona desde donde se hace el registro.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Suite Batia necesita acceder a la ubicación para rastrear la ruta de entrega incluso en segundo plano.</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.GrupoBatia.SuiteBatia</string>
+	<key>MinimumOSVersion</key>
+	<string>12.2</string>
+
+	<key>UIBackgroundModes</key>
+	<array>
+
+		<string>location</string>
+
+	</array>
+
+
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array>
+
+		<!--location-->
+
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeCoarseLocation</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true />
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<true />
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypePreciseLocation</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<true />
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<true />
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+
+	</array>
+</dict>
+</plist>

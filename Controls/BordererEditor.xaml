@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    x:Class="BatiaSuite.Controls.BordererEditor">
+
+    <Frame
+        Style="{StaticResource FrameStyle}"
+        Padding="5">
+
+        <controls:TransparentEditor
+            Text="{Binding Text}"
+            Placeholder="{Binding Placeholder}"
+            PlaceholderColor="{StaticResource Gray}"
+            TextColor="Black"
+            FontSize="{OnIdiom 16, Tablet=20}"
+            VerticalOptions="Center"
+            AutoSize="TextChanges"/>
+
+    </Frame>
+</ContentView>

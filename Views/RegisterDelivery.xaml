@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="BatiaSuite.Views.RegisterDelivery"
+    xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    BackgroundColor="#F5F5F5"
+    Style="{StaticResource PageStyle}"
+    Title="Evidencias"
+    NavigationPage.HasNavigationBar="True"
+    Shell.FlyoutBehavior="Disabled">
+    <Grid>
+        <ScrollView>
+        
+        <Grid
+            RowDefinitions="auto, auto, auto, auto, 200, *"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="5"
+            RowSpacing="5"
+            Margin="10,0">
+
+            <Label
+                Grid.ColumnSpan="2"
+                Text="Firma aqui"
+                HorizontalTextAlignment="Center"
+                FontSize="20"
+                FontFamily="MontBold"
+                TextColor="#3775B5" />
+
+            <Frame
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                HeightRequest="200"
+                BorderColor="LightGray"
+                BackgroundColor="White"
+                CornerRadius="5"
+                Margin="0, 0, 0, 5">
+
+                    <views:DrawingView
+                        
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        x:Name="drawingView"
+                        LineColor="Black"
+                        LineWidth="3"
+                        HeightRequest="190"
+                        IsMultiLineModeEnabled="True"
+                        ShouldClearOnFinish="False"
+                        BackgroundColor="White"
+                        DrawingLineCompletedCommand="{Binding DrawCommand}" />
+                </Frame>
+                
+
+                <!--<Button
+                Grid.Row="2"
+                BackgroundColor="#2E3192"
+                HeightRequest="50"
+                CornerRadius="5"
+                TextColor="White"
+                FontFamily="MontBold"
+                FontSize="20"
+                Padding="0"
+                x:Name="btn_Firmar"
+                IsEnabled="{Binding IsSignature}"
+                Text="FIRMAR"
+                Clicked="btn_Firmar_Clicked"
+                Margin="10,0">
+                <Button.Shadow>
+                    <Shadow
+                        Brush="Black"
+                        Radius="8"
+                        Opacity="0.9" />
+                </Button.Shadow>
+            </Button>-->
+
+            <Button
+                Grid.Row="2"
+                Grid.Column="0"
+                BackgroundColor="#4a92fe"
+                HeightRequest="60"
+                CornerRadius="5"
+                TextColor="White" 
+                FontFamily="MontBold"
+                FontSize="16"
+                Padding="0"
+                Text="LIMPIAR"
+                Command="{Binding ClearDrawingCommand}"
+                Margin="10,0">
+                <Button.Shadow>
+                    <Shadow
+                        Brush="Black"
+                        Radius="8"
+                         Opacity="{OnPlatform Android=0.9,iOS=0.3}" />
+                </Button.Shadow>
+            </Button>
+
+            <Button
+                Grid.Row="2"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                BackgroundColor="#4a92fe"
+                HeightRequest="60"
+                CornerRadius="5"
+                TextColor="White"
+                FontFamily="MontBold"
+                FontSize="16"
+                Padding="0"
+                Text="TOMAR FOTO"
+                Command="{Binding PhotoCommand}"
+                Margin="0,5"
+                ContentLayout="Right,10">
+                    <Button.ImageSource>
+                        <FileImageSource  
+                            File="camera.png"
+                            
+                            />
+                    </Button.ImageSource>
+                    <Button.Shadow>
+                    <Shadow
+                        Brush="Black"
+                        Radius="8"
+                         Opacity="{OnPlatform Android=0.9,iOS=0.3}" />
+                </Button.Shadow>
+            </Button>
+            
+            <CarouselView
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
+                Margin="0"
+                x:Name="MiCarrusel"
+                ItemsSource="{Binding photoPaths}"
+                IndicatorView="MiIndicador">
+                
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <Frame
+                                BorderColor="Gray"
+                                BackgroundColor="Transparent"
+                                CornerRadius="5"
+                                HeightRequest="300"
+                                Margin="10"
+                                WidthRequest="190"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center">
+                                
+                                <Image
+                                    Source="{Binding UrlPhoto}"
+                                    Aspect="Fill"
+                                    HeightRequest="200"
+                                    WidthRequest="150"
+                                    HorizontalOptions="Center" />
+
+                            </Frame>
+                            
+                            <SwipeView.BottomItems>
+                                <SwipeItems>
+                                    <SwipeItem
+                                        Text="Eliminar"
+                                        BackgroundColor="Red"
+                                        Command="{Binding Source={x:Reference MiIndicador}, Path=BindingContext.DeletePhotoCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.BottomItems>
+
+                        </SwipeView>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+
+                <IndicatorView
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
+                x:Name="MiIndicador"
+                IndicatorColor="LightBlue"
+                SelectedIndicatorColor="DarkBlue"
+                HorizontalOptions="Center"
+                VerticalOptions="End" />
+
+                <Button
+                Grid.Row="6"
+                Grid.ColumnSpan="2"
+                BackgroundColor="Green"
+                HeightRequest="65"
+                WidthRequest="320"
+                CornerRadius="5"
+                TextColor="White"
+                FontFamily="MontBold"
+                FontSize="20"
+                Padding="0"
+                Text="REGISTRAR ENTREGA"
+                Command="{Binding RegisterCommand}"
+                Margin="25"
+                VerticalOptions="EndAndExpand"
+                ImageSource="successfuldelivery.png"
+                ContentLayout="Right,10" >
+                <Button.Shadow>
+                    <Shadow
+                        Brush="Black"
+                        Radius="8"
+                         Opacity="{OnPlatform Android=0.9,iOS=0.3}" />
+                </Button.Shadow>
+            </Button>
+        </Grid>
+    </ScrollView>
+        <Grid
+            RowDefinitions="*,*"
+            BackgroundColor="#88000000"
+            IsVisible="{Binding IsBusy}">
+
+            <ActivityIndicator
+                Grid.Row="0"
+                VerticalOptions="End"
+                Color="White"
+                IsRunning="{Binding IsBusy}"
+                HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            <Label
+                 VerticalOptions="Start"
+                 HorizontalOptions="Center"
+                 Grid.Row="1"
+                 TextColor="White"
+                 Text="Enviando registro..."
+            ></Label>
+        </Grid>
+    </Grid>
+</ContentPage>

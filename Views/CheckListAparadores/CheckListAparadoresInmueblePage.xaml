@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:MasterPage
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+     xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    
+    xmlns:viewModel="clr-namespace:BatiaSuite.ViewModel.CheckListAparadores"
+    xmlns:controls="clr-namespace:BatiaSuite.Controls"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Views.CheckListAparadores.CheckListAparadoresInmueblePage"
+    MasterPageTitle="CHECKLIST DE APARADORES"
+    Shell.FlyoutBehavior="Disabled"
+    BackgroundColor="#f0f0f0"
+    FloatingButtonCommand="{Binding ContinuarCommand}"
+    >
+    <!--<controls:MasterPage.MasterPageContent
+        InputTransparent="False"
+        >-->
+    <Grid>
+        <Grid
+            RowDefinitions="auto,auto,auto,*">
+            <Grid RowDefinitions="60, *">
+
+                <!-- 🔵 BARRA SUPERIOR -->
+                <Grid
+                    Margin="8,0,0,0"
+                    Grid.Row="0"
+                    BackgroundColor="Transparent"
+                    Padding="10"
+                    ColumnDefinitions="50, *, 50">
+
+                    <!-- Botón atrás -->
+                    <ImageButton
+                        Grid.Column="0"
+                            HeightRequest="10"
+                            WidthRequest="20"
+                        Source="leftarrowicon.png"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        BackgroundColor="Transparent"
+                        Command="{Binding GoBackCommand}" />
+
+                    <!-- Título -->
+                    <Label
+                        Grid.Column="1"
+                        Grid.ColumnSpan="2"
+                        HorizontalOptions="Start"
+                        HorizontalTextAlignment="Start"
+                        Text="CHECKLIST DE APARADORES"
+                        TextColor="{StaticResource AzulOscuro}"
+                        FontSize="18"
+                        VerticalOptions="Center" />
+
+                </Grid>
+            </Grid>
+
+            <Grid
+                Grid.Row="1"
+                RowDefinitions="auto, auto, auto"
+                RowSpacing="{OnIdiom 20, Tablet=30}"
+                Margin="10, 10,10,0">
+
+                <controls:BordererLabel
+                    Text="{Binding SelectedCliente.nombre}"
+                    Placeholder="{x:Static const:Constants.SELECCIONE_CLIENTE}"
+                    Command="{Binding SelectClienteCommand}" />
+
+                <!--<controls:BordererLabel
+                    Grid.Row="1"
+                    Text="{Binding SelectedEstado.descripcion}"
+                    Placeholder="{x:Static const:Constants.SELECCIONE_ESTADO}"
+                    Command="{Binding SelectEstadoCommand}" />-->
+
+                <controls:BordererLabel
+                    Grid.Row="1"
+                    Text="{Binding SelectedInmueble.Nombre}"
+                    Placeholder="{x:Static const:Constants.SELECCIONE_PUNTO_ATENCION}"
+                    Command="{Binding SelectInmuebleCommand}" />
+            </Grid>
+        <Button
+            Margin="20,0,20,20"
+            Grid.Row="2"
+            BackgroundColor="#2e3192"
+            TextColor="White"
+            FontSize="18"
+            Text="Continuar"
+            Command="{Binding ContinuarCommand}" />
+
+        <!--<ImageButton
+                Grid.Row="3"
+                Source="{StaticResource ArrowIcon}"
+                Style="{StaticResource FloatingButtonStyle}"
+                Command="{Binding ContinuarCommand}" />-->
+
+            
+    </Grid>
+    <Grid
+                BackgroundColor="#88000000"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand"
+                IsVisible="{Binding IsLoading}">
+
+                <ActivityIndicator
+                    Color="{StaticResource AzulOscuro}"
+                    IsRunning="{Binding IsLoading}"
+                    HeightRequest="{OnIdiom 70, Tablet=120}" />
+            </Grid>
+    </Grid>
+    <!--</controls:MasterPage.MasterPageContent>-->
+</controls:MasterPage>
