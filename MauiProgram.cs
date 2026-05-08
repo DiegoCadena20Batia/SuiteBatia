@@ -28,7 +28,7 @@ public static class MauiProgram {
     public static MauiApp CreateMauiApp() {
 
         var builder = MauiApp.CreateBuilder();
-        
+
         builder
             .UseMauiApp<App>()
             //.UseSegmentedControl()
@@ -48,14 +48,14 @@ public static class MauiProgram {
                 fonts.AddFont("icons.ttf", Icons.Family);
                 fonts.AddFont("Font Awesome 7 Free_Solid-900.otf", "FASolid");
             });
-//#if DEBUG
-//#if !IOS
-//        builder.Logging.AddDebug();
-//#endif
-//#endif
-//#if IOS
-//        builder.Logging.AddConsole();
-//#endif
+        //#if DEBUG
+        //#if !IOS
+        //        builder.Logging.AddDebug();
+        //#endif
+        //#endif
+        //#if IOS
+        //        builder.Logging.AddConsole();
+        //#endif
 
         // Para configurar servicios de navegación si los usas
         //builder.Services.AddSingleton<INavigationService, NavigationService>();
@@ -73,7 +73,7 @@ public static class MauiProgram {
         // CHECKLIST APARADORES
         builder.Services.AddSingleton<CheckListService>();
 
-        
+
         builder.Services.AddTransient<CheckListAparadoresInmuebleViewModel>();
         builder.Services.AddTransient<CheckListAparadoresInmueblePage>();
 
@@ -119,6 +119,11 @@ public static class MauiProgram {
 
         builder.Services.AddTransient<SupervisionMantenimientoFirmasViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoFirmasPage>();
+
+        builder.Services.AddSingleton<DbContext>();
+
+        //Correctivos Mayores
+        builder.Services.AddTransient<CorrectivosMayoresViewModel>();
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();

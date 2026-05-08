@@ -18,6 +18,7 @@ namespace BatiaSuite.Models
         {
             public int idCliente { get; set; }
             public string nombre { get; set; }
+            public DateTime SyncDate { get; internal set; }
         }
 
     }

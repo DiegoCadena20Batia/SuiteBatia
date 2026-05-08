@@ -6,8 +6,10 @@ using Microsoft.Data.Sqlite;
 using System.Data;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 
 namespace BatiaSuite.Data;
+
 public static class SqliteConnectionExtensions {
     public static TableQuery<T> Table<T>(this SqliteConnection connection) where T : class, new() {
         return new TableQuery<T>(connection);
@@ -53,14 +55,17 @@ public static class SqliteConnectionExtensions {
         return result == DBNull.Value ? default(T) : (T)Convert.ChangeType(result, typeof(T));
     }
 }
-public class DbContext
-{
+
+public class DbContext {
     private SqliteConnection _dbConn;
+
     //private SQLiteAsyncConnection _dbConn;
     private bool _tablesCreated = false;
+
     private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-    public DbContext() { }
+    public DbContext() {
+    }
 
     private static readonly Type[] _tableTypes = new[]
 {
@@ -86,17 +91,19 @@ public class DbContext
     typeof(EntregaLocal),
     typeof(EntregaMaterialLocal),
     typeof(FotoEntregaLocal),
-    typeof(EntregaReporteUbicacionLocal)
+    typeof(EntregaReporteUbicacionLocal),
+
+    typeof(ListCorrecM),
+    typeof(ClienteCmModel.ClienteCorrec),
+    typeof(InmuebleCmModel.InmuebleCorrec)
 };
 
-    private async Task EnsureInitialized()
-    {
-        if (_dbConn != null && _tablesCreated) return;
+    private async Task EnsureInitialized() {
+        if(_dbConn != null && _tablesCreated) return;
 
         await _semaphore.WaitAsync();
-        try
-        {
-            if (_dbConn != null && _tablesCreated) return;
+        try {
+            if(_dbConn != null && _tablesCreated) return;
 
             _dbConn = new SqliteConnection($"Data Source={Constants.DATABASE_PATH}");
             await _dbConn.OpenAsync();
@@ -105,18 +112,13 @@ public class DbContext
             }
 
             _tablesCreated = true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Debug.WriteLine($"Error inicializando base de datos: {ex.Message}");
             throw;
-        }
-        finally
-        {
+        } finally {
             _semaphore.Release();
         }
     }
-
 
     // Método auxiliar para crear tablas
     private async Task CreateTableAsync(Type tableType) {
@@ -150,29 +152,42 @@ public class DbContext
 
         // ORDEN DE PRIORIDAD - solo asignar PK si no se ha asignado ya
         if(!primaryKeyAssigned) {
-            if(prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase)) {
+
+            // PKs válidas
+            if(prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase) ||
+               prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
+               prop.Name.Equals("IdCorrectivoLocal", StringComparison.OrdinalIgnoreCase) ||
+               prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase) ||
+
+               // PKs reales de catálogos
+               prop.Name.Equals("id_inmueble", StringComparison.OrdinalIgnoreCase) ||
+               prop.Name.Equals("idCliente", StringComparison.OrdinalIgnoreCase)) {
+
                 constraints.Add("PRIMARY KEY");
-                constraints.Add("AUTOINCREMENT");
-                primaryKeyAssigned = true; // ¡Marcar que ya asignamos PK!
-            } else if(prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase)) {
-                constraints.Add("PRIMARY KEY");
-                constraints.Add("AUTOINCREMENT");
-                primaryKeyAssigned = true; // ¡Marcar que ya asignamos PK!
-            } else if(prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase)) {
-                constraints.Add("PRIMARY KEY");
-                constraints.Add("AUTOINCREMENT");
-                primaryKeyAssigned = true; // ¡Marcar que ya asignamos PK!
+
+                // AUTOINCREMENT solo para IDs locales internos
+                if(prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase) ||
+                   prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
+                   prop.Name.Equals("IdCorrectivoLocal", StringComparison.OrdinalIgnoreCase) ||
+                   prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase)) {
+
+                    constraints.Add("AUTOINCREMENT");
+                }
+
+                primaryKeyAssigned = true;
             }
         }
 
         // Lógica para NOT NULL
         var isNullable = IsPropertyNullable(prop);
+
         if(!isNullable && !constraints.Contains("PRIMARY KEY")) {
             constraints.Add("NOT NULL");
         }
 
         return $"{columnName} {sqlType} {string.Join(" ", constraints)}".Trim();
     }
+
     private bool IsPropertyNullable(PropertyInfo prop) {
         // Strings son siempre nullable
         if(prop.PropertyType == typeof(string))
@@ -211,18 +226,16 @@ public class DbContext
     private string GetColumnConstraints(PropertyInfo prop) {
         var constraints = new List<string>();
 
-
-        if (prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase)) {
+        if(prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase)) {
             constraints.Add("PRIMARY KEY");
             constraints.Add("AUTOINCREMENT");
-        } else if  (prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase)) {
+        } else if(prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase)) {
             constraints.Add("PRIMARY KEY");
             constraints.Add("AUTOINCREMENT");
         } else if(prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase)) {
             constraints.Add("PRIMARY KEY");
             constraints.Add("AUTOINCREMENT");
         }
-
 
         //// Si la propiedad se llama "Id" asumimos que es la clave primaria
         //if(prop.Name.Equals("Id", StringComparison.OrdinalIgnoreCase) ||
@@ -232,8 +245,6 @@ public class DbContext
         //    constraints.Add("PRIMARY KEY");
         //    constraints.Add("AUTOINCREMENT");
         //}
-
-
 
         // Si no es nullable y no es la clave primaria, agregar NOT NULL
         var underlyingType = Nullable.GetUnderlyingType(prop.PropertyType);
@@ -249,15 +260,12 @@ public class DbContext
     }
 
     #region Supervision
-    public async Task<bool> InsertSupervisionTotal(SupervisionRequestDataModel supervision)
-    {
-        try
-        {
-            if (supervision != null)
-            {
+
+    public async Task<bool> InsertSupervisionTotal(SupervisionRequestDataModel supervision) {
+        try {
+            if(supervision != null) {
                 await EnsureInitialized();
-                SupervisionLocal supervisionLocal = new SupervisionLocal
-                {
+                SupervisionLocal supervisionLocal = new SupervisionLocal {
                     IdStatusLocal = 1,
                     IdOrden = supervision.IdOrden,
                     Usuario = supervision.Usuario,
@@ -287,16 +295,11 @@ public class DbContext
                 };
                 int idSupervisionLocal = await InsertSupervisionLocal(supervisionLocal);
 
-
-                if (supervision.Archivos != null)
-                {
-                    if (supervision.Archivos.Count > 0)
-                    {
+                if(supervision.Archivos != null) {
+                    if(supervision.Archivos.Count > 0) {
                         List<ArchivoLocal> archivoLocal = new List<ArchivoLocal>();
-                        foreach (var archivo in supervision.Archivos)
-                        {
-                            ArchivoLocal al = new ArchivoLocal
-                            {
+                        foreach(var archivo in supervision.Archivos) {
+                            ArchivoLocal al = new ArchivoLocal {
                                 IdLocal = idSupervisionLocal,
                                 Nombre = archivo.Nombre,
                                 Path = archivo.Path,
@@ -310,16 +313,11 @@ public class DbContext
                     }
                 }
 
-                if (supervision.Preguntas != null)
-                {
-                    if (supervision.Preguntas.Count > 0)
-                    {
+                if(supervision.Preguntas != null) {
+                    if(supervision.Preguntas.Count > 0) {
                         List<PreguntaLocal> preguntaLocal = new List<PreguntaLocal>();
-                        foreach (var pregunta in supervision.Preguntas)
-                        {
-
-                            PreguntaLocal pre = new PreguntaLocal
-                            {
+                        foreach(var pregunta in supervision.Preguntas) {
+                            PreguntaLocal pre = new PreguntaLocal {
                                 IdLocal = idSupervisionLocal,
                                 IdPregunta = pregunta.IdPregunta,
                                 IdSeccion = pregunta.IdSeccion,
@@ -335,15 +333,11 @@ public class DbContext
                     }
                 }
 
-                if (supervision.ChecklistPreguntas != null)
-                {
-                    if (supervision.ChecklistPreguntas.Count > 0)
-                    {
+                if(supervision.ChecklistPreguntas != null) {
+                    if(supervision.ChecklistPreguntas.Count > 0) {
                         List<CheckListLocal> checkListLocal = new List<CheckListLocal>();
-                        foreach (var cl in supervision.ChecklistPreguntas)
-                        {
-                            CheckListLocal checklist = new CheckListLocal
-                            {
+                        foreach(var cl in supervision.ChecklistPreguntas) {
+                            CheckListLocal checklist = new CheckListLocal {
                                 IdLocal = idSupervisionLocal,
                                 IdSupervision = cl.IdSupervision,
                                 IdPregunta = cl.IdPregunta,
@@ -358,15 +352,11 @@ public class DbContext
                     }
                 }
 
-                if (supervision.ListadoMateriales != null)
-                {
-                    if (supervision.ListadoMateriales.Count > 0)
-                    {
+                if(supervision.ListadoMateriales != null) {
+                    if(supervision.ListadoMateriales.Count > 0) {
                         List<ListadoMaterialLocal> listadoLocal = new List<ListadoMaterialLocal>();
-                        foreach (var list in supervision.ListadoMateriales)
-                        {
-                            ListadoMaterialLocal listado = new ListadoMaterialLocal
-                            {
+                        foreach(var list in supervision.ListadoMateriales) {
+                            ListadoMaterialLocal listado = new ListadoMaterialLocal {
                                 IdLocal = idSupervisionLocal,
                                 IdListado = list.IdListado,
                                 Clave = list.Clave,
@@ -382,15 +372,11 @@ public class DbContext
                     }
                 }
 
-                if (supervision.PreguntasEvaluacion != null)
-                {
-                    if (supervision.PreguntasEvaluacion.Count > 0)
-                    {
+                if(supervision.PreguntasEvaluacion != null) {
+                    if(supervision.PreguntasEvaluacion.Count > 0) {
                         List<EvaluacionLocal> evaluacionLocal = new List<EvaluacionLocal>();
-                        foreach (var item in supervision.PreguntasEvaluacion)
-                        {
-                            EvaluacionLocal evaluacion = new EvaluacionLocal
-                            {
+                        foreach(var item in supervision.PreguntasEvaluacion) {
+                            EvaluacionLocal evaluacion = new EvaluacionLocal {
                                 IdLocal = idSupervisionLocal,
                                 IdSupervision = item.IdSupervision,
                                 IdPregunta = item.IdPregunta,
@@ -408,85 +394,67 @@ public class DbContext
                 return true;
             }
             return true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Debug.WriteLine($"Error insertando supervisión: {ex.Message}");
             return false;
         }
     }
-    public async Task<int> InsertSupervisionLocal(SupervisionLocal supervision)
-    {
+
+    public async Task<int> InsertSupervisionLocal(SupervisionLocal supervision) {
         await InsertAsync(supervision);
         return supervision.IdLocal;
     }
-    public async Task<bool> InsertPreguntaLocal(List<PreguntaLocal> preguntas)
-    {
-        try
-        {
+
+    public async Task<bool> InsertPreguntaLocal(List<PreguntaLocal> preguntas) {
+        try {
             await InsertAllAsync(preguntas);
             return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return false;
-        }
-    }
-    public async Task<bool> InsertArchivoLocal(List<ArchivoLocal> archivos)
-    {
-        try
-        {
-            await InsertAllAsync(archivos);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return false;
-        }
-    }
-    public async Task<bool> InsertCheckListLocal(List<CheckListLocal> supervision)
-    {
-        try
-        {
-            await InsertAllAsync(supervision);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return false;
-        }
-    }
-    public async Task<bool> InsertListadoMaterialLocal(List<ListadoMaterialLocal> listado)
-    {
-        try
-        {
-            await InsertAllAsync(listado);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return false;
-        }
-    }
-    public async Task<bool> InsertEvaluacionLocal(List<EvaluacionLocal> evaluacion)
-    {
-        try
-        {
-            await InsertAllAsync(evaluacion);
-            return true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine(ex.Message);
             return false;
         }
     }
 
-    
+    public async Task<bool> InsertArchivoLocal(List<ArchivoLocal> archivos) {
+        try {
+            await InsertAllAsync(archivos);
+            return true;
+        } catch(Exception ex) {
+            Console.WriteLine(ex.Message);
+            return false;
+        }
+    }
+
+    public async Task<bool> InsertCheckListLocal(List<CheckListLocal> supervision) {
+        try {
+            await InsertAllAsync(supervision);
+            return true;
+        } catch(Exception ex) {
+            Console.WriteLine(ex.Message);
+            return false;
+        }
+    }
+
+    public async Task<bool> InsertListadoMaterialLocal(List<ListadoMaterialLocal> listado) {
+        try {
+            await InsertAllAsync(listado);
+            return true;
+        } catch(Exception ex) {
+            Console.WriteLine(ex.Message);
+            return false;
+        }
+    }
+
+    public async Task<bool> InsertEvaluacionLocal(List<EvaluacionLocal> evaluacion) {
+        try {
+            await InsertAllAsync(evaluacion);
+            return true;
+        } catch(Exception ex) {
+            Console.WriteLine(ex.Message);
+            return false;
+        }
+    }
+
     public async Task<SupervisionRequestDataModel> GetSupervisionLocal(int IdLocal) {
         try {
             SupervisionRequestDataModel supervision = new SupervisionRequestDataModel();
@@ -509,147 +477,125 @@ public class DbContext
             //Obtener Listados
             var listados = await _dbConn.Table<ListadoMaterialLocal>().Where(a => a.IdLocal == IdLocal).ToListAsync();
 
-        
+            if(supervisionLocal != null) {
+                //Asignar el header
+                supervision.IdOrden = supervisionLocal.IdOrden;
+                supervision.Usuario = supervisionLocal.Usuario;
+                supervision.Fechaini = supervisionLocal.Fechaini;
+                supervision.Fechafin = supervisionLocal.Fechafin;
+                supervision.Id_Cliente = supervisionLocal.Id_Cliente;
+                supervision.Id_Inmueble = supervisionLocal.Id_Inmueble;
+                supervision.Latitud = supervisionLocal.Latitud;
+                supervision.Longitud = supervisionLocal.Longitud;
+                supervision.NombreOperador = supervisionLocal.NombreOperador;
+                supervision.Clienteentrevista = supervisionLocal._clienteentrevista;
+                supervision.Clientenombre = supervisionLocal.Clientenombre;
+                supervision.Clientecomentario = supervisionLocal.Clientecomentario;
+                supervision.Evalua = supervisionLocal.Evalua;
+                supervision.Trabrealizados = supervisionLocal.Trabrealizados;
+                supervision.Tratopersonal = supervisionLocal.Tratopersonal;
+                supervision.Uniformcompleto = supervisionLocal.Uniformcompleto;
+                supervision.Suprecorrido = supervisionLocal.Suprecorrido;
+                supervision.Areaoportunidad = supervisionLocal.Areaoportunidad;
+                supervision.Plancorrectivo = supervisionLocal.Plancorrectivo;
+                supervision.Calificasup = supervisionLocal.Calificasup;
+                supervision.Reporteasiscgo = supervisionLocal.Reporteasiscgo;
+                supervision.Matetiquetados = supervisionLocal.Matetiquetados;
+                supervision.Matrequerimientos = supervisionLocal.Matrequerimientos;
+            }
 
-        if(supervisionLocal != null)
-        {
-            //Asignar el header
-            supervision.IdOrden = supervisionLocal.IdOrden;
-            supervision.Usuario = supervisionLocal.Usuario;
-            supervision.Fechaini = supervisionLocal.Fechaini;
-            supervision.Fechafin = supervisionLocal.Fechafin;
-            supervision.Id_Cliente = supervisionLocal.Id_Cliente;
-            supervision.Id_Inmueble = supervisionLocal.Id_Inmueble;
-            supervision.Latitud = supervisionLocal.Latitud;
-            supervision.Longitud = supervisionLocal.Longitud;
-            supervision.NombreOperador = supervisionLocal.NombreOperador;
-            supervision.Clienteentrevista = supervisionLocal._clienteentrevista;
-            supervision.Clientenombre = supervisionLocal.Clientenombre;
-            supervision.Clientecomentario = supervisionLocal.Clientecomentario;
-            supervision.Evalua = supervisionLocal.Evalua;
-            supervision.Trabrealizados = supervisionLocal.Trabrealizados;
-            supervision.Tratopersonal = supervisionLocal.Tratopersonal;
-            supervision.Uniformcompleto = supervisionLocal.Uniformcompleto;
-            supervision.Suprecorrido = supervisionLocal.Suprecorrido;
-            supervision.Areaoportunidad = supervisionLocal.Areaoportunidad;
-            supervision.Plancorrectivo = supervisionLocal.Plancorrectivo;
-            supervision.Calificasup = supervisionLocal.Calificasup;
-            supervision.Reporteasiscgo = supervisionLocal.Reporteasiscgo;
-            supervision.Matetiquetados = supervisionLocal.Matetiquetados;
-            supervision.Matrequerimientos = supervisionLocal.Matrequerimientos;
-        }
-
-        //Asingar archivos
-        if (archivos != null)
-        {
-            if (archivos.Count > 0)
-            {
-                supervision.Archivos = new List<ArchivoModel>();
-                foreach (var item in archivos)
-                {
-                    ArchivoModel a = new ArchivoModel
-                    {
-                        Path = item.Path,
-                        Nombre = item.Nombre,
-                        Tamano = item.Tamano,
-                        Seccion = item.Seccion
-                    };
-                    supervision.Archivos.Add(a);
+            //Asingar archivos
+            if(archivos != null) {
+                if(archivos.Count > 0) {
+                    supervision.Archivos = new List<ArchivoModel>();
+                    foreach(var item in archivos) {
+                        ArchivoModel a = new ArchivoModel {
+                            Path = item.Path,
+                            Nombre = item.Nombre,
+                            Tamano = item.Tamano,
+                            Seccion = item.Seccion
+                        };
+                        supervision.Archivos.Add(a);
+                    }
                 }
             }
-        }
 
-        //Asignar preguntas
-        if (preguntas != null)
-        {
-            if (preguntas.Count > 0)
-            {
-                supervision.Preguntas = new List<SupervisionPregunta>();
-                foreach (var item in preguntas)
-                {
-                    SupervisionPregunta p = new SupervisionPregunta
-                    {
-                        IdSupervision = item.IdSupervision,
-                        IdSeccion = item.IdSeccion,
-                        IdPregunta = item.IdPregunta,
-                        Descripcion = item.Descripcion,
-                        Valor = item.Valor,
-                        Observaciones = item.Observaciones
-                    };
-                    supervision.Preguntas.Add(p);
+            //Asignar preguntas
+            if(preguntas != null) {
+                if(preguntas.Count > 0) {
+                    supervision.Preguntas = new List<SupervisionPregunta>();
+                    foreach(var item in preguntas) {
+                        SupervisionPregunta p = new SupervisionPregunta {
+                            IdSupervision = item.IdSupervision,
+                            IdSeccion = item.IdSeccion,
+                            IdPregunta = item.IdPregunta,
+                            Descripcion = item.Descripcion,
+                            Valor = item.Valor,
+                            Observaciones = item.Observaciones
+                        };
+                        supervision.Preguntas.Add(p);
+                    }
                 }
             }
-        }
 
-        //Asignar checklist
-        if (checklist != null)
-        {
-            if (checklist.Count > 0)
-            {
-                supervision.ChecklistPreguntas = new List<ChecklistPregunta>();
-                foreach (var item in checklist)
-                {
-                    ChecklistPregunta c = new ChecklistPregunta
-                    {
-                        IdSupervision = item.IdSupervision,
-                        IdPregunta = item.IdPregunta,
-                        Descripcion = item.Descripcion,
-                        Valor = item.Valor,
-                        Observaciones = item.Observaciones
-                    };
-                    supervision.ChecklistPreguntas.Add(c);
+            //Asignar checklist
+            if(checklist != null) {
+                if(checklist.Count > 0) {
+                    supervision.ChecklistPreguntas = new List<ChecklistPregunta>();
+                    foreach(var item in checklist) {
+                        ChecklistPregunta c = new ChecklistPregunta {
+                            IdSupervision = item.IdSupervision,
+                            IdPregunta = item.IdPregunta,
+                            Descripcion = item.Descripcion,
+                            Valor = item.Valor,
+                            Observaciones = item.Observaciones
+                        };
+                        supervision.ChecklistPreguntas.Add(c);
+                    }
                 }
             }
-        }
 
-        //Asignar evaluacion
-        if (evaluacion != null)
-        {
-            if (evaluacion.Count > 0)
-            {
-                supervision.PreguntasEvaluacion = new List<Evaluacion>();
-                foreach (var item in evaluacion)
-                {
-                    Evaluacion e = new Evaluacion
-                    {
-                        IdSupervision = item.IdSupervision,
-                        IdPregunta = item.IdPregunta,
-                        Descripcion = item.Descripcion,
-                        Valor = item._valor,
-                        Observaciones = item.Observaciones
-                    };
-                    supervision.PreguntasEvaluacion.Add(e);
+            //Asignar evaluacion
+            if(evaluacion != null) {
+                if(evaluacion.Count > 0) {
+                    supervision.PreguntasEvaluacion = new List<Evaluacion>();
+                    foreach(var item in evaluacion) {
+                        Evaluacion e = new Evaluacion {
+                            IdSupervision = item.IdSupervision,
+                            IdPregunta = item.IdPregunta,
+                            Descripcion = item.Descripcion,
+                            Valor = item._valor,
+                            Observaciones = item.Observaciones
+                        };
+                        supervision.PreguntasEvaluacion.Add(e);
+                    }
                 }
             }
-        }
 
-        //Asignar listados
-        if (listados != null)
-        {
-            if (listados.Count > 0)
-            {
-                supervision.ListadoMateriales = new List<ListadoMaterial>();
-                foreach (var item in listados)
-                {
-                    ListadoMaterial l = new ListadoMaterial
-                    {
-                        IdListado = item.IdListado,
-                        Clave = item.Clave,
-                        Descripcion = item.Descripcion,
-                        Cantidad = item.Cantidad,
-                        Entregado = item.Entregado,
-                        Sugerido = item.Sugerido
-                    };
-                    supervision.ListadoMateriales.Add(l);
+            //Asignar listados
+            if(listados != null) {
+                if(listados.Count > 0) {
+                    supervision.ListadoMateriales = new List<ListadoMaterial>();
+                    foreach(var item in listados) {
+                        ListadoMaterial l = new ListadoMaterial {
+                            IdListado = item.IdListado,
+                            Clave = item.Clave,
+                            Descripcion = item.Descripcion,
+                            Cantidad = item.Cantidad,
+                            Entregado = item.Entregado,
+                            Sugerido = item.Sugerido
+                        };
+                        supervision.ListadoMateriales.Add(l);
+                    }
                 }
             }
-        }
-        return supervision;
+            return supervision;
         } catch(Exception ex) {
             Console.WriteLine(ex.Message);
             throw ex;
         }
     }
+
     public async Task<bool> MarcarSupervisionEnviada(int idSupervision) {
         const int ESTATUS_ENVIADO = 2;
 
@@ -665,6 +611,7 @@ public class DbContext
             return false;
         }
     }
+
     //public async Task<List<SupervisionLocal>> GetSupervisionesSinEnviar()
     //{
     //    await EnsureInitialized();
@@ -689,8 +636,8 @@ public class DbContext
 
             using var command = _dbConn.CreateCommand();
             command.CommandText = @"
-        SELECT * FROM SupervisionLocal 
-        WHERE IdStatusLocal = $estatus 
+        SELECT * FROM SupervisionLocal
+        WHERE IdStatusLocal = $estatus
         ORDER BY Fechaini";
 
             command.Parameters.AddWithValue("$estatus", ESTATUS_PENDIENTE);
@@ -741,6 +688,7 @@ public class DbContext
             return new List<SupervisionLocal>();
         }
     }
+
     public async Task<bool> InsertSupervisionProgramadaLocal(List<SupervisionModel> supervisiones) {
         await EnsureInitialized();
 
@@ -761,132 +709,104 @@ public class DbContext
             return false;
         }
     }
-    public async Task<bool> InsertClientesLocal(List<ClientsModel> clientes)
-    {
-        try
-        {
+
+    public async Task<bool> InsertClientesLocal(List<ClientsModel> clientes) {
+        try {
             await EnsureInitialized();
             await DeleteAllAsync<ClientsModel>();
             await InsertAllAsync(clientes);
             return true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite InsertClienteLocal:" + ex.Message);
             return false;
         }
     }
-    public async Task<bool> InsertEstadosLocal(List<EstadoModel> estados)
-    {
-        try
-        {
+
+    public async Task<bool> InsertEstadosLocal(List<EstadoModel> estados) {
+        try {
             await EnsureInitialized();
             await DeleteAllAsync<EstadoModel>();
             await InsertAllAsync(estados);
             return true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite InsertEstadosLocal:" + ex.Message);
             return false;
         }
     }
-    public async Task <bool> InsertInmueblesLocal(List<InmuebleLocal> inmuebles)
-    {
-        try
-        {
+
+    public async Task<bool> InsertInmueblesLocal(List<InmuebleLocal> inmuebles) {
+        try {
             await EnsureInitialized();
             await DeleteAllAsync<InmuebleLocal>();
             await InsertAllAsync(inmuebles);
             return true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite InsertInmueblesLocal:" + ex.Message);
             return false;
         }
     }
-    public async Task<bool> InsertFechaCarga()
-    {
-        try
-        {
-            PrecargaSupervision pc = new PrecargaSupervision
-            {
+
+    public async Task<bool> InsertFechaCarga() {
+        try {
+            PrecargaSupervision pc = new PrecargaSupervision {
                 FechaCarga = DateTime.Now
             };
             await InsertAsync(pc);
             return true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite InserFechaCarga: " + ex.Message);
             return false;
         }
     }
-    public async Task<bool> InsertFechaCargaEntrega()
-    {
-        try
-        {
-            PrecargaEntrega pc = new PrecargaEntrega
-            {
+
+    public async Task<bool> InsertFechaCargaEntrega() {
+        try {
+            PrecargaEntrega pc = new PrecargaEntrega {
                 FechaCarga = DateTime.Now
             };
             await InsertAsync(pc);
             return true;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite InsertFechaCargaEntrega: " + ex.Message);
             return false;
         }
     }
-    public async Task<List<SupervisionModel>> GetSupervisionesLocal()
-    {
-        try
-        {
-        await EnsureInitialized();
-        return await _dbConn.Table<SupervisionModel>().ToListAsync();
-        }
-        catch (Exception ex)
-        {
+
+    public async Task<List<SupervisionModel>> GetSupervisionesLocal() {
+        try {
+            await EnsureInitialized();
+            return await _dbConn.Table<SupervisionModel>().ToListAsync();
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite GetSupervisionesLocal:" + ex.Message);
             return new List<SupervisionModel>();
         }
     }
-    public async Task<List<ClientsModel>> GetClientesLocal()
-    {
-        try
-        {
+
+    public async Task<List<ClientsModel>> GetClientesLocal() {
+        try {
             await EnsureInitialized();
             return await _dbConn.Table<ClientsModel>().ToListAsync();
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite GetSupervisionesLocal:" + ex.Message);
             return new List<ClientsModel>();
         }
     }
-    public async Task<List<EstadoModel>> GetEstadosLocal()
-    {
-        try
-        {
+
+    public async Task<List<EstadoModel>> GetEstadosLocal() {
+        try {
             await EnsureInitialized();
             return await _dbConn.Table<EstadoModel>().ToListAsync();
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite GetSupervisionesLocal:" + ex.Message);
             return new List<EstadoModel>();
         }
     }
-    public async Task<List<Inmueble>> GetinmueblesLocal(int IdCliente, int IdEstado)
-    {
-        if(IdEstado == null)
-        {
+
+    public async Task<List<Inmueble>> GetinmueblesLocal(int IdCliente, int IdEstado) {
+        if(IdEstado == null) {
             IdEstado = 0;
         }
-        try
-        {
+        try {
             await EnsureInitialized();
 
             //LOGS
@@ -896,26 +816,21 @@ public class DbContext
             //    Console.WriteLine($"Inmueble: {item.IdInmueble}, Cliente: {item.IdCliente}");
             //}
 
-
-
             var query = _dbConn.Table<InmuebleLocal>().Where(x => x.IdCliente == IdCliente);
 
-            if (IdEstado != 0)
-            {
+            if(IdEstado != 0) {
                 query = query.Where(x => x.IdEstado == IdEstado);
             }
-             var list = await query.ToListAsync();
+            var list = await query.ToListAsync();
             var filtrado = list.Where(x => x.IdCliente == IdCliente).ToList();
             if(IdEstado != 0) {
                 filtrado = filtrado.Where(x => x.IdEstado == IdEstado).ToList();
             }
 
             List<Inmueble> inmuebles = new List<Inmueble>();
-            if (list != null)
-            {
-                foreach (var item in filtrado) {
-                    Inmueble inmueble = new Inmueble
-                    {
+            if(list != null) {
+                foreach(var item in filtrado) {
+                    Inmueble inmueble = new Inmueble {
                         IdInmueble = item.IdInmueble,
                         Nombre = item.Nombre,
                         Tipo = item.Tipo
@@ -924,31 +839,26 @@ public class DbContext
                 }
             }
             return inmuebles;
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite GetSupervisionesLocal:" + ex.Message);
             return new List<Inmueble>();
         }
     }
-    public async Task<DateTime> GetUltimaCarga()
-    {
-        try
-        {
+
+    public async Task<DateTime> GetUltimaCarga() {
+        try {
             await EnsureInitialized();
             var carga = await _dbConn.Table<PrecargaSupervision>()
                          .OrderByDescending(x => x.IdCarga)
                          .FirstOrDefaultAsync();
 
             return carga?.FechaCarga ?? DateTime.MinValue;
-
-        }
-        catch (Exception ex)
-        {            
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLITE GetultimaCarga:" + ex.Message);
             throw;
         }
     }
+
     public async Task<DateTime> GetUltimaCargaEntregas() {
         try {
             await EnsureInitialized();
@@ -957,39 +867,32 @@ public class DbContext
                          .FirstOrDefaultAsync();
 
             return carga?.FechaCarga ?? DateTime.MinValue;
-
         } catch(Exception ex) {
             Console.WriteLine("Error SQLITE GetUltimaCargaEntregas:" + ex.Message);
             throw;
         }
     }
-    public async Task<bool> VerificarBancoInmueble(int idInmueble)
-    {
-        try
-        {
+
+    public async Task<bool> VerificarBancoInmueble(int idInmueble) {
+        try {
             await EnsureInitialized();
 
             var inmueble = await _dbConn.Table<InmuebleLocal>()
                          .Where(x => x.IdInmueble == idInmueble)
                          .FirstOrDefaultAsync();
 
-            if (inmueble != null)
-            {
+            if(inmueble != null) {
                 return inmueble.AreaBanco;
-            }
-            else
-            {
+            } else {
                 return false; // O decide qué valor tiene sentido si no encuentra nada
             }
-        }
-        catch (Exception ex)
-        {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLITE VerificarBancoInmueble: " + ex.Message);
             throw;
         }
     }
-    public async Task<bool> DeleteSupervisionProgramadaLocal(int idOrden) {
 
+    public async Task<bool> DeleteSupervisionProgramadaLocal(int idOrden) {
         try {
             int rowsAffected = await _dbConn.ExecuteAsync(
                 "DELETE FROM SupervisionModel WHERE Orden = $p0",
@@ -1017,7 +920,9 @@ public class DbContext
     //        return false;
     //    }
     //}
-    #endregion
+
+    #endregion Supervision
+
     //    #region Entregas
 
     //    public async Task<bool> InsertClientesLocal(List<ClientsModelLocal> clientesLocal) {
@@ -1183,12 +1088,13 @@ public class DbContext
 
         return (int)newId;
     }
+
     // Método para obtener la propiedad PK dinámicamente
     private PropertyInfo GetPrimaryKeyProperty(Type type) {
         var properties = type.GetProperties();
 
         // ORDEN DE PRIORIDAD para detectar PK
-        var pkPriority = new[] { "IdConsec", "IdLocal", "IdCarga", "Id" };
+        var pkPriority = new[] { "IdCorrectivoLocal", "IdConsec", "IdLocal", "IdCarga", "Id" };
 
         foreach(var pkName in pkPriority) {
             var property = properties.FirstOrDefault(p =>
@@ -1214,19 +1120,18 @@ public class DbContext
         return value.Equals(Activator.CreateInstance(value.GetType()));
     }
 
-
     #region ENTREGAS PRECARGA
 
     //INSERTAR PRECARGA
     public async Task<bool> InsertPrecargaEntregasLocal(EntregaPrecarga precarga) {
         try {
             await EnsureInitialized();
-            
+
             await DeleteAllAsync<ClienteEntregaPrecarga>();
             await DeleteAllAsync<InmuebleEntregaPrecarga>();
             await DeleteAllAsync<ListadoEntregaPrecarga>();
             await DeleteAllAsync<ListadoMaterialEntregaPrecarga>();
-            if (precarga.Clientes != null && precarga.Clientes.Count > 0) {
+            if(precarga.Clientes != null && precarga.Clientes.Count > 0) {
                 await InsertAllAsync(precarga.Clientes);
             }
             if(precarga.Inmuebles != null && precarga.Inmuebles.Count > 0) {
@@ -1244,6 +1149,7 @@ public class DbContext
             return false;
         }
     }
+
     public async Task<List<ClienteEntregaPrecarga>> ObtenerClientesEntregaPrecarga() {
         try {
             await EnsureInitialized();
@@ -1253,6 +1159,7 @@ public class DbContext
             return new List<ClienteEntregaPrecarga>();
         }
     }
+
     public async Task<List<InmuebleEntregaPrecarga>> ObtenerInmueblesEntregaPrecargaByIdCliente(int IdCliente) {
         try {
             await EnsureInitialized();
@@ -1262,6 +1169,7 @@ public class DbContext
             return new List<InmuebleEntregaPrecarga>();
         }
     }
+
     public async Task<List<ListadoEntregaPrecarga>> ObtenerListadosEntregaPrecargaByIdInmueble(int IdInmueble) {
         try {
             await EnsureInitialized();
@@ -1271,6 +1179,7 @@ public class DbContext
             return new List<ListadoEntregaPrecarga>();
         }
     }
+
     public async Task<List<ListadoMaterialEntregaPrecarga>> ObtenerListadoMaterialEntregaPrecargaByIdListado(int IdListado) {
         try {
             await EnsureInitialized();
@@ -1280,11 +1189,13 @@ public class DbContext
             return new List<ListadoMaterialEntregaPrecarga>();
         }
     }
-    #endregion
+
+    #endregion ENTREGAS PRECARGA
+
     #region ENTREGAS CONSULTA
 
     // METODO PRINCIPAL DE INSERCION DE ENTREGAS OFFLINE
-    public async Task InsertarEntrega(EntregaLocal entrega, List<EntregaMaterialLocal> entregaMaterial, List<FotoEntregaLocal> entregaFoto  ) {
+    public async Task InsertarEntrega(EntregaLocal entrega, List<EntregaMaterialLocal> entregaMaterial, List<FotoEntregaLocal> entregaFoto) {
         try {
             await EnsureInitialized();
             if(entrega != null) {
@@ -1306,12 +1217,11 @@ public class DbContext
                 }
                 await InsertAllAsync(entregaFoto);
             }
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite InsertarEntrega:" + ex.Message);
         }
-
     }
+
     //OBTENER CATALOGO DE ENTREGAS EN LOCAL
     public async Task<List<EntregaLocal>> ObtenerEntregasLocal() {
         try {
@@ -1322,18 +1232,19 @@ public class DbContext
             return new List<EntregaLocal>();
         }
     }
+
     //INSERTA UBICACION DE ENTREGA
-    public async Task<bool> InsertarUbicacionesEntrega (EntregaReporteUbicacionLocal reporte) {
+    public async Task<bool> InsertarUbicacionesEntrega(EntregaReporteUbicacionLocal reporte) {
         try {
             await EnsureInitialized();
             await InsertAsync(reporte);
             return true;
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             Console.WriteLine("Error SQLite InsertarUbicacionesEntrega:" + ex.Message);
             return false;
         }
     }
+
     //OBTENER REPORTES DE UBICACION EN LOCAL
     public async Task<List<EntregaReporteUbicacionLocal>> ObtenerReportesUbicacionLocales() {
         try {
@@ -1347,7 +1258,6 @@ public class DbContext
 
     //ELIMINAR REPORTE DE UBICACION DE LOCAL
     public async Task<bool> EliminarReportesUbicacionLocal(int idReporte) {
-
         try {
             int rowsAffected = await _dbConn.ExecuteAsync(
                 "DELETE FROM EntregaReporteUbicacionLocal WHERE IdLocal = $p0",
@@ -1380,7 +1290,7 @@ public class DbContext
         try {
             await EnsureInitialized();
             int IdEntregaLocal = IdLocal;
-            int rowsAffectedEntrega = await _dbConn.ExecuteAsync("DELETE FROM EntregaLocal WHERE IdLocal = $p0",IdLocal);
+            int rowsAffectedEntrega = await _dbConn.ExecuteAsync("DELETE FROM EntregaLocal WHERE IdLocal = $p0", IdLocal);
             int rowsAffectedMaterial = await _dbConn.ExecuteAsync("DELETE FROM EntregaMaterialLocal WHERE IdEntregaLocal = $p0", IdEntregaLocal);
             int rowsAffectedFoto = await _dbConn.ExecuteAsync("DELETE FROM FotoEntregaLocal WHERE IdEntregaLocal = $p0", IdEntregaLocal);
             return true;
@@ -1403,5 +1313,187 @@ public class DbContext
         }
     }
 
-    #endregion
+    #endregion ENTREGAS CONSULTA
+
+    #region Correctivos Mayores
+
+    public async Task DeleteAllDataCorrectivos() {
+        await EnsureInitialized();
+
+        // Orden recomendado:
+        // Primero datos dependientes, luego catálogos
+        await DeleteAllAsync<ListCorrecM>();
+        await DeleteAllAsync<InmuebleCmModel.InmuebleCorrec>();
+        await DeleteAllAsync<ClienteCmModel.ClienteCorrec>();
+    }
+
+    public async Task GuardarClientesLocal(List<ClienteCmModel.ClienteCorrec> clientes) {
+        await EnsureInitialized();
+
+        await DeleteAllAsync<ClienteCmModel.ClienteCorrec>();
+
+        foreach(var cliente in clientes) {
+            cliente.SyncDate = DateTime.Now;
+        }
+
+        await InsertAllAsync(clientes);
+    }
+
+    public async Task GuardarInmueblesLocal(List<InmuebleCmModel.InmuebleCorrec> inmuebles) {
+        await EnsureInitialized();
+
+        if(inmuebles == null || !inmuebles.Any())
+            return;
+
+        foreach(var inmueble in inmuebles) {
+            inmueble.SyncDate = DateTime.Now;
+        }
+
+        // SOLO INSERTA, NO BORRA TODA LA TABLA
+        await InsertAllAsync(inmuebles);
+    }
+
+    public async Task<string> TestDB() {
+        try {
+            using var cmd = _dbConn.CreateCommand();
+
+            cmd.CommandText = @"
+            SELECT idClaveCM, idCliente, idInmueble
+            FROM ListCorrecM
+            WHERE idCliente = $p0 AND idInmueble = $p1";
+
+            cmd.Parameters.AddWithValue("$p0", 2269);
+            cmd.Parameters.AddWithValue("$p1", 11201);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            int count = 0;
+            StringBuilder sb = new();
+
+            while(await reader.ReadAsync()) {
+                count++;
+
+                string row = $"ID: {reader["idClaveCM"]} | Cliente: {reader["idCliente"]} | Inmueble: {reader["idInmueble"]}";
+                sb.AppendLine(row);
+
+                System.Diagnostics.Debug.WriteLine(row);
+            }
+
+            if(count > 0) {
+                return $"Éxito. Registros encontrados: {count}\n{sb}";
+            }
+
+            return "No se encontraron registros con esos filtros.";
+        } catch(Exception ex) {
+            return $"Error al probar la base de datos: {ex.Message}";
+        }
+    }
+
+    public async Task GuardarCorrectivosLocal(List<ListCorrecM> correctivos) {
+        await EnsureInitialized();
+
+        foreach(var item in correctivos) {
+            item.SyncDate = DateTime.Now;
+        }
+
+        await InsertAllAsync(correctivos);
+    }
+
+    public async Task<List<ClienteCmModel.ClienteCorrec>> ObtenerClientesLocales() {
+        await EnsureInitialized();
+
+        return await QueryAsync<ClienteCmModel.ClienteCorrec>(
+            "SELECT * FROM ClienteCorrec ORDER BY nombre");
+    }
+
+    public async Task<List<InmuebleCmModel.InmuebleCorrec>> ObtenerInmueblesLocales(int idCliente) {
+        try {
+            await EnsureInitialized();
+            return await _dbConn.Table<InmuebleCmModel.InmuebleCorrec>().Where(x => x.id_cliente == idCliente).ToListAsync();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<InmuebleCmModel.InmuebleCorrec>();
+        }
+    }
+
+    public async Task<List<ListCorrecM>> ObtenerCorrectivosPorCliente(int idCliente) {
+        try {
+            await EnsureInitialized();
+            var correctivos = await _dbConn.Table<ListCorrecM>().ToListAsync();
+            return correctivos.Where(c => c.idCliente == idCliente).ToList();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<ListCorrecM>();
+        }
+
+        //TestDB();
+
+        //return await QueryAsync<ListCorrecM>(
+        //    "SELECT * FROM ListCorrecM WHERE idCliente = $p0",
+        //    idCliente);
+    }
+
+    public async Task<List<ListCorrecM>> ObtenerCorrectivosPorClienteInmueble(int cliente, int inmueble) {
+        await EnsureInitialized();
+
+        var testCorrec = await QueryAsync<ListCorrecM>(
+            "SELECT * FROM ListCorrecM");
+        var correctivos = testCorrec.Where(x => x.idCliente == cliente && x.idInmueble == inmueble).ToList();
+
+        return correctivos;
+    }
+
+    public async Task<List<T>> QueryAsync<T>(string sql, params object[] parameters) where T : class, new() {
+        await EnsureInitialized();
+
+        var result = new List<T>();
+
+        using var command = _dbConn.CreateCommand();
+        command.CommandText = sql;
+
+        // Parámetros dinámicos: $p0, $p1, etc.
+        for(int i = 0; i < parameters.Length; i++) {
+            command.Parameters.AddWithValue($"$p{i}", parameters[i] ?? DBNull.Value);
+        }
+
+        using var reader = await command.ExecuteReaderAsync();
+
+        var properties = typeof(T).GetProperties();
+
+        while(await reader.ReadAsync()) {
+            var item = new T();
+
+            foreach(var prop in properties) {
+                try {
+                    int ordinal = reader.GetOrdinal(prop.Name);
+
+                    if(!reader.IsDBNull(ordinal)) {
+                        var dbValue = reader.GetValue(ordinal);
+
+                        // Manejar Nullable<T>
+                        var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+                        // Manejo especial DateTime
+                        if(targetType == typeof(DateTime)) {
+                            prop.SetValue(item, DateTime.Parse(dbValue.ToString()));
+                        }
+                        // Bool SQLite (0/1)
+                        else if(targetType == typeof(bool)) {
+                            prop.SetValue(item, Convert.ToInt32(dbValue) == 1);
+                        } else {
+                            prop.SetValue(item, Convert.ChangeType(dbValue, targetType));
+                        }
+                    }
+                } catch {
+                    // Ignora columnas faltantes o incompatibles
+                }
+            }
+
+            result.Add(item);
+        }
+
+        return result;
+    }
+
+    #endregion Correctivos Mayores
 }
