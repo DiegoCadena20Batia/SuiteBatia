@@ -4,6 +4,7 @@
              x:Class="BatiaSuite.Views.CorrectivosMayores"
              Title="Correctivos Mayores"
              xmlns:utils="clr-namespace:BatiaSuite.Utils"
+             xmlns:local="clr-namespace:BatiaSuite.Views.CorrectivosMayoresPages"
              BackgroundColor="White"
              NavigationPage.HasNavigationBar="True"
              Shell.FlyoutBehavior="Disabled">
@@ -213,34 +214,14 @@
                 <Button 
           Grid.Column="0"
           WidthRequest="150"
-          HeightRequest="20"
+          HeightRequest="50"
           Grid.Row="0"
           BackgroundColor="#6da7fe"
           Text="Precargar Datos" 
           TextColor="White"
           Command="{Binding PrecargarDatosCorrectivosMayoresCommand}"/>
 
-                <!--<Label 
-           Grid.Column="0"
-          Margin="0,10,0,0"
-          HorizontalOptions="Center"
-          VerticalOptions="Center"
-          Grid.Row="1"
-          IsVisible="{Binding FechaCargaValida}"
-          Text="{Binding FechaCarga , StringFormat='💾 {0:dd-MM-yyyy}'}"
-          TextColor="Gray"/>-->
-                
-                
-                <!--<Button 
-          HorizontalOptions="Center"
-          Grid.Column="1"
-          WidthRequest="120"
-          Margin="50,0,0,0"
-          Grid.Row="0"
-          BackgroundColor="LightSeaGreen"
-          Text="Enviar todo" 
-          TextColor="White"
-          Command="{Binding EnviarTodoLocalCommand}"/>-->
+                <local:CorrectivosPendientesBanner />
             </Grid>
         </VerticalStackLayout>
     </ScrollView>

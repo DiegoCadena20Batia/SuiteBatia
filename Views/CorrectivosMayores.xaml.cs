@@ -7,4 +7,12 @@ public partial class CorrectivosMayores : ContentPage {
         InitializeComponent();
         BindingContext = vm;
     }
+
+    protected override async void OnAppearing() {
+        base.OnAppearing();
+
+        if(BindingContext is CorrectivosMayoresViewModel vm) {
+            await vm.VerificarCorrectivosPendientes();
+        }
+    }
 }

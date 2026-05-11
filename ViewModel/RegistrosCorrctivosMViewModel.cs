@@ -21,6 +21,7 @@ using System.Globalization;
 using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
 using BatiaSuite.Models.Encuestas;
+using BatiaSuite.Data;
 
 namespace BatiaSuite.ViewModel {
 
@@ -55,6 +56,7 @@ namespace BatiaSuite.ViewModel {
         }
 
         #region RadioButtons
+
         public int _selectionRadio;
 
         public int SelectionRadio {
@@ -89,7 +91,9 @@ namespace BatiaSuite.ViewModel {
             get { return _selectionRadio4; }
             set { _selectionRadio4 = value; OnPropertyChanged(); }
         }
-        #endregion
+
+        #endregion RadioButtons
+
         private bool _isVisible = false;
 
         public bool IsVisible {
@@ -145,9 +149,14 @@ namespace BatiaSuite.ViewModel {
             }
         }
 
+      
+      
+
         private ObservableCollection<PhotosModel> fotos;
         public ICommand RegisterCommand { get; set; }
         public ICommand ShowPasswordCommand { get; set; }
+
+        private DbContext _dbContext;
 
         public RegistrosCorrctivosMViewModel() {
             ShowPasswordCommand = new Command(() => IsEncuesta());
@@ -156,6 +165,9 @@ namespace BatiaSuite.ViewModel {
 
             IsEnabled = true;
             IsSignature = true;
+            _dbContext = new DbContext();
+
+           
         }
 
         private async Task RegisterCorrectivo() {
@@ -171,35 +183,117 @@ namespace BatiaSuite.ViewModel {
 
             IsEnabled = false;
             IsBusy = true;
-            await UploadPhotosAsync();
 
-            RegistrosCorrectivosMModel registroscorrectivosM = new RegistrosCorrectivosMModel {
-                IdClaveCM = idClave,
-                TrabajosGeneral = _selectionRadio,
-                TecnicosUniforme = _selectionRadio1,
-                TratoTecnicos = _selectionRadio2,
-                TrabajosOrden = _selectionRadio3,
-                MaterialesAdecuados = _selectionRadio4,
-                Encuestado = _nombreRecibe,
-            };
-            var httpClient = new HttpClient();
-            var json = JsonConvert.SerializeObject(registroscorrectivosM);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            //var response = await httpClient.PostAsync("https://www.singa.com.mx:5500/api/CorrectivosMReporte", content);
-            var response = await httpClient.PostAsync(Constants.API_BASE_URL + "CorrectivosMReporte", content);
-            IsBusy = false;
-            IsEnabled = true;
-            if(response.StatusCode == HttpStatusCode.OK) {
-                await DisplayAlert("Mensaje", "Evidencias Enviadas", "Ok");
+            try {
+                RegistrosCorrectivosMModel registroscorrectivosM = new RegistrosCorrectivosMModel {
+                    IdClaveCM = idClave,
+                    TrabajosGeneral = _selectionRadio,
+                    TecnicosUniforme = _selectionRadio1,
+                    TratoTecnicos = _selectionRadio2,
+                    TrabajosOrden = _selectionRadio3,
+                    MaterialesAdecuados = _selectionRadio4,
+                    Encuestado = _nombreRecibe,
+                };
 
-                await Shell.Current.GoToAsync("//MyMenu");
-            } else {
-                //await DisplayAlert("Mensaje", "Evidencias Enviadas", "Ok");
+                // =========================
+                // SIN INTERNET → GUARDAR LOCAL
+                // =========================
+                if(!InternetUtil.IsConnectedInternet()) {
+                    await _dbContext.GuardarCorrectivoPendienteLocal(
+                        registroscorrectivosM,
+                        fotos,
+                        PathFirmaLocal
+                    );
 
-                //await Shell.Current.GoToAsync("//MyMenu");
-                await DisplayAlert("Error", "Ocurrió un error al registrar la información", "Cerrar");
+                    await DisplayAlert(
+                        "Sin conexión",
+                        "Correctivo guardado localmente para sincronización posterior.",
+                        "OK"
+                    );
+
+                    await Shell.Current.GoToAsync("//MyMenu");
+
+                    return;
+                }
+
+                // =========================
+                // CON INTERNET → FLUJO NORMAL
+                // =========================
+                await UploadPhotosAsync();
+
+                var httpClient = new HttpClient();
+
+                var json = JsonConvert.SerializeObject(registroscorrectivosM);
+
+                var content = new StringContent(
+                    json,
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                var response = await httpClient.PostAsync(
+                    Constants.API_BASE_URL + "CorrectivosMReporte",
+                    content
+                );
+
+                if(response.StatusCode == HttpStatusCode.OK) {
+                    await DisplayAlert(
+                        "Mensaje",
+                        "Evidencias Enviadas",
+                        "Ok"
+                    );
+
+                    await Shell.Current.GoToAsync("//MyMenu");
+                } else {
+                    // Si falla API pero sí había conexión:
+                    // guardar local como respaldo
+                    await _dbContext.GuardarCorrectivoPendienteLocal(
+                        registroscorrectivosM,
+                        fotos,
+                        PathFirmaLocal
+                    );
+
+                    await DisplayAlert(
+                        "Sincronización pendiente",
+                        "No se pudo enviar al servidor. Se guardó localmente.",
+                        "OK"
+                    );
+
+                    await Shell.Current.GoToAsync("//MyMenu");
+                }
+            } catch(Exception ex) {
+                // Error inesperado → respaldo local
+                try {
+                    RegistrosCorrectivosMModel respaldo = new RegistrosCorrectivosMModel {
+                        IdClaveCM = idClave,
+                        TrabajosGeneral = _selectionRadio,
+                        TecnicosUniforme = _selectionRadio1,
+                        TratoTecnicos = _selectionRadio2,
+                        TrabajosOrden = _selectionRadio3,
+                        MaterialesAdecuados = _selectionRadio4,
+                        Encuestado = _nombreRecibe,
+                    };
+
+                    await _dbContext.GuardarCorrectivoPendienteLocal(
+                        respaldo,
+                        fotos,
+                        PathFirmaLocal
+                    );
+                } catch { }
+
+                await DisplayAlert(
+                    "Error",
+                    $"Se guardó localmente por seguridad. Detalle: {ex.Message}",
+                    "OK"
+                );
+            } finally {
+                IsBusy = false;
+                IsEnabled = true;
             }
         }
+
+      
+
 
         public void ApplyQueryAttributes(IDictionary<string, object> query) {
             if(query.ContainsKey(Constants.ORDEN_TRABAJO_KEY)) {
@@ -360,6 +454,8 @@ namespace BatiaSuite.ViewModel {
 
             _ordenTrabajo.Trabajo.Fejecucion = (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
             HttpHelper _httpHelper = new HttpHelper();
+
+            //TODO: Recordar tomar los objetos que se llenan en esta clase y guardarlos en BD local, crear las tablas y hacer el reconocimiento para saber si tienen algo o no e imitar la logica de las entregas
 
             int result = await _httpHelper.PostBodyAsync<OrdenTrabajoEjecutadaModel, int>(Constants.OT_ENVIAR_ORDEN_EJECUTADA_API, _ordenTrabajo);
 

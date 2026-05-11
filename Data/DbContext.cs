@@ -3,6 +3,8 @@ using BatiaSuite.Models.Entregas;
 using BatiaSuite.Models.Supervision;
 using BatiaSuite.Utils;
 using Microsoft.Data.Sqlite;
+using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
 using System.Reflection;
@@ -57,7 +59,7 @@ public static class SqliteConnectionExtensions {
 }
 
 public class DbContext {
-    private SqliteConnection _dbConn;
+    public SqliteConnection _dbConn;
 
     //private SQLiteAsyncConnection _dbConn;
     private bool _tablesCreated = false;
@@ -95,10 +97,14 @@ public class DbContext {
 
     typeof(ListCorrecM),
     typeof(ClienteCmModel.ClienteCorrec),
-    typeof(InmuebleCmModel.InmuebleCorrec)
+    typeof(InmuebleCmModel.InmuebleCorrec),
+    typeof(CorrectivoMPendienteLocal),
+    typeof(FotoCorrectivoPendienteLocal)
+    
+
 };
 
-    private async Task EnsureInitialized() {
+    public async Task EnsureInitialized() {
         if(_dbConn != null && _tablesCreated) return;
 
         await _semaphore.WaitAsync();
@@ -1107,6 +1113,53 @@ public class DbContext {
         return null;
     }
 
+    public async Task<int> UpdateAsync<T>(T item) where T : class, new() {
+        await EnsureInitialized();
+
+        var properties = typeof(T).GetProperties()
+            .Where(p => p.CanRead && p.CanWrite)
+            .ToList();
+
+        var primaryKeyProperty = GetPrimaryKeyProperty(typeof(T));
+
+        if(primaryKeyProperty == null)
+            throw new Exception($"No se encontró PRIMARY KEY para {typeof(T).Name}");
+
+        var setClause = string.Join(", ",
+            properties
+                .Where(p => p.Name != primaryKeyProperty.Name)
+                .Select(p => $"{p.Name} = ${p.Name}"));
+
+        var sql =
+            $"UPDATE {typeof(T).Name} " +
+            $"SET {setClause} " +
+            $"WHERE {primaryKeyProperty.Name} = $PrimaryKey";
+
+        using var command = _dbConn.CreateCommand();
+
+        command.CommandText = sql;
+
+        foreach(var prop in properties) {
+
+            if(prop.Name == primaryKeyProperty.Name)
+                continue;
+
+            var value = prop.GetValue(item);
+
+            command.Parameters.AddWithValue(
+                $"${prop.Name}",
+                value ?? DBNull.Value
+            );
+        }
+
+        command.Parameters.AddWithValue(
+            "$PrimaryKey",
+            primaryKeyProperty.GetValue(item)
+        );
+
+        return await command.ExecuteNonQueryAsync();
+    }
+
     // Método para verificar si un valor es el valor por defecto
     private bool IsDefaultValue(object value) {
         if(value == null) return true;
@@ -1441,6 +1494,192 @@ public class DbContext {
         var correctivos = testCorrec.Where(x => x.idCliente == cliente && x.idInmueble == inmueble).ToList();
 
         return correctivos;
+    }
+
+    public async Task GuardarCorrectivoPendienteLocal(
+     RegistrosCorrectivosMModel registro,
+     ObservableCollection<PhotosModel> fotos,
+     string pathFirmaLocal) {
+        await EnsureInitialized();
+
+        // =========================
+        // 1) GUARDAR CABECERA
+        // =========================
+        var correctivoLocal = new CorrectivoMPendienteLocal {
+            IdClaveCM = registro.IdClaveCM,
+            TrabajosGeneral = registro.TrabajosGeneral,
+            TecnicosUniforme = registro.TecnicosUniforme,
+            TratoTecnicos = registro.TratoTecnicos,
+            TrabajosOrden = registro.TrabajosOrden,
+            MaterialesAdecuados = registro.MaterialesAdecuados,
+            Encuestado = registro.Encuestado,
+            FirmaPath = pathFirmaLocal,
+            Sincronizado = false,
+            FechaRegistro = DateTime.Now
+        };
+
+        // InsertAsync actualizará automáticamente IdLocal
+        await InsertAsync(correctivoLocal);
+
+        // =========================
+        // 2) GUARDAR FOTOS
+        // =========================
+        if(fotos != null && fotos.Any()) {
+
+            foreach(var foto in fotos) {
+
+                if(string.IsNullOrWhiteSpace(foto.UrlPhoto))
+                    continue;
+
+                var fotoLocal = new FotoCorrectivoPendienteLocal {
+                    IdCorrectivoLocal = correctivoLocal.IdLocal,
+                    PathFoto = foto.UrlPhoto,
+                    EsFirma = false,
+                    Sincronizado = false,
+                    FechaRegistro = DateTime.Now
+                };
+
+                await InsertAsync(fotoLocal);
+            }
+        }
+
+        // =========================
+        // 3) GUARDAR FIRMA
+        // =========================
+        if(!string.IsNullOrWhiteSpace(pathFirmaLocal)) {
+
+            var firmaLocal = new FotoCorrectivoPendienteLocal {
+                IdCorrectivoLocal = correctivoLocal.IdLocal,
+                PathFoto = pathFirmaLocal,
+                EsFirma = true,
+                Sincronizado = false,
+                FechaRegistro = DateTime.Now
+            };
+
+            await InsertAsync(firmaLocal);
+        }
+    }
+
+    public async Task SincronizarCorrectivosPendientes() {
+        try {
+            await EnsureInitialized();
+
+            // =========================
+            // 1) OBTENER CORRECTIVOS NO SINCRONIZADOS
+            // =========================
+            var correctivos = await _dbConn.Table<CorrectivoMPendienteLocal>()
+                .Where(x => x.Sincronizado == false)
+                .ToListAsync();
+
+            if(correctivos == null || !correctivos.Any())
+                return;
+
+            using var httpClient = new HttpClient();
+
+            // =========================
+            // 2) RECORRER CADA CORRECTIVO
+            // =========================
+            foreach(var local in correctivos) {
+
+                try {
+
+                    // =========================
+                    // 3) OBTENER FOTOS RELACIONADAS
+                    // =========================
+                    var fotos = await _dbConn.Table<FotoCorrectivoPendienteLocal>()
+                        .Where(x =>
+                            x.IdCorrectivoLocal == local.IdLocal &&
+                            x.Sincronizado == false)
+                        .ToListAsync();
+
+                    // =========================
+                    // 4) SUBIR FOTOS / FIRMA
+                    // =========================
+                    foreach(var foto in fotos) {
+
+                        if(string.IsNullOrWhiteSpace(foto.PathFoto) ||
+                           !File.Exists(foto.PathFoto))
+                            continue;
+
+                        using var content = new MultipartFormDataContent();
+
+                        byte[] fileBytes = File.ReadAllBytes(foto.PathFoto);
+
+                        var fileContent = new ByteArrayContent(fileBytes);
+
+                        content.Add(
+                            fileContent,
+                            "files",
+                            Path.GetFileName(foto.PathFoto)
+                        );
+
+                        string url =
+                            Constants.API_BASE_URL +
+                            $"FilesImagenesCM/CargaMul?folio={local.IdClaveCM}";
+
+                        var fotoResponse = await httpClient.PostAsync(
+                            url,
+                            content
+                        );
+
+                        if(fotoResponse.IsSuccessStatusCode) {
+
+                            foto.Sincronizado = true;
+
+                            await UpdateAsync(foto);
+                        }
+                    }
+
+                    // =========================
+                    // 5) ENVIAR REPORTE
+                    // =========================
+                    var registro = new RegistrosCorrectivosMModel {
+                        IdClaveCM = local.IdClaveCM,
+                        TrabajosGeneral = local.TrabajosGeneral,
+                        TecnicosUniforme = local.TecnicosUniforme,
+                        TratoTecnicos = local.TratoTecnicos,
+                        TrabajosOrden = local.TrabajosOrden,
+                        MaterialesAdecuados = local.MaterialesAdecuados,
+                        Encuestado = local.Encuestado
+                    };
+
+                    var json = JsonConvert.SerializeObject(registro);
+
+                    var requestContent = new StringContent(
+                        json,
+                        Encoding.UTF8,
+                        "application/json"
+                    );
+
+                    var response = await httpClient.PostAsync(
+                        Constants.API_BASE_URL + "CorrectivosMReporte",
+                        requestContent
+                    );
+
+                    // =========================
+                    // 6) MARCAR COMO SINCRONIZADO
+                    // =========================
+                    if(response.IsSuccessStatusCode) {
+
+                        local.Sincronizado = true;
+
+                        await UpdateAsync(local);
+                    }
+
+                } catch(Exception ex) {
+
+                    System.Diagnostics.Debug.WriteLine(
+                        $"Error sincronizando correctivo local {local.IdLocal}: {ex.Message}"
+                    );
+                }
+            }
+
+        } catch(Exception ex) {
+
+            System.Diagnostics.Debug.WriteLine(
+                $"Error general de sincronización: {ex.Message}"
+            );
+        }
     }
 
     public async Task<List<T>> QueryAsync<T>(string sql, params object[] parameters) where T : class, new() {

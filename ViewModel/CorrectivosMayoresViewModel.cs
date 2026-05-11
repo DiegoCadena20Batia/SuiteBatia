@@ -24,6 +24,26 @@ namespace BatiaSuite.ViewModel {
             get { return _isEnabled; }
             set { _isEnabled = value; OnPropertyChanged(); }
         }
+        private bool _hayCorrectivosPendientes;
+
+        public bool HayCorrectivosPendientes {
+            get => _hayCorrectivosPendientes;
+            set {
+                _hayCorrectivosPendientes = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int _cantidadCorrectivosPendientes;
+        public int CantidadCorrectivosPendientes {
+            get => _cantidadCorrectivosPendientes;
+            set {
+                _cantidadCorrectivosPendientes = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand SincronizarCorrectivosCommand { get; set; }
 
         public ObservableCollection<ListCorrecM> ListApps {
             get { return listApps; }
@@ -140,6 +160,44 @@ namespace BatiaSuite.ViewModel {
             CommandListadoSelec = new Command<ListCorrecM>(async (k) => await ListadoSelec(k));
 
             PrecargarDatosCorrectivosMayoresCommand = new Command(async () => PrecargarDatosCorrectivosMayores());
+
+            SincronizarCorrectivosCommand = new Command(async () => {
+                if(!InternetUtil.IsConnectedInternet()) {
+                    await DisplayAlert(
+                        "Sin conexión",
+                        "Necesitas internet para enviar correctivos pendientes.",
+                        "OK"
+                    );
+                    return;
+                }
+
+                IsBusy = true;
+
+                try {
+
+                    await _dbContext.SincronizarCorrectivosPendientes();
+
+                    await VerificarCorrectivosPendientes();
+
+                    await DisplayAlert(
+                        "Éxito",
+                        "Correctivos pendientes sincronizados.",
+                        "OK"
+                    );
+
+                } catch(Exception ex) {
+
+                    await DisplayAlert(
+                        "Error",
+                        ex.Message,
+                        "OK"
+                    );
+
+                } finally {
+
+                    IsBusy = false;
+                }
+            });
         }
 
         private async Task GetClients() {
@@ -536,6 +594,33 @@ namespace BatiaSuite.ViewModel {
             }
             IsBusy = false;
             IsEnabled = true;
+        }
+
+
+        public async Task VerificarCorrectivosPendientes() {
+            try {
+
+                await _dbContext.EnsureInitialized();
+
+                var pendientes = await _dbContext._dbConn
+                    .Table<CorrectivoMPendienteLocal>()
+                    .Where(x => x.Sincronizado == false)
+                    .ToListAsync();
+
+                CantidadCorrectivosPendientes = pendientes.Count;
+
+                HayCorrectivosPendientes = CantidadCorrectivosPendientes > 0;
+
+            } catch(Exception ex) {
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"Error verificando pendientes: {ex.Message}"
+                );
+
+                CantidadCorrectivosPendientes = 0;
+
+                HayCorrectivosPendientes = false;
+            }
         }
     }
 }
