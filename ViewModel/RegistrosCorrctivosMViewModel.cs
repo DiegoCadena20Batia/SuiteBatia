@@ -455,7 +455,6 @@ namespace BatiaSuite.ViewModel {
             _ordenTrabajo.Trabajo.Fejecucion = (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
             HttpHelper _httpHelper = new HttpHelper();
 
-            //TODO: Recordar tomar los objetos que se llenan en esta clase y guardarlos en BD local, crear las tablas y hacer el reconocimiento para saber si tienen algo o no e imitar la logica de las entregas
 
             int result = await _httpHelper.PostBodyAsync<OrdenTrabajoEjecutadaModel, int>(Constants.OT_ENVIAR_ORDEN_EJECUTADA_API, _ordenTrabajo);
 

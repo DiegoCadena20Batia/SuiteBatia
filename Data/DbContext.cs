@@ -1,5 +1,6 @@
 ﻿using BatiaSuite.Models;
 using BatiaSuite.Models.Entregas;
+using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Models.Supervision;
 using BatiaSuite.Utils;
 using Microsoft.Data.Sqlite;
@@ -13,6 +14,7 @@ using System.Text;
 namespace BatiaSuite.Data;
 
 public static class SqliteConnectionExtensions {
+
     public static TableQuery<T> Table<T>(this SqliteConnection connection) where T : class, new() {
         return new TableQuery<T>(connection);
     }
@@ -100,9 +102,13 @@ public class DbContext {
     typeof(InmuebleCmModel.InmuebleCorrec),
     typeof(CorrectivoMPendienteLocal),
     typeof(FotoCorrectivoPendienteLocal)
-    
-
 };
+
+    private static readonly Type[] _tableOrdenesDeTrabajo = new[]
+{
+         typeof(OrdenTrabajoModel)
+    };
+
 
     public async Task EnsureInitialized() {
         if(_dbConn != null && _tablesCreated) return;
@@ -120,6 +126,28 @@ public class DbContext {
             _tablesCreated = true;
         } catch(Exception ex) {
             Debug.WriteLine($"Error inicializando base de datos: {ex.Message}");
+            throw;
+        } finally {
+            _semaphore.Release();
+        }
+    }
+
+    public async Task InitializedOrdenesDeTrabajo() {
+        if(_dbConn != null && _tablesCreated) return;
+
+        await _semaphore.WaitAsync();
+        try {
+            if(_dbConn != null && _tablesCreated) return;
+
+            _dbConn = new SqliteConnection($"Data Source={Constants.DATABASE_PATH}");
+            await _dbConn.OpenAsync();
+            foreach(var type in _tableOrdenesDeTrabajo) {
+                await CreateTableAsync(type);
+            }
+
+            _tablesCreated = true;
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error inicializando tablas de Ordenes de Trabajo: {ex.Message}");
             throw;
         } finally {
             _semaphore.Release();
@@ -158,7 +186,6 @@ public class DbContext {
 
         // ORDEN DE PRIORIDAD - solo asignar PK si no se ha asignado ya
         if(!primaryKeyAssigned) {
-
             // PKs válidas
             if(prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase) ||
                prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
@@ -168,7 +195,6 @@ public class DbContext {
                // PKs reales de catálogos
                prop.Name.Equals("id_inmueble", StringComparison.OrdinalIgnoreCase) ||
                prop.Name.Equals("idCliente", StringComparison.OrdinalIgnoreCase)) {
-
                 constraints.Add("PRIMARY KEY");
 
                 // AUTOINCREMENT solo para IDs locales internos
@@ -176,7 +202,6 @@ public class DbContext {
                    prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
                    prop.Name.Equals("IdCorrectivoLocal", StringComparison.OrdinalIgnoreCase) ||
                    prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase)) {
-
                     constraints.Add("AUTOINCREMENT");
                 }
 
@@ -1140,7 +1165,6 @@ public class DbContext {
         command.CommandText = sql;
 
         foreach(var prop in properties) {
-
             if(prop.Name == primaryKeyProperty.Name)
                 continue;
 
@@ -1525,9 +1549,7 @@ public class DbContext {
         // 2) GUARDAR FOTOS
         // =========================
         if(fotos != null && fotos.Any()) {
-
             foreach(var foto in fotos) {
-
                 if(string.IsNullOrWhiteSpace(foto.UrlPhoto))
                     continue;
 
@@ -1547,7 +1569,6 @@ public class DbContext {
         // 3) GUARDAR FIRMA
         // =========================
         if(!string.IsNullOrWhiteSpace(pathFirmaLocal)) {
-
             var firmaLocal = new FotoCorrectivoPendienteLocal {
                 IdCorrectivoLocal = correctivoLocal.IdLocal,
                 PathFoto = pathFirmaLocal,
@@ -1580,9 +1601,7 @@ public class DbContext {
             // 2) RECORRER CADA CORRECTIVO
             // =========================
             foreach(var local in correctivos) {
-
                 try {
-
                     // =========================
                     // 3) OBTENER FOTOS RELACIONADAS
                     // =========================
@@ -1596,7 +1615,6 @@ public class DbContext {
                     // 4) SUBIR FOTOS / FIRMA
                     // =========================
                     foreach(var foto in fotos) {
-
                         if(string.IsNullOrWhiteSpace(foto.PathFoto) ||
                            !File.Exists(foto.PathFoto))
                             continue;
@@ -1623,7 +1641,6 @@ public class DbContext {
                         );
 
                         if(fotoResponse.IsSuccessStatusCode) {
-
                             foto.Sincronizado = true;
 
                             await UpdateAsync(foto);
@@ -1660,22 +1677,17 @@ public class DbContext {
                     // 6) MARCAR COMO SINCRONIZADO
                     // =========================
                     if(response.IsSuccessStatusCode) {
-
                         local.Sincronizado = true;
 
                         await UpdateAsync(local);
                     }
-
                 } catch(Exception ex) {
-
                     System.Diagnostics.Debug.WriteLine(
                         $"Error sincronizando correctivo local {local.IdLocal}: {ex.Message}"
                     );
                 }
             }
-
         } catch(Exception ex) {
-
             System.Diagnostics.Debug.WriteLine(
                 $"Error general de sincronización: {ex.Message}"
             );
@@ -1735,4 +1747,6 @@ public class DbContext {
     }
 
     #endregion Correctivos Mayores
+
+
 }

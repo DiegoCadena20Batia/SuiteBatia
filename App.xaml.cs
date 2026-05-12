@@ -3,6 +3,7 @@ using BatiaSuite.Utils;
 using BatiaSuite.Views;
 using System.Drawing;
 using SQLitePCL;
+using System.Diagnostics;
 #if IOS
 using UIKit;
 using Foundation;
@@ -18,6 +19,7 @@ public partial class App : Application {
 
         if(UserSession.IdPersonal != 0) {
             MainPage = new AppShell();
+            Debug.WriteLine("User logged in: " + UserSession.IdPersonal);
         } else {
             MainPage = new Logueo();
         }
@@ -84,4 +86,6 @@ public partial class App : Application {
 #endif
         });
     }
+
+    
 }

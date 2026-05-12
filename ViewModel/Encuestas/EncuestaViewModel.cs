@@ -119,6 +119,8 @@ public partial class EncuestaViewModel : ViewModelBase, IQueryAttributable {
             return;
         }
 
+        //TODO: en este punto se debe guardar en local la orden de trabajo 
+
         int result = await _httpHelper.PostBodyAsync<OrdenTrabajoEjecutadaModel, int>(Constants.OT_ENVIAR_ORDEN_EJECUTADA_API, _ordenTrabajo);
 
         IsLoading = false;
