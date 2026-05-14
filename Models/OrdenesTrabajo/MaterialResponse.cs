@@ -75,6 +75,7 @@ public class MaterialResponse {
 
     [JsonIgnore]
     public bool IsCompra { get; set; }
+    public DateTime SyncDate { get; internal set; }
 
     public static MaterialRequest MaterialConvert(MaterialResponse material) {
         return new MaterialRequest {
@@ -97,4 +98,5 @@ public class MaterialResponse {
 public class AlmacenModel {
     public int IdAlmacen { get; set; }
     public string Nombre { get; set; }
+    public DateTime SyncDate { get; internal set; }
 }

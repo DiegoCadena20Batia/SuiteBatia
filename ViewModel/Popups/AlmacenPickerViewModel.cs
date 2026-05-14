@@ -1,4 +1,5 @@
-﻿using BatiaSuite.Models.OrdenesTrabajo;
+﻿using BatiaSuite.Data;
+using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 namespace BatiaSuite.ViewModel.Popups;
 
 public partial class AlmacenPickerViewModel : ViewModelBase {
+    DbContext _dbContext;
 
     CancellationTokenSource _cancellationTokenSource;
     AlmacenModel _oldAlmacen;
@@ -24,27 +26,35 @@ public partial class AlmacenPickerViewModel : ViewModelBase {
     }
 
     public AlmacenPickerViewModel(AlmacenModel oldAlmacen) {
+        _dbContext = new DbContext();
         _oldAlmacen = oldAlmacen;
         AlmacenList = new ObservableCollection<AlmacenModel>();
     }
 
     [RelayCommand]
     async Task GetAlmacenList(string query) {
-        if(_cancellationTokenSource is not null) {
-            _cancellationTokenSource.Cancel();
-        }
-        _cancellationTokenSource = new CancellationTokenSource();
+        if(Utils.InternetUtil.IsConnectedInternet()) {
 
-        CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
-        if(!cancellationToken.IsCancellationRequested) {
-            string url = $"{Constants.OT_ALMACEN_API}?nombre={query}";
-
-            AlmacenList = await _httpHelper.GetAsync<ObservableCollection<AlmacenModel>>(url, cancellationToken);
-
-            if(AlmacenList is null || AlmacenList.Count == 0) {
-                EmptyView =Constants.NO_HAY_REGISTROS;
+            if(_cancellationTokenSource is not null) {
+                _cancellationTokenSource.Cancel();
             }
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            CancellationToken cancellationToken = _cancellationTokenSource.Token;
+
+            if(!cancellationToken.IsCancellationRequested) {
+                string url = $"{Constants.OT_ALMACEN_API}?nombre={query}";
+
+                AlmacenList = await _httpHelper.GetAsync<ObservableCollection<AlmacenModel>>(url, cancellationToken);
+
+                if(AlmacenList is null || AlmacenList.Count == 0) {
+                    EmptyView = Constants.NO_HAY_REGISTROS;
+                }
+            }
+        } else {
+            var almacenList = await _dbContext.ObtenerAlmacenesLocales();
+            AlmacenList = new ObservableCollection<AlmacenModel>(almacenList.Where(x=>x.Nombre.Contains(query.ToUpper())));
         }
     }
 

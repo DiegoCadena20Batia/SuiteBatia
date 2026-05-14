@@ -1,4 +1,5 @@
-﻿using BatiaSuite.Models;
+﻿using BatiaSuite.Data;
+using BatiaSuite.Models;
 using BatiaSuite.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -6,6 +7,8 @@ using CommunityToolkit.Mvvm.Input;
 namespace BatiaSuite.ViewModel;
 
 public partial class LogueoViewModel : ViewModelBase {
+
+    DbContext _dbContext;
 
     [ObservableProperty]
     bool _isPassword = true;
@@ -22,6 +25,10 @@ public partial class LogueoViewModel : ViewModelBase {
     [ObservableProperty]
     bool _isBusy;
 
+    public LogueoViewModel() {
+           _dbContext = new DbContext();
+    }
+
     [RelayCommand]
     async Task Login() {
         if(!await ValidateData()) {
@@ -32,7 +39,7 @@ public partial class LogueoViewModel : ViewModelBase {
             return;
         }
 
-        IsBusy = true;
+            IsBusy = true;
         await Task.Delay(200);
         string url = $"Login?usr={UserName}&pwd={Password}";
 
@@ -42,6 +49,10 @@ public partial class LogueoViewModel : ViewModelBase {
 
             if(!string.IsNullOrEmpty(response.per_Nombre)) {
                 UserSession.SetData(response);
+                if(Utils.InternetUtil.IsConnectedInternet()) {
+                    await _dbContext.GuardarDataOrdenesTrabajoLocal();
+                }
+
                 App.Current.MainPage = new AppShell();
             } else {
                 await App.Current.MainPage.DisplayAlert(string.Empty, Constants.USER_PASS_INCORRECTOS, Constants.ACEPTAR);

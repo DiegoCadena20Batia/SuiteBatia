@@ -62,6 +62,7 @@ public static class SqliteConnectionExtensions {
 
 public class DbContext {
     public SqliteConnection _dbConn;
+    HttpHelper _httpHelper;
 
     //private SQLiteAsyncConnection _dbConn;
     private bool _tablesCreated = false;
@@ -69,11 +70,12 @@ public class DbContext {
     private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     public DbContext() {
+        _httpHelper= new HttpHelper();  
     }
 
     private static readonly Type[] _tableTypes = new[]
-{
-        //SUPERVISION
+    {
+    // SUPERVISION
     typeof(SupervisionLocal),
     typeof(ArchivoLocal),
     typeof(PreguntaLocal),
@@ -85,30 +87,32 @@ public class DbContext {
     typeof(InmuebleLocal),
     typeof(ClientsModel),
     typeof(PrecargaSupervision),
-        //ENTREGAS
+
+    // ENTREGAS
     typeof(PrecargaEntrega),
     typeof(ClienteEntregaPrecarga),
     typeof(InmuebleEntregaPrecarga),
     typeof(ListadoEntregaPrecarga),
     typeof(ListadoMaterialEntregaPrecarga),
-
     typeof(EntregaLocal),
     typeof(EntregaMaterialLocal),
     typeof(FotoEntregaLocal),
     typeof(EntregaReporteUbicacionLocal),
 
+    // CORRECTIVOS
     typeof(ListCorrecM),
     typeof(ClienteCmModel.ClienteCorrec),
     typeof(InmuebleCmModel.InmuebleCorrec),
     typeof(CorrectivoMPendienteLocal),
-    typeof(FotoCorrectivoPendienteLocal)
+    typeof(FotoCorrectivoPendienteLocal),
+
+    // ORDENES
+    typeof(OrdenTrabajoModel),
+    typeof(PersonalOrdenTrabajoResponse),
+    typeof(UnidadMedidaModel),
+    typeof(AlmacenModel),
+    typeof(MaterialResponse)
 };
-
-    private static readonly Type[] _tableOrdenesDeTrabajo = new[]
-{
-         typeof(OrdenTrabajoModel)
-    };
-
 
     public async Task EnsureInitialized() {
         if(_dbConn != null && _tablesCreated) return;
@@ -126,28 +130,6 @@ public class DbContext {
             _tablesCreated = true;
         } catch(Exception ex) {
             Debug.WriteLine($"Error inicializando base de datos: {ex.Message}");
-            throw;
-        } finally {
-            _semaphore.Release();
-        }
-    }
-
-    public async Task InitializedOrdenesDeTrabajo() {
-        if(_dbConn != null && _tablesCreated) return;
-
-        await _semaphore.WaitAsync();
-        try {
-            if(_dbConn != null && _tablesCreated) return;
-
-            _dbConn = new SqliteConnection($"Data Source={Constants.DATABASE_PATH}");
-            await _dbConn.OpenAsync();
-            foreach(var type in _tableOrdenesDeTrabajo) {
-                await CreateTableAsync(type);
-            }
-
-            _tablesCreated = true;
-        } catch(Exception ex) {
-            Debug.WriteLine($"Error inicializando tablas de Ordenes de Trabajo: {ex.Message}");
             throw;
         } finally {
             _semaphore.Release();
@@ -842,7 +824,7 @@ public class DbContext {
 
             //LOGS
             //var todos = await _dbConn.Table<InmuebleLocal>().ToListAsync();
-            //Console.WriteLine($"Total inmuebles en tabla: {todos.Count}");
+            //Console.WriteLine($"Total ordenes en tabla: {todos.Count}");
             //foreach(var item in todos) {
             //    Console.WriteLine($"Inmueble: {item.IdInmueble}, Cliente: {item.IdCliente}");
             //}
@@ -1430,42 +1412,6 @@ public class DbContext {
         await InsertAllAsync(inmuebles);
     }
 
-    public async Task<string> TestDB() {
-        try {
-            using var cmd = _dbConn.CreateCommand();
-
-            cmd.CommandText = @"
-            SELECT idClaveCM, idCliente, idInmueble
-            FROM ListCorrecM
-            WHERE idCliente = $p0 AND idInmueble = $p1";
-
-            cmd.Parameters.AddWithValue("$p0", 2269);
-            cmd.Parameters.AddWithValue("$p1", 11201);
-
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            int count = 0;
-            StringBuilder sb = new();
-
-            while(await reader.ReadAsync()) {
-                count++;
-
-                string row = $"ID: {reader["idClaveCM"]} | Cliente: {reader["idCliente"]} | Inmueble: {reader["idInmueble"]}";
-                sb.AppendLine(row);
-
-                System.Diagnostics.Debug.WriteLine(row);
-            }
-
-            if(count > 0) {
-                return $"Éxito. Registros encontrados: {count}\n{sb}";
-            }
-
-            return "No se encontraron registros con esos filtros.";
-        } catch(Exception ex) {
-            return $"Error al probar la base de datos: {ex.Message}";
-        }
-    }
-
     public async Task GuardarCorrectivosLocal(List<ListCorrecM> correctivos) {
         await EnsureInitialized();
 
@@ -1748,5 +1694,199 @@ public class DbContext {
 
     #endregion Correctivos Mayores
 
+    #region Ordenes de Trabajo
+
+    public async Task GuardarOrdenesTrabajoLocal(List<OrdenTrabajoModel> ordenes) {
+        try {
+            await EnsureInitialized();
+          
+
+            if(ordenes == null || !ordenes.Any())
+                return;
+
+            foreach(var inmueble in ordenes) {
+                inmueble.SyncDate = DateTime.Now;
+            }
+
+            await InsertAllAsync(ordenes);
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error al guardar órdenes de trabajo local: {ex.Message}");
+        }
+    }
+
+    public async Task GuardarPersonalLocal(List<PersonalOrdenTrabajoResponse> personal) {
+        try {
+            await EnsureInitialized();  
+            if(personal == null || !personal.Any())
+                return;
+
+            foreach(var inmueble in personal) {
+                inmueble.SyncDate = DateTime.Now;
+            }
+
+            await InsertAllAsync(personal);
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error al guardar personal local: {ex.Message}");
+        }
+    }
+
+    public async Task GuardarUnidadMedidaLocal(List<UnidadMedidaModel> unidades) {
+        try {
+            await EnsureInitialized();  
+            if(unidades == null || !unidades.Any())
+                return;
+
+            foreach(var unidad in unidades) {
+                unidad.SyncDate = DateTime.Now;
+            }
+
+            await InsertAllAsync(unidades   );
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error al guardar personal local: {ex.Message}");
+        }
+    }
+    public async Task GuardarAlmacenesLocal(List<AlmacenModel> materiales) {
+        try {
+            await EnsureInitialized();  
+            if(materiales == null || !materiales.Any())
+                return;
+
+            foreach(var material in materiales) {
+                material.SyncDate = DateTime.Now;
+            }
+
+            await InsertAllAsync(materiales);
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error al guardar personal local: {ex.Message}");
+        }
+    }
+    public async Task GuardarMaterialFiltradoLocal(List<MaterialResponse> materiales) {
+        try {
+            await EnsureInitialized();  
+            if(materiales == null || !materiales.Any())
+                return;
+
+            foreach(var material in materiales) {
+                material.SyncDate = DateTime.Now;
+            }
+
+            await InsertAllAsync(materiales);
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error al guardar personal local: {ex.Message}");
+        }
+    }
+
+    public async Task<List<OrdenTrabajoModel>> ObtenerOrdenesTrabajoLocales() {
+        try {
+            await EnsureInitialized();
+            return await _dbConn.Table<OrdenTrabajoModel>().ToListAsync();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<OrdenTrabajoModel>();
+        }
+    }
+
+    public async Task<List<PersonalOrdenTrabajoResponse>> ObtenerPersonalLocales() {
+        try {
+            await EnsureInitialized();
+            return await _dbConn.Table<PersonalOrdenTrabajoResponse>().ToListAsync();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<PersonalOrdenTrabajoResponse>();
+        }
+    }
+
+    public async Task<List<UnidadMedidaModel>> ObtenerUnidadesMedidaLocales() {
+        try {
+            await EnsureInitialized();
+            return await _dbConn.Table<UnidadMedidaModel>().ToListAsync();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<UnidadMedidaModel>();
+        }
+    }
+    public async Task<List<AlmacenModel>> ObtenerAlmacenesLocales() {
+        try {
+            await EnsureInitialized();
+            return await _dbConn.Table<AlmacenModel>().ToListAsync();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<AlmacenModel>();
+        }
+    }
+    public async Task<List<MaterialResponse>> ObtenerMaterialFiltradoLocales() {
+        try {
+            await EnsureInitialized();
+            return await _dbConn.Table<MaterialResponse>().ToListAsync();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<MaterialResponse>();
+        }
+    }
+
+    public async Task DeleteAllDataOrdenesTrabajo() {
+        await EnsureInitialized();
+
+        // Orden recomendado:
+        // Primero datos dependientes, luego catálogos
+        await DeleteAllAsync<OrdenTrabajoModel>();
+        await DeleteAllAsync<PersonalOrdenTrabajoResponse>();
+        await DeleteAllAsync<UnidadMedidaModel>();
+        await DeleteAllAsync<AlmacenModel>();
+        await DeleteAllAsync<MaterialResponse>();
+    }
+
+
+
+
+
+
+
+
+    public async Task GuardarDataOrdenesTrabajoLocal() {
+        await EnsureInitialized();
+        await DeleteAllDataOrdenesTrabajo();
+
+        string url = $"{Constants.ORDENES_TRABAJO_API}?idtecnico={UserSession.IdEmpleado}";
+        var ListOrdenes = await _httpHelper.GetAsync<List<OrdenTrabajoModel>>(url);
+        await EnsureInitialized();
+        await GuardarOrdenesTrabajoLocal(ListOrdenes);
+
+        string urlPersonal = $"{Constants.OT_TECNICO_API}";
+        var ListPersonal = await _httpHelper.GetAsync<List<PersonalOrdenTrabajoResponse>>(urlPersonal);
+        await GuardarPersonalLocal(ListPersonal);
+
+        string urlUnidadesMedida = Constants.OT_UNIDAD_MEDIDA_API;
+        var unidadMedidaList = await _httpHelper.GetAsync<List<UnidadMedidaModel>>(urlUnidadesMedida);
+        await GuardarUnidadMedidaLocal(unidadMedidaList);
+
+        string urlAlmacenes = Constants.OT_ALMACEN_API;
+        var materialesList = await _httpHelper.GetAsync<List<AlmacenModel>>(urlAlmacenes);
+        await GuardarAlmacenesLocal(materialesList);
+
+        string urlMateriales = $"{Constants.OT_PRODUCTOS_API}?nombre=";
+    }
+    #endregion Ordenes de Trabajo
+
+    public async Task TestDB() {
+        try {
+            await EnsureInitialized();
+            using var cmd = _dbConn.CreateCommand();
+
+            cmd.CommandText = @"SELECT * from OrdenTrabajoModel";
+
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            StringBuilder sb = new();
+
+            while(await reader.ReadAsync()) {
+                string row = $"ID: {reader["idOrden"]} | Status: {reader["status"]}";
+                sb.AppendLine(row);
+
+                System.Diagnostics.Debug.WriteLine(row);
+            }
+        } catch(Exception ex) {
+        }
+    }
 
 }

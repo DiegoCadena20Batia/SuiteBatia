@@ -49,6 +49,7 @@ public partial class ManoObraViewModel : ViewModelBase, IQueryAttributable {
         if(string.IsNullOrWhiteSpace(personal.nombre)) {
             return;
         }
+        
 
         if(SelectedPersonalList.Any(p => p.IdEmpleado == personal.idEmpleado)) {
             await App.Current.MainPage.DisplayAlert("", Constants.PERSONAL_AGREGADO, Constants.ACEPTAR);

@@ -1,9 +1,13 @@
 ﻿using BatiaSuite.Controls;
+using BatiaSuite.Data;
+using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
-using System.Drawing;
 using SQLitePCL;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
+
 #if IOS
 using UIKit;
 using Foundation;
@@ -12,14 +16,20 @@ using Foundation;
 namespace BatiaSuite;
 
 public partial class App : Application {
+    private DbContext _dbContext;
+    public readonly HttpHelper _httpHelper;
 
-    public App() {
+    public App(DbContext dbContext) {
+        _dbContext = dbContext;
+        _httpHelper = new HttpHelper();
         SQLitePCL.Batteries_V2.Init();
         InitializeComponent();
 
         if(UserSession.IdPersonal != 0) {
             MainPage = new AppShell();
-            Debug.WriteLine("User logged in: " + UserSession.IdPersonal);
+            if(Utils.InternetUtil.IsConnectedInternet()) {
+                 _dbContext.GuardarDataOrdenesTrabajoLocal();
+            }
         } else {
             MainPage = new Logueo();
         }
@@ -27,7 +37,9 @@ public partial class App : Application {
         CreateControls();
     }
 
-    void CreateControls() {
+    
+
+    private void CreateControls() {
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(TransparentEntry), (handler, view) => {
             if(view is TransparentEntry) {
 #if ANDROID
@@ -86,6 +98,4 @@ public partial class App : Application {
 #endif
         });
     }
-
-    
 }

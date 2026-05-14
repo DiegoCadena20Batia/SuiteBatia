@@ -1,4 +1,5 @@
-﻿using BatiaSuite.Models.OrdenesTrabajo;
+﻿using BatiaSuite.Data;
+using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,6 +9,8 @@ using System.Collections.ObjectModel;
 namespace BatiaSuite.ViewModel.Popups;
 
 public partial class MatSumClienteViewModel : ViewModelBase {
+
+    DbContext _dbContext;
 
     [ObservableProperty]
     bool _isLoading;
@@ -39,6 +42,7 @@ public partial class MatSumClienteViewModel : ViewModelBase {
     }
 
     public MatSumClienteViewModel() {
+        _dbContext = new DbContext();
         InitValues();
     }
 
@@ -91,9 +95,15 @@ public partial class MatSumClienteViewModel : ViewModelBase {
 
     async Task InitUnidadMedidaList() {
         IsLoading = true;
+        if(Utils.InternetUtil.IsConnectedInternet()) {
+
         string url = Constants.OT_UNIDAD_MEDIDA_API;
         UnidadMedidaList = await _httpHelper.GetAsync<ObservableCollection<UnidadMedidaModel>>(url);
-        IsLoading = false;
+        } else {
+            var unidadesMedida = await _dbContext.ObtenerUnidadesMedidaLocales();
+            UnidadMedidaList = new ObservableCollection<UnidadMedidaModel>(unidadesMedida);
+        }
+            IsLoading = false;
     }
 
     [RelayCommand]

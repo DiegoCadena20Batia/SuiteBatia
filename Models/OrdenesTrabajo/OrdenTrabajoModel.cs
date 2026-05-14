@@ -1,4 +1,5 @@
-﻿namespace BatiaSuite.Models.OrdenesTrabajo;
+﻿
+namespace BatiaSuite.Models.OrdenesTrabajo;
 
 public class OrdenTrabajoModel {
     public int idOrden { get; set; }
@@ -10,4 +11,5 @@ public class OrdenTrabajoModel {
     public string tipomanto { get; set; }
     public string tipoOrden { get; set; }
     public string descripcion { get; set; }
+    public DateTime SyncDate { get; internal set; }
 }

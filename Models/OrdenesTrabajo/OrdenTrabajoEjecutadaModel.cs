@@ -79,10 +79,12 @@ public class MaterialRequest {
 public class UnidadMedidaModel {
     public int IdUnidad { get; set; }
     public string Descripcion { get; set; }
+    public DateTime SyncDate { get; internal set; }
 }
 
 public class PersonalOrdenTrabajoResponse {
     public int idEmpleado { get; set; }
     public string nombre { get; set; }
     public float sueldo { get; set; }
+    public DateTime SyncDate { get; internal set; }
 }

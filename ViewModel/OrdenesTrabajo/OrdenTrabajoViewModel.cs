@@ -1,4 +1,5 @@
-﻿using BatiaSuite.Models.OrdenesTrabajo;
+﻿using BatiaSuite.Data;
+using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
 using BatiaSuite.Views.OrdenesTrabajo;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,40 +14,46 @@ public partial class OrdenTrabajoViewModel : ViewModelBase {
     private ObservableCollection<OrdenTrabajoModel> _listOrdenes;
 
     [ObservableProperty]
-    bool _isLoading;
+    private bool _isLoading;
 
     [ObservableProperty]
-    string _textLoading;
+    private string _textLoading;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SelectedOrdenCommand))]
-    bool _isBusy;
+    private bool _isBusy;
 
-    int _idEmpleado = 0;
+    private int _idEmpleado = 0;
+
+    private DbContext _dbContext;
 
     public OrdenTrabajoViewModel() {
-
-        
+        _dbContext = new DbContext();
         _idEmpleado = UserSession.IdEmpleado;
         InitValues();
     }
 
-    async void InitValues() {
+    private async void InitValues() {
         //aqui validar si el usuario es de tipo cliente o es el que solo va a ver las ordenes de trabajo programadas
         await GetOrdersAsync();
     }
 
-    async Task GetOrdersAsync() {
-        IsLoading = true;
-        TextLoading = "Cargando órdenes de trabajo...";
-        string url = $"{Constants.ORDENES_TRABAJO_API}?idtecnico={_idEmpleado}";
-        ListOrdenes = await _httpHelper.GetAsync<ObservableCollection<OrdenTrabajoModel>>(url);
-        TextLoading = "";
-        IsLoading = false;
+    private async Task GetOrdersAsync() {
+        if(!Utils.InternetUtil.IsConnectedInternet()) {
+            var ordenesLoclaes = await _dbContext.ObtenerOrdenesTrabajoLocales();
+            ListOrdenes = new ObservableCollection<OrdenTrabajoModel>(ordenesLoclaes);
+        } else {
+            IsLoading = true;
+            TextLoading = "Cargando órdenes de trabajo...";
+            string url = $"{Constants.ORDENES_TRABAJO_API}?idtecnico={_idEmpleado}";
+            ListOrdenes = await _httpHelper.GetAsync<ObservableCollection<OrdenTrabajoModel>>(url);
+            TextLoading = "";
+            IsLoading = false;
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanSelectedOrden))]
-    async Task SelectedOrden(OrdenTrabajoModel ordenSeleccionada) {
+    private async Task SelectedOrden(OrdenTrabajoModel ordenSeleccionada) {
         IsBusy = true;
         IsLoading = true;
         TextLoading = "Cargando...";
@@ -58,7 +65,7 @@ public partial class OrdenTrabajoViewModel : ViewModelBase {
             Descripcion = ordenSeleccionada.descripcion,
             Falta = ordenSeleccionada.falta,
             Tipo = ordenSeleccionada.tipomanto
-        }; 
+        };
 
         OrdenTrabajoEjecutadaModel orden = new OrdenTrabajoEjecutadaModel {
             Trabajo = trabajo
@@ -75,7 +82,7 @@ public partial class OrdenTrabajoViewModel : ViewModelBase {
         TextLoading = "";
     }
 
-    bool CanSelectedOrden() {
+    private bool CanSelectedOrden() {
         return !IsBusy;
     }
 }

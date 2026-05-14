@@ -1,4 +1,5 @@
-﻿using BatiaSuite.Models.OrdenesTrabajo;
+﻿using BatiaSuite.Data;
+using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 namespace BatiaSuite.ViewModel.Popups;
 
 public partial class MaterialPickerViewModel : ViewModelBase {
+    DbContext _dbContext;
 
     CancellationTokenSource _cancellationTokenSource;
     int _idCliente;
@@ -30,6 +32,7 @@ public partial class MaterialPickerViewModel : ViewModelBase {
     }
 
     public MaterialPickerViewModel(int idAlmacen, int idCliente) {
+        _dbContext = new DbContext();
         IdAlmacen = idAlmacen;
         _idCliente = idCliente;
     }
@@ -45,8 +48,13 @@ public partial class MaterialPickerViewModel : ViewModelBase {
         CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
         if(!cancellationToken.IsCancellationRequested) {
+            if(Utils.InternetUtil.IsConnectedInternet()) {
 
             MaterialList = await _httpHelper.GetAsync<ObservableCollection<MaterialResponse>>(GetUrl(query));
+            } else {
+                MaterialList = new ObservableCollection<MaterialResponse>(await _dbContext.ObtenerMaterialFiltradoLocales());
+            }
+
 
             if(IdAlmacen == 0 && _idCliente == 0) {// es compra directa
                 foreach(MaterialResponse material in MaterialList) {

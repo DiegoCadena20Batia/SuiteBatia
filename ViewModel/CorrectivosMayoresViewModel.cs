@@ -24,6 +24,7 @@ namespace BatiaSuite.ViewModel {
             get { return _isEnabled; }
             set { _isEnabled = value; OnPropertyChanged(); }
         }
+
         private bool _hayCorrectivosPendientes;
 
         public bool HayCorrectivosPendientes {
@@ -35,6 +36,7 @@ namespace BatiaSuite.ViewModel {
         }
 
         private int _cantidadCorrectivosPendientes;
+
         public int CantidadCorrectivosPendientes {
             get => _cantidadCorrectivosPendientes;
             set {
@@ -85,8 +87,6 @@ namespace BatiaSuite.ViewModel {
 
                     CargarInmuebles();
                     GetInfoSelect();
-
-                    _dbContext.TestDB();
 
                     OnPropertyChanged();
                 }
@@ -174,7 +174,6 @@ namespace BatiaSuite.ViewModel {
                 IsBusy = true;
 
                 try {
-
                     await _dbContext.SincronizarCorrectivosPendientes();
 
                     await VerificarCorrectivosPendientes();
@@ -184,17 +183,13 @@ namespace BatiaSuite.ViewModel {
                         "Correctivos pendientes sincronizados.",
                         "OK"
                     );
-
                 } catch(Exception ex) {
-
                     await DisplayAlert(
                         "Error",
                         ex.Message,
                         "OK"
                     );
-
                 } finally {
-
                     IsBusy = false;
                 }
             });
@@ -373,27 +368,21 @@ namespace BatiaSuite.ViewModel {
                 HttpResponseMessage response = await client.SendAsync(request);
 
                 if(response.StatusCode == HttpStatusCode.OK) {
-
                     string contentCM = await response.Content.ReadAsStringAsync();
 
                     var result = JsonConvert.DeserializeObject<List<ListCorrecM>>(contentCM);
 
                     return result;
                 } else {
-
                     await DisplayAlert("Error", $"Error al obtener datos: {response.StatusCode}", "Ok");
 
                     return null;
                 }
-
             } catch(Exception ex) {
-
                 await DisplayAlert("Error", ex.Message, "Ok");
 
                 return null;
-
             } finally {
-
                 IsBusy = false;
             }
         }
@@ -408,13 +397,10 @@ namespace BatiaSuite.ViewModel {
                 // 1) BUSCAR LOCAL
                 // =========================
                 if(IdClientSelected != null && IdInmubleSelected == null) {
-
                     localData = await _dbContext.ObtenerCorrectivosPorCliente(
                         IdClientSelected.idCliente
                     );
-
                 } else if(IdClientSelected != null && IdInmubleSelected != null) {
-
                     localData = await _dbContext.ObtenerCorrectivosPorClienteInmueble(
                         IdClientSelected.idCliente,
                         IdInmubleSelected.id_inmueble
@@ -425,7 +411,6 @@ namespace BatiaSuite.ViewModel {
                 // 2) SI HAY DATOS LOCALES
                 // =========================
                 if(localData != null && localData.Any()) {
-
                     ListApps = new ObservableCollection<ListCorrecM>(localData);
 
                     return;
@@ -435,7 +420,6 @@ namespace BatiaSuite.ViewModel {
                 // 3) SIN INTERNET
                 // =========================
                 if(!InternetUtil.IsConnectedInternet()) {
-
                     await DisplayAlert("Sin conexión", "No hay datos locales disponibles.", "Ok");
 
                     return;
@@ -447,12 +431,9 @@ namespace BatiaSuite.ViewModel {
                 var request = new HttpRequestMessage();
 
                 if(IdClientSelected != null && IdInmubleSelected == null) {
-
                     request.RequestUri = new Uri(
                         $"{Constants.API_BASE_URL}CorrectivosMPruebas?idclavecm=0&idcliente={IdClientSelected.idCliente}&idinmueble=0");
-
                 } else if(IdClientSelected != null && IdInmubleSelected != null) {
-
                     request.RequestUri = new Uri(
                         $"{Constants.API_BASE_URL}CorrectivosMPruebas?idclavecm=0&idcliente={IdClientSelected.idCliente}&idinmueble={IdInmubleSelected.id_inmueble}");
                 }
@@ -465,13 +446,11 @@ namespace BatiaSuite.ViewModel {
                 HttpResponseMessage response = await client.SendAsync(request);
 
                 if(response.StatusCode == HttpStatusCode.OK) {
-
                     string contentCM = await response.Content.ReadAsStringAsync();
 
                     var apiData = JsonConvert.DeserializeObject<List<ListCorrecM>>(contentCM);
 
                     if(apiData != null && apiData.Any()) {
-
                         foreach(var item in apiData)
                             item.SyncDate = DateTime.Now;
 
@@ -481,16 +460,11 @@ namespace BatiaSuite.ViewModel {
                         ListApps = new ObservableCollection<ListCorrecM>(apiData);
                     }
                 } else {
-
                     await DisplayAlert("Error", $"Error al obtener datos: {response.StatusCode}", "Ok");
                 }
-
             } catch(Exception ex) {
-
                 await DisplayAlert("Error", ex.Message, "Ok");
-
             } finally {
-
                 IsBusy = false;
             }
         }
@@ -523,7 +497,6 @@ namespace BatiaSuite.ViewModel {
                 // 2) INMUEBLES + CORRECTIVOS
                 // =========================
                 foreach(var cliente in clientes) {
-
                     var inmuebles = await GetInmuebleToLocal(cliente.idCliente);
 
                     if(inmuebles == null || !inmuebles.Any())
@@ -541,7 +514,6 @@ namespace BatiaSuite.ViewModel {
                     // CORRECTIVOS POR CLIENTE + INMUEBLE
                     // =========================
                     foreach(var inmueble in inmuebles) {
-
                         var correctivos = await GetInfoIDClaveToLocal(
                             cliente.idCliente,
                             inmueble.id_inmueble
@@ -558,17 +530,12 @@ namespace BatiaSuite.ViewModel {
                 }
 
                 await DisplayAlert("Éxito", "Datos precargados para uso sin conexión.", "OK");
-
             } catch(Exception ex) {
-
                 await DisplayAlert("Error", ex.Message, "OK");
-
             } finally {
-
                 IsBusy = false;
             }
         }
-
 
         private async Task ListadoSelec(ListCorrecM listCorrecM)//pasa como tipo de dato
         {
@@ -596,10 +563,8 @@ namespace BatiaSuite.ViewModel {
             IsEnabled = true;
         }
 
-
         public async Task VerificarCorrectivosPendientes() {
             try {
-
                 await _dbContext.EnsureInitialized();
 
                 var pendientes = await _dbContext._dbConn
@@ -610,9 +575,7 @@ namespace BatiaSuite.ViewModel {
                 CantidadCorrectivosPendientes = pendientes.Count;
 
                 HayCorrectivosPendientes = CantidadCorrectivosPendientes > 0;
-
             } catch(Exception ex) {
-
                 System.Diagnostics.Debug.WriteLine(
                     $"Error verificando pendientes: {ex.Message}"
                 );
