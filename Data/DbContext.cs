@@ -1107,7 +1107,7 @@ public class DbContext {
         var properties = type.GetProperties();
 
         // ORDEN DE PRIORIDAD para detectar PK
-        var pkPriority = new[] { "IdCorrectivoLocal", "IdConsec", "IdLocal", "IdCarga", "Id" };
+        var pkPriority = new[] { "Clave","IdCorrectivoLocal", "IdConsec", "IdLocal", "IdCarga", "Id" };
 
         foreach(var pkName in pkPriority) {
             var property = properties.FirstOrDefault(p =>
@@ -1775,6 +1775,21 @@ public class DbContext {
             Debug.WriteLine($"Error al guardar personal local: {ex.Message}");
         }
     }
+    public async Task GuardarMaterialCompletoLocal(List<MaterialResponse> materiales) {
+        try {
+            await EnsureInitialized();  
+            if(materiales == null || !materiales.Any())
+                return;
+
+            foreach(var material in materiales) {
+                material.SyncDate = DateTime.Now;
+            }
+
+            await InsertAllAsync(materiales);
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error al guardar personal local: {ex.Message}");
+        }
+    }
 
     public async Task<List<OrdenTrabajoModel>> ObtenerOrdenesTrabajoLocales() {
         try {
@@ -1816,8 +1831,20 @@ public class DbContext {
     }
     public async Task<List<MaterialResponse>> ObtenerMaterialFiltradoLocales() {
         try {
-            await EnsureInitialized();
+            //await EnsureInitialized();
             return await _dbConn.Table<MaterialResponse>().ToListAsync();
+        } catch(Exception ex) {
+            Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
+            return new List<MaterialResponse>();
+        }
+    }
+
+    public async Task<List<MaterialResponse>> ObtenerMaterialCompletoLocales() {
+        try {
+            await EnsureInitialized();
+            TestDB();
+            var listaTest = await _dbConn.Table<MaterialResponse>().ToListAsync();
+            return listaTest;
         } catch(Exception ex) {
             Console.WriteLine("Error SQLite en DbContext ClienteEntregaLocal:" + ex.Message);
             return new List<MaterialResponse>();
@@ -1835,12 +1862,6 @@ public class DbContext {
         await DeleteAllAsync<AlmacenModel>();
         await DeleteAllAsync<MaterialResponse>();
     }
-
-
-
-
-
-
 
 
     public async Task GuardarDataOrdenesTrabajoLocal() {
@@ -1864,7 +1885,10 @@ public class DbContext {
         var materialesList = await _httpHelper.GetAsync<List<AlmacenModel>>(urlAlmacenes);
         await GuardarAlmacenesLocal(materialesList);
 
-        string urlMateriales = $"{Constants.OT_PRODUCTOS_API}?nombre=";
+        string urlMateriales = $"{Constants.OT_MATERIAL_COMPLETO_API}";
+        var materialCompletoList = await _httpHelper.GetAsync<List<MaterialResponse>>(urlMateriales);
+        await GuardarMaterialCompletoLocal(materialCompletoList);
+
     }
     #endregion Ordenes de Trabajo
 
@@ -1873,7 +1897,7 @@ public class DbContext {
             await EnsureInitialized();
             using var cmd = _dbConn.CreateCommand();
 
-            cmd.CommandText = @"SELECT * from OrdenTrabajoModel";
+            cmd.CommandText = @"SELECT * from MaterialResponse";
 
             using var reader = await cmd.ExecuteReaderAsync();
 

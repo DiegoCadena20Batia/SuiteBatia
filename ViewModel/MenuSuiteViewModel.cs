@@ -2,6 +2,7 @@
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
+using BatiaSuite.Views.CheckListSupervisionesAldoConti;
 using BatiaSuite.Views.EntregasInteligentes;
 using BatiaSuite.Views.IncidenciasBiometa;
 using BatiaSuite.Views.OrdenesTrabajo;
@@ -239,6 +240,12 @@ public partial class MenuSuiteViewModel : ViewModelBase {
             Details = Constants.DETALLES_SUPERVISION_MANTENIMIENTO,
             ImageUrl = "supervisionmantenimientoiconnew.png",
             IdModulo = 7
+        },
+        new Monkey {
+            Name = Constants.SUPERVISION_ALDO_CONTI,
+            Details = Constants.DETALLES_SUPERVISION_ALDO_CONTI,
+            ImageUrl = "supervisionaldoconti.png",
+            IdModulo = 11
         }
         //,
         //new Monkey {
@@ -309,7 +316,9 @@ public partial class MenuSuiteViewModel : ViewModelBase {
             case "INCIDENCIAS DIARIAS":
                 route = $"{nameof(IncidenciasBiometaPage)}";
                 break;
-
+            case Constants.SUPERVISION_ALDO_CONTI:
+                route = $"{nameof(ChecklistPage)}";
+                break;
             default:
                 IsBusy = false;
                 IsLoading = false;

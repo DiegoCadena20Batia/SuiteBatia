@@ -52,7 +52,7 @@ public partial class MaterialPickerViewModel : ViewModelBase {
 
             MaterialList = await _httpHelper.GetAsync<ObservableCollection<MaterialResponse>>(GetUrl(query));
             } else {
-                MaterialList = new ObservableCollection<MaterialResponse>(await _dbContext.ObtenerMaterialFiltradoLocales());
+                MaterialList = new ObservableCollection<MaterialResponse>(await _dbContext.ObtenerMaterialCompletoLocales());
             }
 
 

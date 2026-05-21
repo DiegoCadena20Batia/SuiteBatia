@@ -286,6 +286,7 @@
 		<PackageReference Include="Shiny.Jobs" Version="3.3.4" />
 		<PackageReference Include="Shiny.Locations" Version="3.3.4" />
 		<PackageReference Include="SlackAPI" Version="1.1.14" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.core" Version="3.0.2" />
 		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.2" />
 	</ItemGroup>
@@ -458,6 +459,9 @@
 		</MauiXaml>
 		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasUnoPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CheckListSupervisionesAldoConti\ChecklistPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CorrectivosMayoresPages\CorrectivosPendientesBanner.xaml">
 		  <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
