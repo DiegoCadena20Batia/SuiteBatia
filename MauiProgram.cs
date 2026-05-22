@@ -31,6 +31,7 @@ public static class MauiProgram {
 
         builder
             .UseMauiApp<App>()
+            
             //.UseSegmentedControl()
             .UseMauiMaps()
             .UseShiny()

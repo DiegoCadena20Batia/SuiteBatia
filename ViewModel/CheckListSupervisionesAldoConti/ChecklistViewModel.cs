@@ -1,52 +1,77 @@
-﻿using BatiaSuite.Models.CheckListSupervisionesAldoConti;
+﻿using BatiaSuite.Data;
 using BatiaSuite.Models.CheckListSupervisionesAldoConti.singamobiletest.Models;
+using BatiaSuite.Models.Supervision;
 using BatiaSuite.Utils;
-using System;
-using System.Collections.Generic;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
+
     public class ChecklistViewModel : INotifyPropertyChanged {
         private readonly HttpClient _httpClient;
-        private const string BaseApiUrl = $"{Constants.API_BASE_URL}"; // Cambia por tu URL real
+        private const string BaseApiUrl = $"{Constants.API_BASE_URL}";
+
+        private readonly string _userSessionCliente = "Aldo Conti";
+        public string UserSessionCliente => _userSessionCliente;
+
+        private readonly int _clienteId = UserSession.Cliente;
+        public int ClienteId => _clienteId;
+
+        private int _tiendaId = 0;
+        public int TiendaId => _tiendaId;
 
         // --- PROPIEDADES DE CONTROL DE UI ---
         private bool _isLoading;
+
         public bool IsLoading {
             get => _isLoading;
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        // --- PROPIEDADES DEL ENCABEZADO ---
-        private string _supervisorNombre = string.Empty;
-        public string SupervisorNombre {
-            get => _supervisorNombre;
-            set { _supervisorNombre = value; OnPropertyChanged(); }
-        }
-
         private string _tiendaNombre = string.Empty;
+
         public string TiendaNombre {
             get => _tiendaNombre;
             set { _tiendaNombre = value; OnPropertyChanged(); }
         }
 
         private string _gerenteNombre = string.Empty;
+
         public string GerenteNombre {
             get => _gerenteNombre;
             set { _gerenteNombre = value; OnPropertyChanged(); }
         }
 
-        // --- LISTA DINÁMICA DE SECCIONES Y PREGUNTAS ---
+        public ObservableCollection<Inmueble> ListaInmuebles { get; set; } = new ObservableCollection<Inmueble>();
+ 
+        private Inmueble? _inmuebleSeleccionado;
+
+        public Inmueble? InmuebleSeleccionado {
+            get => _inmuebleSeleccionado;
+            set {
+                if(_inmuebleSeleccionado != value) {
+                    _inmuebleSeleccionado = value;
+                    OnPropertyChanged();
+
+                    if(_inmuebleSeleccionado != null) {
+                        _tiendaId = _inmuebleSeleccionado.IdInmueble;
+                        TiendaNombre = _inmuebleSeleccionado.Nombre;
+                    } else {
+                        _tiendaId = 0;
+                        TiendaNombre = string.Empty;
+                    }
+                }
+            }
+        }
+
         public ObservableCollection<SeccionTemplate> Secciones { get; set; } = new ObservableCollection<SeccionTemplate>();
 
-        // --- COMANDOS ---
         public ICommand CargarTemplateCommand { get; }
         public ICommand EnviarChecklistCommand { get; }
 
@@ -56,11 +81,46 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             CargarTemplateCommand = new Command(async () => await CargarTemplateAsync());
             EnviarChecklistCommand = new Command(async () => await EnviarChecklistAsync());
 
-            // Carga automática del catálogo al iniciar
-            Task.Run(async () => await CargarTemplateAsync());
+            Task.Run(async () => {
+                await CargarTemplateAsync();
+                await CargarInmueblesClienteAsync();
+            });
         }
 
-        // 1. OBTENER EL CATÁLOGO DESDE LA API (HTTP GET)
+        private async Task CargarInmueblesClienteAsync() {
+            try {
+                int idEstadoDefault = 0;
+
+                string url = $"{BaseApiUrl}Sucursales?idcliente={_clienteId}&idestado={idEstadoDefault}";
+
+                List<Inmueble>? inmueblesDescargados = null;
+
+                if(InternetUtil.IsConnectedInternet()) {
+                    var response = await _httpClient.GetAsync(url);
+                    if(response.IsSuccessStatusCode) {
+                        inmueblesDescargados = await response.Content.ReadFromJsonAsync<List<Inmueble>>();
+                    }
+                } else {
+                    var _dbContext = new DbContext();
+                    inmueblesDescargados = await _dbContext.GetinmueblesLocal(_clienteId, idEstadoDefault);
+                }
+
+                if(inmueblesDescargados != null) {
+                    MainThread.BeginInvokeOnMainThread(() => {
+                        ListaInmuebles.Clear();
+                        foreach(var inmueble in inmueblesDescargados) {
+                            ListaInmuebles.Add(inmueble);
+                        }
+                    });
+                }
+            } catch(Exception ex) {
+                Console.WriteLine($"Error al precargar la lista de inmuebles: {ex.Message}");
+                await Toast.Make($"Error al precargar la lista de inmuebles: {ex.Message}", ToastDuration.Short).Show();
+
+            }
+        }
+
+        // 1. OBTENER EL CATÁLOGO DESDE LA API
         private async Task CargarTemplateAsync() {
             if(IsLoading) return;
             IsLoading = true;
@@ -78,7 +138,9 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                     }
                 });
             } catch(Exception ex) {
-                await Application.Current!.MainPage!.DisplayAlert("Error", $"No se pudo descargar el catálogo: {ex.Message}", "OK");
+                MainThread.BeginInvokeOnMainThread(async () => {
+                    await Application.Current!.MainPage!.DisplayAlert("Error", $"No se pudo descargar el catálogo: {ex.Message}", "OK");
+                });
             } finally {
                 IsLoading = false;
             }
@@ -86,8 +148,9 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
 
         // 2. ENVIAR EL PAYLOAD DE RESPUESTAS A LA API (HTTP POST)
         private async Task EnviarChecklistAsync() {
-            if(string.IsNullOrWhiteSpace(SupervisorNombre) || string.IsNullOrWhiteSpace(TiendaNombre)) {
-                await Application.Current!.MainPage!.DisplayAlert("Atención", "Por favor llena los datos obligatorios del encabezado.", "OK");
+            if(string.IsNullOrWhiteSpace(TiendaNombre) || _tiendaId == 0) {
+                await Toast.Make("Por favor selecciona una Tienda / Sucursal obligatoriamente.", ToastDuration.Short).Show();
+
                 return;
             }
 
@@ -104,53 +167,55 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                             valorFinal = pregunta.RespuestaBool ? "1" : "0";
                         }
 
-                        if(pregunta.TipoDatoId==5 && string.IsNullOrEmpty(valorFinal)) {
-                            valorFinal = DateTime.Now.ToString();
+                        if(pregunta.TipoDatoId == 5 && string.IsNullOrEmpty(valorFinal)) {
+                            valorFinal = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                         }
 
                         detallesEnvio.Add(new {
                             PreguntaId = pregunta.Id,
-                            ValorRespondido = valorFinal, // Mandará "1" o "0" si es Switch, o su texto/null normal si es otra cosa
-                            Observaciones = pregunta.Observaciones // Se va null o vacío de forma correcta si no escribieron nada
+                            ValorRespondido = valorFinal,
+                            Observaciones = pregunta.Observaciones
                         });
                     }
                 }
 
-                // Armamos el Payload transaccional EXACTAMENTE como lo espera el DTO de la API
                 var payload = new {
-                    SupervisorNombre = this.SupervisorNombre,
-                    TiendaNombre = this.TiendaNombre,
+                    ClienteId = this.ClienteId,
+                    TiendaId = this.TiendaId,
                     GerenteNombre = this.GerenteNombre,
                     FechaRegistro = DateTime.Now,
                     Detalles = detallesEnvio
                 };
 
                 var url = $"{BaseApiUrl}evaluaciones";
+                var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
                 var response = await _httpClient.PostAsJsonAsync(url, payload);
 
                 if(response.IsSuccessStatusCode) {
-                    await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de supervisión guardado y enviado correctamente!", "OK");
+                    //await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de supervisión guardado y enviado correctamente!", "OK");
+                    await Toast.Make($"¡Checklist de supervisión guardado y enviado correctamente!", ToastDuration.Long).Show();
 
-                    // Limpiamos los campos del formulario tras un envío exitoso
-                    SupervisorNombre = string.Empty;
-                    TiendaNombre = string.Empty;
                     GerenteNombre = string.Empty;
+                    InmuebleSeleccionado = null;
 
                     IsLoading = false;
 
-                    // Recargamos el catálogo limpio para una nueva auditoría
                     await CargarTemplateAsync();
+                    await CargarInmueblesClienteAsync();
                 } else {
-                    await Application.Current!.MainPage!.DisplayAlert("Error", $"El servidor respondió con código: {response.StatusCode}", "OK");
+                    await Toast.Make($"El servidor respondió con código: {response.StatusCode}", ToastDuration.Short).Show();
+
                 }
             } catch(Exception ex) {
-                await Application.Current!.MainPage!.DisplayAlert("Error de red", $"Ocurrió un error al enviar: {ex.Message}", "OK");
+                await Toast.Make($"Ocurrió un error al enviar: {ex.Message}", ToastDuration.Short).Show();
+
             } finally {
                 IsLoading = false;
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

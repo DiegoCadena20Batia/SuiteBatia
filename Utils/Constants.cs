@@ -29,8 +29,8 @@ public static class Constants {
     #endregion
 
     #region API URI´s 
-    public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
-    //public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
+    //public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
+    public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
     public const string ENT_GET_PRECARGA_API = "entregaprecarga";
     public const string GET_MODULOS_MENU = "ObtenerModulos";
     public const string GET_TECNICOS_ORDENES_TRABAJO_API = "OTTecnico";
