@@ -11,6 +11,7 @@ using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.IncidenciasBiometa;
 using BatiaSuite.Views.CheckListSupervisionesAldoConti;
+using BatiaSuite.Views.CheckListAparadoristasAldoConti;
 
 namespace BatiaSuite;
 
@@ -127,6 +128,7 @@ public partial class AppShell : Shell {
         #region SUPERVICION_ALDOCONTI
 
         Routing.RegisterRoute(nameof(ChecklistPage), typeof(ChecklistPage));
+        Routing.RegisterRoute(nameof(AparadoristasPage), typeof(AparadoristasPage));
 
         #endregion SUPERVICION_ALDOCONTI
     }

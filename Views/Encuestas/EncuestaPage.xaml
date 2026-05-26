@@ -238,7 +238,7 @@
         VerticalOptions="End"
         Color="White"
         IsRunning="{Binding IsLoading}"
-        HeightRequest="{OnIdiom 70, Tablet=120}"/>
+        HeightRequest="{OnIdiom 70, Tablet=120}" />
             <Label
          VerticalOptions="Start"
          HorizontalOptions="Center"

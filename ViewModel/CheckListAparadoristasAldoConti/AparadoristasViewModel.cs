@@ -4,7 +4,6 @@ using BatiaSuite.Models.Supervision;
 using BatiaSuite.Utils;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.Http.Json;
@@ -13,12 +12,12 @@ using System.Windows.Input;
 
 namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
 
-    public class ChecklistViewModel : INotifyPropertyChanged {
+    public class AparadoristasViewModel : INotifyPropertyChanged {
         private readonly HttpClient _httpClient;
         private const string BaseApiUrl = $"{Constants.API_BASE_URL}";
 
-        private readonly string _userSessionCliente = "Aldo Conti";
-        public string UserSessionCliente => _userSessionCliente;
+        private readonly string _nommbreAparadorista = UserSession.NOMBRE;
+        public string NombreAparadorista => _nommbreAparadorista;
 
         private readonly int _clienteId = UserSession.Cliente;
         public int ClienteId => _clienteId;
@@ -48,8 +47,29 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             set { _gerenteNombre = value; OnPropertyChanged(); }
         }
 
+        private DateTime _fechaUltimaVisita = DateTime.Today;
+
+        public DateTime FechaUltimaVisita {
+            get => _fechaUltimaVisita;
+            set { _fechaUltimaVisita = value; OnPropertyChanged(); }
+        }
+
+        private bool _showClearAparadorista;
+
+        public bool ShowClearAparadorista {
+            get => _showClearAparadorista;
+            set { _showClearAparadorista = value; OnPropertyChanged(); }
+        }
+
+        private bool _showClearGerente;
+
+        public bool ShowClearGerente {
+            get => _showClearGerente;
+            set { _showClearGerente = value; OnPropertyChanged(); }
+        }
+
         public ObservableCollection<Inmueble> ListaInmuebles { get; set; } = new ObservableCollection<Inmueble>();
- 
+
         private Inmueble? _inmuebleSeleccionado;
 
         public Inmueble? InmuebleSeleccionado {
@@ -75,11 +95,21 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
         public ICommand CargarTemplateCommand { get; }
         public ICommand EnviarChecklistCommand { get; }
 
-        public ChecklistViewModel() {
+        public ICommand DrawAparadoristaCommand { get; }
+        public ICommand ClearAparadoristaCommand { get; }
+        public ICommand DrawGerenteCommand { get; }
+        public ICommand ClearGerenteCommand { get; }
+
+        public AparadoristasViewModel() {
             _httpClient = new HttpClient();
 
             CargarTemplateCommand = new Command(async () => await CargarTemplateAsync());
             EnviarChecklistCommand = new Command(async () => await EnviarChecklistAsync());
+
+            DrawAparadoristaCommand = new Command(OnDrawAparadorista);
+            ClearAparadoristaCommand = new Command(OnClearAparadorista);
+            DrawGerenteCommand = new Command(OnDrawGerente);
+            ClearGerenteCommand = new Command(OnClearGerente);
 
             Task.Run(async () => {
                 await CargarTemplateAsync();
@@ -87,12 +117,28 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             });
         }
 
+        public static event Action? OnClearAparadoristaRequested;
+
+        public static event Action? OnClearGerenteRequested;
+
+        private void OnDrawAparadorista() {
+        }
+
+        private void OnClearAparadorista() {
+            OnClearAparadoristaRequested?.Invoke();
+        }
+
+        private void OnDrawGerente() {
+        }
+
+        private void OnClearGerente() {
+            OnClearGerenteRequested?.Invoke();
+        }
+
         private async Task CargarInmueblesClienteAsync() {
             try {
                 int idEstadoDefault = 0;
-
                 string url = $"{BaseApiUrl}Sucursales?idcliente={_clienteId}&idestado={idEstadoDefault}";
-
                 List<Inmueble>? inmueblesDescargados = null;
 
                 if(InternetUtil.IsConnectedInternet()) {
@@ -116,48 +162,68 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             } catch(Exception ex) {
                 Console.WriteLine($"Error al precargar la lista de inmuebles: {ex.Message}");
                 await Toast.Make($"Error al precargar la lista de inmuebles: {ex.Message}", ToastDuration.Short).Show();
-
             }
         }
 
-        // 1. OBTENER EL CATÁLOGO DESDE LA API
+        // ====================================================================
+        // 1. OBTENER EL CATÁLOGO DINÁMICO DE APARADORISTAS (HTTP GET)
+        // ====================================================================
         private async Task CargarTemplateAsync() {
             if(IsLoading) return;
             IsLoading = true;
 
             try {
-                var url = $"{BaseApiUrl}estructura/Supervisor";
+                var url = $"{BaseApiUrl}estructura/Aparadorista";
                 var resultado = await _httpClient.GetFromJsonAsync<List<SeccionTemplate>>(url);
 
                 MainThread.BeginInvokeOnMainThread(() => {
-                    Secciones.Clear();
-                    if(resultado != null) {
-                        foreach(var seccion in resultado) {
-                            Secciones.Add(seccion);
+                    try {
+                        Secciones.Clear();
+                        if(resultado != null) {
+                            foreach(var seccion in resultado) {
+                                Secciones.Add(seccion);
+                            }
                         }
+                    } finally {
+                        IsLoading = false;
                     }
                 });
             } catch(Exception ex) {
                 MainThread.BeginInvokeOnMainThread(async () => {
+                    IsLoading = false;
                     await Application.Current!.MainPage!.DisplayAlert("Error", $"No se pudo descargar el catálogo: {ex.Message}", "OK");
                 });
-            } finally {
-                IsLoading = false;
             }
         }
 
-        // 2. ENVIAR EL PAYLOAD DE RESPUESTAS A LA API (HTTP POST)
+        public Func<Task<bool>>? AntesDeEnviarChecklist { get; set; }
+        public byte[]? FirmaAparadoristaBytes { get; set; }
+        public byte[]? FirmaGerenteBytes { get; set; }
+
+        // ====================================================================
+        // 2. ENVIAR EL PAYLOAD DE RESPUESTAS Y FIRMAS (MULTIPART POST)
+        // ====================================================================
         private async Task EnviarChecklistAsync() {
             if(string.IsNullOrWhiteSpace(TiendaNombre) || _tiendaId == 0) {
-                await Toast.Make("Por favor selecciona una Tienda / Sucursal obligatoriamente.", ToastDuration.Short).Show();
-
+                await Application.Current!.MainPage!.DisplayAlert("Atención", "Por favor selecciona una Tienda / Sucursal obligatoriamente.", "OK");
                 return;
+            }
+
+            if(string.IsNullOrWhiteSpace(GerenteNombre)) {
+                await Application.Current!.MainPage!.DisplayAlert("Atención", "Por favor ingresa el nombre del Gerente.", "OK");
+                return;
+            }
+
+            // Invocar la captura e interceptación de las firmas en la Vista
+            if(AntesDeEnviarChecklist != null) {
+                bool firmasValidas = await AntesDeEnviarChecklist.Invoke();
+                if(!firmasValidas) return; // Detiene el flujo si falta alguna firma
             }
 
             IsLoading = true;
 
             try {
-                var detallesEnvio = new List<object>();
+                var respuestasEnvio = new List<object>();
 
                 foreach(var seccion in Secciones) {
                     foreach(var pregunta in seccion.Preguntas) {
@@ -168,47 +234,76 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                         }
 
                         if(pregunta.TipoDatoId == 5 && string.IsNullOrEmpty(valorFinal)) {
-                            valorFinal = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                            valorFinal = DateTime.Now.ToString("yyyy-MM-dd");
                         }
 
-                        detallesEnvio.Add(new {
+                        respuestasEnvio.Add(new {
                             PreguntaId = pregunta.Id,
                             ValorRespondido = valorFinal,
-                            Observaciones = pregunta.Observaciones
+                            Observaciones = pregunta.Observaciones ?? string.Empty
                         });
                     }
                 }
 
                 var payload = new {
-                    ClienteId = this.ClienteId,
-                    TiendaId = this.TiendaId,
+                    SucursalId = this.TiendaId,
+                    UsuarioId = UserSession.IdPersonal,
                     GerenteNombre = this.GerenteNombre,
-                    FechaRegistro = DateTime.Now,
-                    Detalles = detallesEnvio
+                    FechaUltimaVisita = this.FechaUltimaVisita.ToString("yyyy-MM-dd"),
+                    FechaRegistro = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    Respuestas = respuestasEnvio
                 };
 
-                var url = $"{BaseApiUrl}evaluaciones";
+                // Cambiamos a MultipartFormDataContent para adjuntar los datos del formulario e imágenes juntas
+                using var content = new MultipartFormDataContent();
+
+                // 1. Adjuntar el JSON del formato original
                 var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
-                var response = await _httpClient.PostAsJsonAsync(url, payload);
+                content.Add(new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json"), "DatosChecklist");
+
+                // 2. Adjuntar la imagen de la firma del Aparadorista
+                if(FirmaAparadoristaBytes != null) {
+                    var byteContent1 = new ByteArrayContent(FirmaAparadoristaBytes);
+                    byteContent1.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+                    content.Add(byteContent1, "firmaAparadorista", "firma_aparadorista.png");
+                }
+
+                // 3. Adjuntar la imagen de la firma del Gerente
+                if(FirmaGerenteBytes != null) {
+                    var byteContent2 = new ByteArrayContent(FirmaGerenteBytes);
+                    byteContent2.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
+                    content.Add(byteContent2, "firmaGerente", "firma_gerente.png");
+                }
+
+                var url = $"{BaseApiUrl}aparadoristas";
+                var response = await _httpClient.PostAsync(url, content);
 
                 if(response.IsSuccessStatusCode) {
-                    //await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de supervisión guardado y enviado correctamente!", "OK");
-                    await Toast.Make($"¡Checklist de supervisión guardado y enviado correctamente!", ToastDuration.Long).Show();
+                    // Reemplaza por tu Toast habitual o DisplayAlert corporativo
+                    await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de aparadores y firmas enviados con éxito!", "OK");
 
+                    // Limpieza de campos del formulario
                     GerenteNombre = string.Empty;
                     InmuebleSeleccionado = null;
+                    FechaUltimaVisita = DateTime.Today;
 
-                    IsLoading = false;
+                    FirmaAparadoristaBytes = null;
+                    FirmaGerenteBytes = null;
+
+                    // Forzar el limpiado de botones en UI
+                    ShowClearAparadorista = false;
+                    ShowClearGerente = false;
+
+                    // Solicitar limpiar físicamente los páneles de dibujo
+                    OnClearAparadoristaRequested?.Invoke();
+                    OnClearGerenteRequested?.Invoke();
 
                     await CargarTemplateAsync();
-                    await CargarInmueblesClienteAsync();
                 } else {
-                    await Toast.Make($"El servidor respondió con código: {response.StatusCode}", ToastDuration.Short).Show();
-
+                    await Application.Current!.MainPage!.DisplayAlert("Error", $"El servidor respondió con código: {response.StatusCode}", "OK");
                 }
             } catch(Exception ex) {
-                await Toast.Make($"Ocurrió un error al enviar: {ex.Message}", ToastDuration.Short).Show();
-
+                await Application.Current!.MainPage!.DisplayAlert("Error", $"Ocurrió un error al enviar: {ex.Message}", "OK");
             } finally {
                 IsLoading = false;
             }

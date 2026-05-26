@@ -105,6 +105,7 @@ public static class Constants {
     
     
     public const string SUPERVISION_ALDO_CONTI = "Supervisión de Aldo Conti";
+    public const string APARADORISTAS_ALDO_CONTI = "Supervisión aparadoristas de Aldo Conti";
 
     public const string VACANTES = "Vacantes";
     public const string DATOS_GENERALES = "Datos generales";
@@ -326,6 +327,7 @@ public static class Constants {
     public const string DETALLES_VACANTES = "Registro de candidatos para cobertura de vacantes.";
     public const string DETALLES_SANITIZACION = "Registro de visitas a puntos de atención para sanitización y desinfección del inmueble.";
     public const string DETALLES_SUPERVISION_ALDO_CONTI = "Se realiza la supervisión de Aldo Conti mediante un checklist detallado.";
+    public const string DETALLES_APARADORISTAS_ALDO_CONTI = "Se realiza la supervisión en Aldo Conti a aparadoristas mediante un checklist detallado.";
 
     #region MONTHS
     public static List<object> MonthList = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];

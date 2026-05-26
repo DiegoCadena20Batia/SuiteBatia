@@ -460,6 +460,9 @@
 		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasUnoPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Views\CheckListAparadoristasAldoConti\AparadoristasPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\CheckListSupervisionesAldoConti\ChecklistPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
