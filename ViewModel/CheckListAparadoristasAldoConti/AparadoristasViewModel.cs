@@ -191,7 +191,8 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             } catch(Exception ex) {
                 MainThread.BeginInvokeOnMainThread(async () => {
                     IsLoading = false;
-                    await Application.Current!.MainPage!.DisplayAlert("Error", $"No se pudo descargar el catálogo: {ex.Message}", "OK");
+                    await Toast.Make($"No se pudo descargar el catálogo: {ex.Message}", ToastDuration.Short).Show();
+
                 });
             }
         }
@@ -205,12 +206,14 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
         // ====================================================================
         private async Task EnviarChecklistAsync() {
             if(string.IsNullOrWhiteSpace(TiendaNombre) || _tiendaId == 0) {
-                await Application.Current!.MainPage!.DisplayAlert("Atención", "Por favor selecciona una Tienda / Sucursal obligatoriamente.", "OK");
+                await Toast.Make($"Por favor selecciona una Tienda / Sucursal obligatoriamente.", ToastDuration.Short).Show();
+
                 return;
             }
 
             if(string.IsNullOrWhiteSpace(GerenteNombre)) {
-                await Application.Current!.MainPage!.DisplayAlert("Atención", "Por favor ingresa el nombre del Gerente.", "OK");
+                await Toast.Make($"Por favor ingresa el nombre del Gerente.", ToastDuration.Short).Show();
+
                 return;
             }
 
@@ -273,7 +276,9 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                 var response = await _httpClient.PostAsync(url, content);
 
                 if(response.IsSuccessStatusCode) {
-                    await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de aparadores y firmas enviados con éxito!", "OK");
+                    await Toast.Make($"¡Checklist de aparadores y firmas enviados con éxito!", ToastDuration.Short).Show();
+
+                    //await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de aparadores y firmas enviados con éxito!", "OK");
 
                     GerenteNombre = string.Empty;
                     InmuebleSeleccionado = null;
@@ -290,10 +295,14 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
 
                     await CargarTemplateAsync();
                 } else {
-                    await Application.Current!.MainPage!.DisplayAlert("Error", $"El servidor respondió con código: {response.StatusCode}", "OK");
+                    await Toast.Make($"El servidor respondió con código: {response.StatusCode}", ToastDuration.Short).Show();
+
+                    //await Application.Current!.MainPage!.DisplayAlert("Error", $"El servidor respondió con código: {response.StatusCode}", "OK");
                 }
             } catch(Exception ex) {
-                await Application.Current!.MainPage!.DisplayAlert("Error", $"Ocurrió un error al enviar: {ex.Message}", "OK");
+                await Toast.Make($"Ocurrió un error al enviar: {ex.Message}", ToastDuration.Short).Show();
+
+                //await Application.Current!.MainPage!.DisplayAlert("Error", $"Ocurrió un error al enviar: {ex.Message}", "OK");
             } finally {
                 IsLoading = false;
             }
