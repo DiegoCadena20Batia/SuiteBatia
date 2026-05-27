@@ -139,7 +139,9 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                 });
             } catch(Exception ex) {
                 MainThread.BeginInvokeOnMainThread(async () => {
-                    await Application.Current!.MainPage!.DisplayAlert("Error", $"No se pudo descargar el catálogo: {ex.Message}", "OK");
+                    await Toast.Make($"No se pudo descargar el catálogo: {ex.Message}", ToastDuration.Short).Show();
+
+                    //await Application.Current!.MainPage!.DisplayAlert("Error", $"No se pudo descargar el catálogo: {ex.Message}", "OK");
                 });
             } finally {
                 IsLoading = false;
