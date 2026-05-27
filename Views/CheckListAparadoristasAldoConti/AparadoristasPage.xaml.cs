@@ -86,4 +86,11 @@ public partial class AparadoristasPage : ContentPage {
             ViewModel.AntesDeEnviarChecklist = null;
         }
     }
+
+    private void PadAparadorista_DrawingLineCompleted(object sender, CommunityToolkit.Maui.Core.DrawingLineCompletedEventArgs e) {
+        // Evitamos que el componente limpie el lienzo añadiendo el trazo actual de forma permanente
+        if(e.LastDrawingLine != null && !PadAparadorista.Lines.Contains(e.LastDrawingLine)) {
+            PadAparadorista.Lines.Add(e.LastDrawingLine);
+        }
+    }
 }

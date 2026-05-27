@@ -214,10 +214,9 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                 return;
             }
 
-            // Invocar la captura e interceptación de las firmas en la Vista
             if(AntesDeEnviarChecklist != null) {
                 bool firmasValidas = await AntesDeEnviarChecklist.Invoke();
-                if(!firmasValidas) return; // Detiene el flujo si falta alguna firma
+                if(!firmasValidas) return;
             }
 
             IsLoading = true;
@@ -245,44 +244,37 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                     }
                 }
 
+                //string? firmaAparadoristaJson = FirmaAparadoristaBytes != null
+                //    ? $"[{string.Join(",", FirmaAparadoristaBytes)}]"
+                //    : null;
+
+                //string? firmaGerenteJson = FirmaGerenteBytes != null
+                //    ? $"[{string.Join(",", FirmaGerenteBytes)}]"
+                //    : null;
+
                 var payload = new {
                     SucursalId = this.TiendaId,
                     UsuarioId = UserSession.IdPersonal,
                     GerenteNombre = this.GerenteNombre,
                     FechaUltimaVisita = this.FechaUltimaVisita.ToString("yyyy-MM-dd"),
                     FechaRegistro = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    Respuestas = respuestasEnvio
+                    Detalles = respuestasEnvio, 
+                    FirmaAparadorista = FirmaAparadoristaBytes, 
+                    FirmaGerente = FirmaGerenteBytes
                 };
 
-                // Cambiamos a MultipartFormDataContent para adjuntar los datos del formulario e imágenes juntas
                 using var content = new MultipartFormDataContent();
 
                 // 1. Adjuntar el JSON del formato original
                 var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
                 content.Add(new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json"), "DatosChecklist");
 
-                // 2. Adjuntar la imagen de la firma del Aparadorista
-                if(FirmaAparadoristaBytes != null) {
-                    var byteContent1 = new ByteArrayContent(FirmaAparadoristaBytes);
-                    byteContent1.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-                    content.Add(byteContent1, "firmaAparadorista", "firma_aparadorista.png");
-                }
-
-                // 3. Adjuntar la imagen de la firma del Gerente
-                if(FirmaGerenteBytes != null) {
-                    var byteContent2 = new ByteArrayContent(FirmaGerenteBytes);
-                    byteContent2.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-                    content.Add(byteContent2, "firmaGerente", "firma_gerente.png");
-                }
-
                 var url = $"{BaseApiUrl}aparadoristas";
                 var response = await _httpClient.PostAsync(url, content);
 
                 if(response.IsSuccessStatusCode) {
-                    // Reemplaza por tu Toast habitual o DisplayAlert corporativo
                     await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de aparadores y firmas enviados con éxito!", "OK");
 
-                    // Limpieza de campos del formulario
                     GerenteNombre = string.Empty;
                     InmuebleSeleccionado = null;
                     FechaUltimaVisita = DateTime.Today;
@@ -290,11 +282,9 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                     FirmaAparadoristaBytes = null;
                     FirmaGerenteBytes = null;
 
-                    // Forzar el limpiado de botones en UI
                     ShowClearAparadorista = false;
                     ShowClearGerente = false;
 
-                    // Solicitar limpiar físicamente los páneles de dibujo
                     OnClearAparadoristaRequested?.Invoke();
                     OnClearGerenteRequested?.Invoke();
 
