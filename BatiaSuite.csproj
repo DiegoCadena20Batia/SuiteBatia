@@ -1,39 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<!--COMENTADO PARA BUILD IOS-->
-	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
-		<UseMauiMaps>true</UseMauiMaps>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-ios'">
-		<UseMauiMaps>true</UseMauiMaps>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows10.0.19041.0'">
-		<UseMauiMaps>true</UseMauiMaps>
-	</PropertyGroup>-->
-
-
-
-	<!--<AndroidProguardConfig>proguard.cfg</AndroidProguardConfig>-->
-
-	<!--<AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>-->
-	<!--<DebugSymbols>true</DebugSymbols>-->
 
 	<PropertyGroup>
-		
-		
-		<!--USAR SOLO PARA COMPILACION REMOTA EN MAC-->
-		<!--<TargetFrameworks>net9.0-ios</TargetFrameworks>-->
-		
-		
-		
-		<!--USAR SOLO PARA COMPILACION ANDOID-->
-		<TargetFrameworks>net9.0-android;</TargetFrameworks>
-		
-		
+		<!-- ✅ Plataformas objetivo unificadas (Android, iOS y Windows) -->
+		<TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
+
 		<OutputType>Exe</OutputType>
 		<RootNamespace>BatiaSuite</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -52,71 +23,43 @@
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
+		<!-- Versiones mínimas de SO soportadas -->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
-		<!--COMENTADO PARA BUILD IOS-->
-		<!--<TargetFramework>net8.0-android35.0</TargetFramework>
-		<AndroidTargetSdkVersion>35</AndroidTargetSdkVersion>
-		<AndroidCompileSdkVersion>35</AndroidCompileSdkVersion>
-		<AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>-->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+
+		<SkipStaticLibraryValidation>true</SkipStaticLibraryValidation>
 	</PropertyGroup>
-	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net9.0-android'">
-		<PublishTrimmed>true</PublishTrimmed>
-		-->
-	<!-- Recorta código no usado -->
-	<!--
-		-->
-	<!--<PublishAot>true</PublishAot>-->
-	<!--
-		-->
-	<!-- Ahead-of-Time compilation -->
-	<!--
-		<EnableLLVM>true</EnableLLVM>
-		-->
-	<!-- Optimización nativa -->
-	<!--
-		<AndroidLinkMode>SdkOnly</AndroidLinkMode>
-		-->
-	<!-- O Full para más recorte -->
-	<!--
+
+	<!-- ✅ Soporte para Mapas en todas las plataformas de forma nativa -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) or $(TargetFramework.Contains('-ios')) or $(TargetFramework.Contains('-windows'))">
+		<UseMauiMaps>true</UseMauiMaps>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
-	  <AndroidLinkTool>r8</AndroidLinkTool>
-	  <AndroidUseAapt2>True</AndroidUseAapt2>
-	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-	</PropertyGroup>-->
-	<!-- ✅ Compatibilidad con 32 y 64 bits en .NET 9 -->
+
+	<!-- ✅ CONFIGURACIÓN ANDROID DEBUG -->
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+		<AndroidUseAapt2>True</AndroidUseAapt2>
+		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+	</PropertyGroup>
+
+	<!-- ✅ CONFIGURACIÓN ANDROID RELEASE (Compatibilidad total 32 y 64 bits) -->
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
 		<AndroidUseAapt2>True</AndroidUseAapt2>
 		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		<AndroidLinkTool>r8</AndroidLinkTool>
-
-		<!-- ABI y RuntimeIdentifiers -->
 		<RuntimeIdentifiers>android-arm64;android-arm;android-x64;android-x86</RuntimeIdentifiers>
-
-		<!-- Optimización -->
 		<PublishTrimmed>true</PublishTrimmed>
-		<!--<PublishAot>true</PublishAot>-->
-		<!-- Si activas AOT, tarda más y aumenta tamaño, opcional -->
 	</PropertyGroup>
 
-
-	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
-	  <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
-	</PropertyGroup>-->
-
-	
-
-
-	<!--DESCOMENTAR PARA COMPILACION REMOTA EN LA MAC-->
+	<!-- ✅ CONFIGURACIÓN IOS COMPILACIÓN REMOTA EN MAC -->
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-		<ServerAddress>192.168.11.117</ServerAddress>
+		<ServerAddress>192.168.11.33</ServerAddress>
 		<ServerUser>ricardoberistain</ServerUser>
 		<ServerTcpPort>52852</ServerTcpPort>
 
@@ -124,101 +67,23 @@
 		<ApplicationTitle>Suite Batia</ApplicationTitle>
 
 		<ProvisioningType>manual</ProvisioningType>
-		<CodesignKey>iPhone Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
-		<CodesignProvision>SuiteBatiaRelease</CodesignProvision>
+		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
+		<CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
 
 		<BuildIpa>true</BuildIpa>
 		<ArchiveOnBuild>true</ArchiveOnBuild>
-		<ProvisioningType>manual</ProvisioningType>
 	</PropertyGroup>
 
-	<!--COMENTAR PARA RELEASE IOS-->
-	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-		<ProvisioningType>automatic</ProvisioningType>
-		<CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
-		<CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
-		<SkipStaticLibraryValidation>true</SkipStaticLibraryValidation>
-	</PropertyGroup>-->
-	
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
-		<MtouchLink>SdkOnly</MtouchLink>
-		<MtouchUseLlvm>False</MtouchUseLlvm>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
-		<!--<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-		<PublishAot>false</PublishAot>
-		<RunAOTCompilation>false</RunAOTCompilation>
-		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-		<PublishTrimmed>false</PublishTrimmed>
-		<AndroidUseAapt2>True</AndroidUseAapt2>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>-->
-	</PropertyGroup>
-
-	<!--COMENTAR PARA TESTEO DE IOS EN VISUAL STUDIO FIN-->
-	<PropertyGroup>
-		<SkipStaticLibraryValidation>true</SkipStaticLibraryValidation>
-	</PropertyGroup>
+	<!-- ✅ CONFIGURACIÓN IOS RELEASE OPTIMIZACIONES -->
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
 		<MtouchLink>SdkOnly</MtouchLink>
 		<MtouchUseLlvm>False</MtouchUseLlvm>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
-		<AndroidUseAapt2>True</AndroidUseAapt2>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<!--<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-		<PublishAot>false</PublishAot>
-		<RunAOTCompilation>false</RunAOTCompilation>
-		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-		<PublishTrimmed>false</PublishTrimmed>
-		<AndroidUseAapt2>True</AndroidUseAapt2>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>-->
-	</PropertyGroup>
-
-	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
-	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
-	</PropertyGroup>-->
-
-	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
-	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
-	</PropertyGroup>-->
-
-	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
-	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
-	</PropertyGroup>-->
-
-	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
-	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
-	</PropertyGroup>-->
-
-	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
-	  <CodesignKey>Apple Development: Created via API (NSMS5C332M)</CodesignKey>
-	  <CodesignProvision>VS: com.GrupoBatia.SuiteBatia Development</CodesignProvision>
-	</PropertyGroup>-->
-
-
-
-
-
-	<!--COMENTADO PARA BUILD IOS-->
-	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android34.0|AnyCPU'">
-	  <AndroidUseAapt2>True</AndroidUseAapt2>
-	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-	  <AndroidPackageFormat>aab</AndroidPackageFormat>
-	</PropertyGroup>-->
-
+	<!-- RECURSOS -->
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appiconandroid.svg" ForegroundFile="Resources\AppIcon\appiconfgandroid.svg" />
-
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
 
 		<!-- Splash Screen -->
@@ -234,10 +99,11 @@
 		<MauiFont Include="Resources\IconFonts\*" />
 		<MauiFont Include="Resources\IconFonts\icons.ttf" Alias="Icon fonts family" />
 
-		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<!-- Raw Assets -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	<!-- LIMPIEZA DE ENLACES DE RECURSOS -->
 	<ItemGroup>
 		<Compile Remove="Resources\IconFonts\FontAwesome.cs" />
 	</ItemGroup>
@@ -261,9 +127,8 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\IconFonts\icons.ttf" />
 	</ItemGroup>
-	<!--<ItemGroup>
-		<MauiAsset Include="Platforms\iOS\Info.plist" />
-	</ItemGroup>-->
+
+	<!-- PAQUETES (NUGETS) -->
 	<ItemGroup>
 		<PackageReference Include="Camera.MAUI" Version="1.5.1" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.0" />
@@ -276,7 +141,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="8.0.100" />
-		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.111" />
+		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.120" />
 		<PackageReference Include="Mopups" Version="1.3.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
@@ -290,10 +155,19 @@
 		<PackageReference Include="SQLitePCLRaw.core" Version="3.0.2" />
 		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.2" />
 	</ItemGroup>
-	<!--COMENTADO PARA BUILD IOS-->
-	<!--<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-		<BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
-	</ItemGroup>-->
+
+	<!-- Paquetes condicionales de Android -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+		<PackageReference Include="Xamarin.AndroidX.LocalBroadcastManager" Version="1.1.0.22" />
+	</ItemGroup>
+
+	<!-- REFERENCIAS DE PROYECTOS INTERNOS -->
+	<ItemGroup>
+		<ProjectReference Include="..\BIZ\BIZ.csproj" />
+		<ProjectReference Include="..\DAL\DAL.csproj" />
+	</ItemGroup>
+
+	<!-- ACTUALIZACIONES DE COMPILACIÓN DE VISTAS (XAML) -->
 	<ItemGroup>
 		<Compile Update="Controls\OptionsViewMantenimiento.xaml.cs">
 			<DependentUpon>OptionsViewMantenimiento.xaml</DependentUpon>
@@ -344,22 +218,22 @@
 			<DependentUpon>SolicitudCotizacionPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml.cs">
-		  <DependentUpon>SupervisionMantenimientoFirmasPage.xaml</DependentUpon>
+			<DependentUpon>SupervisionMantenimientoFirmasPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoEvaluacionPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoEvaluacionPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoExtintoresObjectPage.xaml.cs">
-		  <DependentUpon>SupervisionMantenimientoExtintoresObjectPage.xaml</DependentUpon>
+			<DependentUpon>SupervisionMantenimientoExtintoresObjectPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoHidrantesObjectPage.xaml.cs">
-		  <DependentUpon>SupervisionMantenimientoHidrantesObjectPage.xaml</DependentUpon>
+			<DependentUpon>SupervisionMantenimientoHidrantesObjectPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionPage.xaml.cs">
-		  <DependentUpon>SupervisionMantenimientoSeccionPage.xaml</DependentUpon>
+			<DependentUpon>SupervisionMantenimientoSeccionPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionesPage.xaml.cs">
-		  <DependentUpon>SupervisionMantenimientoSeccionesPage.xaml</DependentUpon>
+			<DependentUpon>SupervisionMantenimientoSeccionesPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPreguntasPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoPreguntasPage.xaml</DependentUpon>
@@ -461,13 +335,13 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CheckListAparadoristasAldoConti\AparadoristasPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CheckListSupervisionesAldoConti\ChecklistPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CorrectivosMayoresPages\CorrectivosPendientesBanner.xaml">
-		  <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+			<Generator>MSBuild:UpdateDesignTimeXaml</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\DeliveriesRoute.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -533,22 +407,22 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoEvaluacionPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoExtintoresObjectPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoHidrantesObjectPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionesPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPreguntasPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -618,13 +492,7 @@
 		</MauiXaml>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
-		<PackageReference Include="Xamarin.AndroidX.LocalBroadcastManager">
-			<Version>1.1.0.22</Version>
-		</PackageReference>
-	</ItemGroup>
-
-
+	<!-- ENTIDAD DE VISUAL STUDIO -->
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties XamarinHotReloadDebuggerTimeoutExceptionBatiaSuiteHideInfoBar="True" XamarinHotReloadGenericExceptionInfoBarBatiaSuiteHideInfoBar="True" />
