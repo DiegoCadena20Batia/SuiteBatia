@@ -12,6 +12,9 @@ using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.IncidenciasBiometa;
 using BatiaSuite.Views.CheckListSupervisionesAldoConti;
 using BatiaSuite.Views.CheckListAparadoristasAldoConti;
+using BatiaSuite.Views.ChecklistLimpieza;
+using BatiaSuite.Views.ChecklistMantenimiento;
+using BatiaSuite.Views.ChecklistMonitoreo;
 
 namespace BatiaSuite;
 
@@ -129,6 +132,9 @@ public partial class AppShell : Shell {
 
         Routing.RegisterRoute(nameof(ChecklistPage), typeof(ChecklistPage));
         Routing.RegisterRoute(nameof(AparadoristasPage), typeof(AparadoristasPage));
+        Routing.RegisterRoute(nameof(LimpiezaPage), typeof(LimpiezaPage));
+        Routing.RegisterRoute(nameof(MantenimientoPage), typeof(MantenimientoPage));
+        Routing.RegisterRoute(nameof(MonitoreoPage), typeof(MonitoreoPage));
 
         #endregion SUPERVICION_ALDOCONTI
     }

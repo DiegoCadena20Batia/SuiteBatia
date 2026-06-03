@@ -4,20 +4,26 @@ using BatiaSuite.Models.Supervision;
 using BatiaSuite.Utils;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
+namespace BatiaSuite.ViewModel.ChecklistMantenimiento {
+    public class MantenimientoViewModel : INotifyPropertyChanged {
 
-    public class AparadoristasViewModel : INotifyPropertyChanged {
+        #region Variables
         private readonly HttpClient _httpClient;
         private const string BaseApiUrl = $"{Constants.API_BASE_URL}";
 
-        private readonly string _nommbreAparadorista = UserSession.NOMBRE;
-        public string NombreAparadorista => _nommbreAparadorista;
+        private readonly string _nombreEmpleado = UserSession.NOMBRE;
+        public string NombreEmpleado => _nombreEmpleado;
 
         private readonly int _clienteId = UserSession.Cliente;
         public int ClienteId => _clienteId;
@@ -54,11 +60,11 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             set { _fechaUltimaVisita = value; OnPropertyChanged(); }
         }
 
-        private bool _showClearAparadorista;
+        private bool _showClearEmpleado;
 
-        public bool ShowClearAparadorista {
-            get => _showClearAparadorista;
-            set { _showClearAparadorista = value; OnPropertyChanged(); }
+        public bool ShowClearEmpleado {
+            get => _showClearEmpleado;
+            set { _showClearEmpleado = value; OnPropertyChanged(); }
         }
 
         private bool _showClearGerente;
@@ -95,19 +101,21 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
         public ICommand CargarTemplateCommand { get; }
         public ICommand EnviarChecklistCommand { get; }
 
-        public ICommand DrawAparadoristaCommand { get; }
-        public ICommand ClearAparadoristaCommand { get; }
+        public ICommand DrawEmpleadoCommand { get; }
+        public ICommand ClearEmpleadoCommand { get; }
         public ICommand DrawGerenteCommand { get; }
         public ICommand ClearGerenteCommand { get; }
 
-        public AparadoristasViewModel() {
+        #endregion
+
+        public MantenimientoViewModel() {
             _httpClient = new HttpClient();
 
             CargarTemplateCommand = new Command(async () => await CargarTemplateAsync());
             EnviarChecklistCommand = new Command(async () => await EnviarChecklistAsync());
 
-            DrawAparadoristaCommand = new Command(OnDrawAparadorista);
-            ClearAparadoristaCommand = new Command(OnClearAparadorista);
+            DrawEmpleadoCommand = new Command(OnDrawEmpleado);
+            ClearEmpleadoCommand = new Command(OnClearEmpleado);
             DrawGerenteCommand = new Command(OnDrawGerente);
             ClearGerenteCommand = new Command(OnClearGerente);
 
@@ -117,15 +125,15 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             });
         }
 
-        public static event Action? OnClearAparadoristaRequested;
+        public static event Action? OnClearMantenimientoRequested;
 
         public static event Action? OnClearGerenteRequested;
 
-        private void OnDrawAparadorista() {
+        private void OnDrawEmpleado() {
         }
 
-        private void OnClearAparadorista() {
-            OnClearAparadoristaRequested?.Invoke();
+        private void OnClearEmpleado() {
+            OnClearMantenimientoRequested?.Invoke();
         }
 
         private void OnDrawGerente() {
@@ -173,7 +181,7 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
             IsLoading = true;
 
             try {
-                var url = $"{BaseApiUrl}estructura/Aparadorista";
+                var url = $"{BaseApiUrl}estructura/Mantenimiento";
                 var resultado = await _httpClient.GetFromJsonAsync<List<SeccionTemplate>>(url);
 
                 MainThread.BeginInvokeOnMainThread(() => {
@@ -198,7 +206,7 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
         }
 
         public Func<Task<bool>>? AntesDeEnviarChecklist { get; set; }
-        public byte[]? FirmaAparadoristaBytes { get; set; }
+        public byte[]? FirmaEmpleadoBytes { get; set; }
         public byte[]? FirmaGerenteBytes { get; set; }
 
         // ====================================================================
@@ -247,13 +255,6 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                     }
                 }
 
-                //string? firmaAparadoristaJson = FirmaEmpleadoBytes != null
-                //    ? $"[{string.Join(",", FirmaEmpleadoBytes)}]"
-                //    : null;
-
-                //string? firmaGerenteJson = FirmaGerenteBytes != null
-                //    ? $"[{string.Join(",", FirmaGerenteBytes)}]"
-                //    : null;
 
                 var payload = new {
                     SucursalId = this.TiendaId,
@@ -261,8 +262,8 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                     GerenteNombre = this.GerenteNombre,
                     FechaUltimaVisita = this.FechaUltimaVisita.ToString("yyyy-MM-dd"),
                     FechaRegistro = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    Detalles = respuestasEnvio, 
-                    FirmaAparadorista = FirmaAparadoristaBytes, 
+                    Detalles = respuestasEnvio,
+                    FirmaEmpleado = FirmaEmpleadoBytes,
                     FirmaGerente = FirmaGerenteBytes
                 };
 
@@ -272,25 +273,24 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                 var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
                 content.Add(new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json"), "DatosChecklist");
 
-                var url = $"{BaseApiUrl}aparadoristas";
+                var url = $"{BaseApiUrl}Mantenimiento";
                 var response = await _httpClient.PostAsync(url, content);
 
                 if(response.IsSuccessStatusCode) {
-                    await Toast.Make($"¡Checklist de aparadores y firmas enviados con éxito!", ToastDuration.Short).Show();
-
+                    await Toast.Make($"¡Checklist de mantenimiento y firmas enviados con éxito!", ToastDuration.Short).Show();
                     //await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de aparadores y firmas enviados con éxito!", "OK");
 
                     GerenteNombre = string.Empty;
                     InmuebleSeleccionado = null;
                     FechaUltimaVisita = DateTime.Today;
 
-                    FirmaAparadoristaBytes = null;
+                    FirmaEmpleadoBytes = null;
                     FirmaGerenteBytes = null;
 
-                    ShowClearAparadorista = false;
+                    ShowClearEmpleado = false;
                     ShowClearGerente = false;
 
-                    OnClearAparadoristaRequested?.Invoke();
+                    OnClearMantenimientoRequested?.Invoke();
                     OnClearGerenteRequested?.Invoke();
 
                     await CargarTemplateAsync();

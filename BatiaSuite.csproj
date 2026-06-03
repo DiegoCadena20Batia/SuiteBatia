@@ -20,8 +20,8 @@
 		<ApplicationIdGuid>c32f8002-8c0d-47c2-a53b-d2a8e250d3db</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>2.9.0</ApplicationDisplayVersion>
+		<ApplicationVersion>55</ApplicationVersion>
 
 		<!-- Versiones mínimas de SO soportadas -->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
@@ -32,6 +32,8 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 
 		<SkipStaticLibraryValidation>true</SkipStaticLibraryValidation>
+
+		<AndroidSigningKeyStore>SuiteBatiaFirma.keystore</AndroidSigningKeyStore>
 	</PropertyGroup>
 
 	<!-- ✅ Soporte para Mapas en todas las plataformas de forma nativa -->
@@ -40,11 +42,15 @@
 	</PropertyGroup>
 
 	<!-- ✅ CONFIGURACIÓN ANDROID DEBUG -->
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 		<AndroidUseAapt2>True</AndroidUseAapt2>
 		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
-	</PropertyGroup>
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
+	</PropertyGroup>-->
 
 	<!-- ✅ CONFIGURACIÓN ANDROID RELEASE (Compatibilidad total 32 y 64 bits) -->
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
@@ -54,11 +60,15 @@
 		<AndroidLinkTool>r8</AndroidLinkTool>
 		<RuntimeIdentifiers>android-arm64;android-arm;android-x64;android-x86</RuntimeIdentifiers>
 		<PublishTrimmed>true</PublishTrimmed>
-		<RunAOTCompilation>true</RunAOTCompilation>
+		<RunAOTCompilation>false</RunAOTCompilation>
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
 	</PropertyGroup>
 
 	<!-- ✅ CONFIGURACIÓN IOS COMPILACIÓN REMOTA EN MAC -->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true'">
+	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<ServerAddress>192.168.11.33</ServerAddress>
 		<ServerUser>ricardoberistain</ServerUser>
@@ -73,13 +83,13 @@
 
 		<BuildIpa>true</BuildIpa>
 		<ArchiveOnBuild>true</ArchiveOnBuild>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<!-- ✅ CONFIGURACIÓN IOS RELEASE OPTIMIZACIONES -->
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
 		<MtouchLink>SdkOnly</MtouchLink>
 		<MtouchUseLlvm>False</MtouchUseLlvm>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<!-- RECURSOS -->
 	<ItemGroup>
@@ -333,6 +343,15 @@
 		<MauiXaml Update="Views\CheckListAparadoristasAldoConti\AparadoristasPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Views\ChecklistLimpieza\LimpiezaPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ChecklistMantenimiento\MantenimientoPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ChecklistMonitoreo\MonitoreoPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\CheckListSupervisionesAldoConti\ChecklistPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
@@ -486,6 +505,12 @@
 		<MauiXaml Update="Views\Vacantes\VacantesPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\ChecklistLimpieza\" />
+	  <Folder Include="Models\ChecklistMantenimiento\" />
+	  <Folder Include="Models\ChecklistMonitoreo\" />
 	</ItemGroup>
 
 	<!-- ENTIDAD DE VISUAL STUDIO -->

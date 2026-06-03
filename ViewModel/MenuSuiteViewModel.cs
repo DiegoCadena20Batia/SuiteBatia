@@ -3,6 +3,9 @@ using BatiaSuite.Utils;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.CheckListAparadoristasAldoConti;
+using BatiaSuite.Views.ChecklistLimpieza;
+using BatiaSuite.Views.ChecklistMantenimiento;
+using BatiaSuite.Views.ChecklistMonitoreo;
 using BatiaSuite.Views.CheckListSupervisionesAldoConti;
 using BatiaSuite.Views.EntregasInteligentes;
 using BatiaSuite.Views.IncidenciasBiometa;
@@ -253,6 +256,24 @@ public partial class MenuSuiteViewModel : ViewModelBase {
             Details = Constants.DETALLES_APARADORISTAS_ALDO_CONTI,
             ImageUrl = "aparadoristas.png",
             IdModulo = 12
+        },
+        new Monkey {
+            Name = Constants.LIMPIEZA_ALDO_CONTI,
+            Details = Constants.DETALLES_LIMPIEZA_ALDO_CONTI,
+            ImageUrl = "limpieza.png",
+            IdModulo = 13
+        },
+        new Monkey {
+            Name = Constants.MANTENIMIENTO_ALDO_CONTI,
+            Details = Constants.DETALLES_MANTENIMIENTO_ALDO_CONTI,
+            ImageUrl = "mantenimientoac.png",
+            IdModulo = 14
+        },
+        new Monkey {
+            Name = Constants.MONITOREO_ALDO_CONTI,
+            Details = Constants.DETALLES_MONITOREO_ALDO_CONTI,
+            ImageUrl = "monitoreo.png",
+            IdModulo = 15
         }
         //,
         //new Monkey {
@@ -328,6 +349,15 @@ public partial class MenuSuiteViewModel : ViewModelBase {
                 break;
             case Constants.APARADORISTAS_ALDO_CONTI:
                 route = $"{nameof(AparadoristasPage)}";
+                break;
+            case Constants.LIMPIEZA_ALDO_CONTI:
+                route = $"{nameof(LimpiezaPage)}";
+                break;
+            case Constants.MANTENIMIENTO_ALDO_CONTI:
+                route = $"{nameof(MantenimientoPage)}";
+                break;
+            case Constants.MONITOREO_ALDO_CONTI:
+                route = $"{nameof(MonitoreoPage)}";
                 break;
             default:
                 IsBusy = false;

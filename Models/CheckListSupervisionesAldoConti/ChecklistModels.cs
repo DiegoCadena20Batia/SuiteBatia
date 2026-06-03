@@ -13,12 +13,11 @@ namespace BatiaSuite.Models.CheckListSupervisionesAldoConti {
 
     namespace singamobiletest.Models {
         public class SeccionTemplate {
-            public int Id { get; set; } // <-- Cambiado de Guid a int
+            public int Id { get; set; } 
             public string Nombre { get; set; } = string.Empty;
             public int Orden { get; set; }
             public bool Activa { get; set; }
 
-            // Usamos ObservableCollection para que la UI de MAUI reaccione a los cambios
             public ObservableCollection<PreguntaTemplate> Preguntas { get; set; } = new();
         }
     }
@@ -34,7 +33,6 @@ namespace singamobiletest.Models {
             public bool EsRequerido { get; set; }
             public int Orden { get; set; }
 
-            // --- Propiedades para capturar las respuestas del Supervisor ---
             private string? _valorRespondido;
             public string? ValorRespondido {
                 get => _valorRespondido;
@@ -47,7 +45,6 @@ namespace singamobiletest.Models {
                 set { _observaciones = value; OnPropertyChanged(); }
             }
 
-            // Propiedad auxiliar para enlazar directamente con los Switches/CheckBoxes
             private bool _respuestaBool;
             public bool RespuestaBool {
                 get => _valorRespondido == "1";

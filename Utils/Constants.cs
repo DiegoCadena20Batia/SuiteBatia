@@ -30,9 +30,9 @@ public static class Constants {
 
     #region API URI´s 
     //URL BASE PARA PRODUCCIÓN
-    public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
+    //public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
     //URL BASE PARA PRUEBAS
-    //public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
+    public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
     public const string ENT_GET_PRECARGA_API = "entregaprecarga";
     public const string GET_MODULOS_MENU = "ObtenerModulos";
     public const string GET_TECNICOS_ORDENES_TRABAJO_API = "OTTecnico";
@@ -108,6 +108,9 @@ public static class Constants {
     
     public const string SUPERVISION_ALDO_CONTI = "Supervisión de Aldo Conti";
     public const string APARADORISTAS_ALDO_CONTI = "Supervisión aparadoristas de Aldo Conti";
+    public const string LIMPIEZA_ALDO_CONTI = "Supervisión limpieza de Aldo Conti";
+    public const string MANTENIMIENTO_ALDO_CONTI = "Supervisión mantenimiento de Aldo Conti";
+    public const string MONITOREO_ALDO_CONTI = "Supervisión monitoreo de Aldo Conti";
 
     public const string VACANTES = "Vacantes";
     public const string DATOS_GENERALES = "Datos generales";
@@ -330,6 +333,9 @@ public static class Constants {
     public const string DETALLES_SANITIZACION = "Registro de visitas a puntos de atención para sanitización y desinfección del inmueble.";
     public const string DETALLES_SUPERVISION_ALDO_CONTI = "Se realiza la supervisión de Aldo Conti mediante un checklist detallado.";
     public const string DETALLES_APARADORISTAS_ALDO_CONTI = "Se realiza la supervisión en Aldo Conti a aparadoristas mediante un checklist detallado.";
+    public const string DETALLES_LIMPIEZA_ALDO_CONTI = "Se realiza la supervisión en Aldo Conti a limpieza mediante un checklist detallado.";
+    public const string DETALLES_MANTENIMIENTO_ALDO_CONTI = "Se realiza la supervisión en Aldo Conti a mantenimiento mediante un checklist detallado.";
+    public const string DETALLES_MONITOREO_ALDO_CONTI = "Se realiza la supervisión en Aldo Conti a monitoreo mediante un checklist detallado.";
 
     #region MONTHS
     public static List<object> MonthList = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
