@@ -207,13 +207,11 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
         private async Task EnviarChecklistAsync() {
             if(string.IsNullOrWhiteSpace(TiendaNombre) || _tiendaId == 0) {
                 await Toast.Make($"Por favor selecciona una Tienda / Sucursal obligatoriamente.", ToastDuration.Short).Show();
-
                 return;
             }
 
             if(string.IsNullOrWhiteSpace(GerenteNombre)) {
                 await Toast.Make($"Por favor ingresa el nombre del Gerente.", ToastDuration.Short).Show();
-
                 return;
             }
 
@@ -247,13 +245,8 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                     }
                 }
 
-                //string? firmaAparadoristaJson = FirmaEmpleadoBytes != null
-                //    ? $"[{string.Join(",", FirmaEmpleadoBytes)}]"
-                //    : null;
-
-                //string? firmaGerenteJson = FirmaGerenteBytes != null
-                //    ? $"[{string.Join(",", FirmaGerenteBytes)}]"
-                //    : null;
+                string? firmaAparadoristaBase64 = FirmaAparadoristaBytes != null ? Convert.ToBase64String(FirmaAparadoristaBytes) : null;
+                string? firmaGerenteBase64 = FirmaGerenteBytes != null ? Convert.ToBase64String(FirmaGerenteBytes) : null;
 
                 var payload = new {
                     SucursalId = this.TiendaId,
@@ -261,25 +254,19 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                     GerenteNombre = this.GerenteNombre,
                     FechaUltimaVisita = this.FechaUltimaVisita.ToString("yyyy-MM-dd"),
                     FechaRegistro = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    Detalles = respuestasEnvio, 
-                    FirmaAparadorista = FirmaAparadoristaBytes, 
-                    FirmaGerente = FirmaGerenteBytes
+                    Detalles = respuestasEnvio,
+                    FirmaAparadorista = firmaAparadoristaBase64, 
+                    FirmaGerente = firmaGerenteBase64           
                 };
 
-                using var content = new MultipartFormDataContent();
-
-                // 1. Adjuntar el JSON del formato original
-                var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
-                content.Add(new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json"), "DatosChecklist");
-
                 var url = $"{BaseApiUrl}aparadoristas";
-                var response = await _httpClient.PostAsync(url, content);
+
+                var response = await _httpClient.PostAsJsonAsync(url, payload);
 
                 if(response.IsSuccessStatusCode) {
                     await Toast.Make($"¡Checklist de aparadores y firmas enviados con éxito!", ToastDuration.Short).Show();
-
-                    //await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de aparadores y firmas enviados con éxito!", "OK");
-
+                    await Shell.Current.GoToAsync("//MyMenu");
+                    // Limpieza de estados e  de usuario
                     GerenteNombre = string.Empty;
                     InmuebleSeleccionado = null;
                     FechaUltimaVisita = DateTime.Today;
@@ -295,14 +282,11 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
 
                     await CargarTemplateAsync();
                 } else {
-                    await Toast.Make($"El servidor respondió con código: {response.StatusCode}", ToastDuration.Short).Show();
-
-                    //await Application.Current!.MainPage!.DisplayAlert("Error", $"El servidor respondió con código: {response.StatusCode}", "OK");
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    await Toast.Make($"Error del servidor ({response.StatusCode}): {errorContent}", ToastDuration.Long).Show();
                 }
             } catch(Exception ex) {
                 await Toast.Make($"Ocurrió un error al enviar: {ex.Message}", ToastDuration.Short).Show();
-
-                //await Application.Current!.MainPage!.DisplayAlert("Error", $"Ocurrió un error al enviar: {ex.Message}", "OK");
             } finally {
                 IsLoading = false;
             }

@@ -570,7 +570,7 @@ public partial class SupervisionPregunta : BaseNotify
                 new SupervisionPregunta { IdPregunta=85,  IdSeccion =11,Descripcion = "Limpieza de bodega"},
                 new SupervisionPregunta { IdPregunta=86,  IdSeccion =11,Descripcion = "Cristales Externos"},
                 new SupervisionPregunta { IdPregunta=87,  IdSeccion =11,Descripcion = "Espejos, carteles y acabados"},
-                new SupervisionPregunta { IdPregunta=88,  IdSeccion =11,Descripcion = "Limipeza de piso (loceta vinilica e interceramica, marmol, duela laminada, azulejo, cemento pulido)"},
+                new SupervisionPregunta { IdPregunta=88,  IdSeccion =11,Descripcion = "Limpeza de piso (loceta vinilica e interceramica, marmol, duela laminada, azulejo, cemento pulido)"},
                 new SupervisionPregunta { IdPregunta=89,  IdSeccion =11,Descripcion = "Exhibidores"},
                 new SupervisionPregunta { IdPregunta=90,  IdSeccion =11,Descripcion = "limpieza de covacha y inventarios de materiales y maquinaria "},
                 new SupervisionPregunta { IdPregunta=91,  IdSeccion =12,Descripcion = "¿El piso de la zona de cajeros automáticos exterior se encuentra limpio?"},

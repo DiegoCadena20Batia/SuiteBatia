@@ -141,6 +141,7 @@ public partial class EncuestaSupervisionViewModel : ViewModelBase, IQueryAttribu
             BaseAddress = new Uri(Constants.API_BASE_URL + "SupervisionN")
         };
         cli.DefaultRequestHeaders.Add("Accept", "application/json");
+        //string json = JsonConvert.SerializeObject(_data);
 
         int result = 0;
         try {
@@ -304,8 +305,7 @@ public partial class EncuestaSupervisionViewModel : ViewModelBase, IQueryAttribu
                 var byteArrayContent = new ByteArrayContent(resizedImage);
                 byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
 
-                var fileName = "F_" + _data.Id_Inmueble.ToString() + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + consecF.ToString() + Path.GetExtension(filePath.Path).ToString();
-                content.Add(byteArrayContent, "files", fileName);
+                var fileName = "F_" + filePath.Seccion.ToString() + "_" + _data.Id_Inmueble.ToString() + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + consecF.ToString() + Path.GetExtension(filePath.Path).ToString(); content.Add(byteArrayContent, "files", fileName);
                 consecF++;
                 filePath.NombreGenerado = fileName;
             }
@@ -345,6 +345,12 @@ public partial class EncuestaSupervisionViewModel : ViewModelBase, IQueryAttribu
             //    video.NombreGenerado = videoFileName;
             //    content.Add(streamContent, "files", videoFileName);
             //}
+
+            var datosDeCargaDetalle = new { SubDirectorio = subDirectory, Fotos = fotos, Video = video };
+            string jsonArchivosEnviados = JsonConvert.SerializeObject(datosDeCargaDetalle, Formatting.Indented);
+            System.Diagnostics.Debug.WriteLine("=== DATOS ENVIADOS A STREAMING ===\n" + jsonArchivosEnviados);
+
+
             var handler = new HttpClientHandler();
             var httpClient = new HttpClient(handler) {
                 Timeout = TimeSpan.FromMinutes(5)

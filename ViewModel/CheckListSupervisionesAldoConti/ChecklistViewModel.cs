@@ -196,7 +196,7 @@ namespace BatiaSuite.ViewModel.CheckListSupervisionesAldoConti {
                 if(response.IsSuccessStatusCode) {
                     //await Application.Current!.MainPage!.DisplayAlert("Éxito", "¡Checklist de supervisión guardado y enviado correctamente!", "OK");
                     await Toast.Make($"¡Checklist de supervisión guardado y enviado correctamente!", ToastDuration.Long).Show();
-
+                    await Shell.Current.GoToAsync("//MyMenu");
                     GerenteNombre = string.Empty;
                     InmuebleSeleccionado = null;
 
