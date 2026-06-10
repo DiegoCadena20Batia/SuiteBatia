@@ -322,6 +322,9 @@
 		<MauiXaml Update="Resources\Styles\Resources.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Popups\VersionApp\VersionPopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasResumenPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

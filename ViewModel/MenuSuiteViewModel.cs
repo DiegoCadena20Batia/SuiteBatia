@@ -1,4 +1,5 @@
 ﻿using BatiaSuite.Models;
+using BatiaSuite.Models.Apps;
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
@@ -25,6 +26,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
 //using static SQLite.SQLite3;
 
 namespace BatiaSuite.ViewModel;
@@ -34,25 +36,25 @@ public partial class MenuSuiteViewModel : ViewModelBase {
     private readonly string _apiKey = "AIzaSyBpoRJAkG1NFtHFuE3uTRbVnRcTG7ndz18";
 
     [ObservableProperty]
-    ObservableCollection<Monkey> _monkeys;
+    private ObservableCollection<Monkey> _monkeys;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(NextPageCommand))]
-    bool _isBusy;
+    private bool _isBusy;
 
     [ObservableProperty]
-    string _appVersionString;
+    private string _appVersionString;
 
     [ObservableProperty]
-    string _appName;
+    private string _appName;
 
     [ObservableProperty]
-    bool _isLoading;
+    private bool _isLoading;
 
     [ObservableProperty]
-    bool _isRefreshing;
+    private bool _isRefreshing;
 
-    OrdenesSupervisionTotal _ordenesSupervisionTotal;
+    private OrdenesSupervisionTotal _ordenesSupervisionTotal;
 
     public MenuSuiteViewModel() {
         AppName = AppInfo.Name;
@@ -60,8 +62,47 @@ public partial class MenuSuiteViewModel : ViewModelBase {
         InitValuesAsync();
     }
 
+    public async Task<bool> ValidarVersion() {
+        try {
+            string version = AppInfo.Current.VersionString;
+            string buildVersion = AppInfo.Current.BuildString;
+            string plataforma = "";
+
+#if ANDROID
+            plataforma = "1";
+#endif
+#if IOS
+plataforma = "2";
+#endif
+
+            string url = Constants.API_BASE_URL + $"VersionesApp?app=2&plataforma={plataforma}";
+
+            var _httpClient = new HttpClient();
+            var response = await _httpClient.GetAsync(url);
+            if(!response.IsSuccessStatusCode) {
+                Console.WriteLine("No se pudo obtener la versión de la app desde el server");
+            }
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            var result = System.Text.Json.JsonSerializer.Deserialize<List<VersionApp>>(jsonResponse);
+
+            if(result != null && result[0] != null) {
+                if(result[0].nomversion == version) {
+                    return true;
+                } else {
+                    Console.WriteLine($"version incorrecta: {result[0].nomversion} (num: {result[0].numversion}), se esperaba {version}");
+                }
+            }
+
+            return true;
+        } catch(Exception ex) {
+            Console.WriteLine($"Error al validar la versión de la app: {ex.Message}");
+            return true;
+        }
+    }
+
     [RelayCommand]
-    async Task RefreshPage() {
+    private async Task RefreshPage() {
         IsRefreshing = true;
         if(InternetUtil.IsConnectedInternet()) {
             try {
@@ -76,7 +117,6 @@ public partial class MenuSuiteViewModel : ViewModelBase {
                 } else {
                     await App.Current.MainPage.DisplayAlert("Alerta", "Sin modulos asignados, verifique con su encargado", Constants.ACEPTAR);
                 }
-
             } catch(Exception ex) {
                 await App.Current.MainPage.DisplayAlert("Error", ex.Message, Constants.ACEPTAR);
             }
@@ -85,7 +125,8 @@ public partial class MenuSuiteViewModel : ViewModelBase {
         }
         IsRefreshing = false;
     }
-    async void InitValuesAsync() {
+
+    private async void InitValuesAsync() {
         IsBusy = true;
         IsLoading = true;
         DateTime currentDate = DateTime.Now;
@@ -93,7 +134,6 @@ public partial class MenuSuiteViewModel : ViewModelBase {
         if(!InternetUtil.IsConnectedInternet()) {
             _ordenesSupervisionTotal = new OrdenesSupervisionTotal();
             if(UserSession.Modulos == "" && UserSession.Modulos == null) {
-
             }
         } else {
             string url = $"{Constants.SUP_GET_ORDENES_TOTALES_API}?idsupervisor={UserSession.IdEmpleado}&anio={currentDate.Year}&mes={currentDate.Month}";
@@ -119,17 +159,19 @@ public partial class MenuSuiteViewModel : ViewModelBase {
             }
         }
         Monkeys = await GenerarMenu();
+        await ValidarVersion();
         IsBusy = false;
         IsLoading = false;
         //CreateMonkeyCollection();
     }
 
     public class ModulosResponse {
+
         [JsonProperty("modulo")]
         public List<int> Modulo { get; set; }
     }
 
-    void CreateMonkeyCollection() {
+    private void CreateMonkeyCollection() {
         Monkeys = new ObservableCollection<Monkey> {
             new Monkey {
                 Name =Constants.ENTREGAS,
@@ -184,7 +226,7 @@ public partial class MenuSuiteViewModel : ViewModelBase {
             return new ObservableCollection<Monkey>();
         }
         //PARA USUARIOS QUE AUN NO TIENEN MODULOS ASIGNADOS EN EL BACKEND NO PODRAN VER EL MENU DE SUITE BATIA
-        //APARECIENDO UNA LEYENDA INDICANDO QUE SE DEBEN CONTACTAR CON SISTEMAS PARA DAR DE ALTA SUS PERMISOS 
+        //APARECIENDO UNA LEYENDA INDICANDO QUE SE DEBEN CONTACTAR CON SISTEMAS PARA DAR DE ALTA SUS PERMISOS
 
         // Lista completa de posibles módulos
         var todosLosMonos = new List<Monkey>
@@ -332,33 +374,43 @@ public partial class MenuSuiteViewModel : ViewModelBase {
             case Constants.SANITIZACION:
                 route = $"{nameof(SanitizacionPage)}";
                 break;
+
             case Constants.SUPERVISION_MANTENIMIENTO:
                 route = $"{nameof(SupervisionMantenimientoPage)}";
                 break;
+
             case Constants.SOLICITUD_COTIZACION:
                 route = $"{nameof(SolicitudCotizacionPage)}";
                 break;
+
             case "CHECKLIST CONTROL DE APARADORES":
                 route = $"{nameof(CheckListAparadoresInmueblePage)}";
                 break;
+
             case "INCIDENCIAS DIARIAS":
                 route = $"{nameof(IncidenciasBiometaPage)}";
                 break;
+
             case Constants.SUPERVISION_ALDO_CONTI:
                 route = $"{nameof(ChecklistPage)}";
                 break;
+
             case Constants.APARADORISTAS_ALDO_CONTI:
                 route = $"{nameof(AparadoristasPage)}";
                 break;
+
             case Constants.LIMPIEZA_ALDO_CONTI:
                 route = $"{nameof(LimpiezaPage)}";
                 break;
+
             case Constants.MANTENIMIENTO_ALDO_CONTI:
                 route = $"{nameof(MantenimientoPage)}";
                 break;
+
             case Constants.MONITOREO_ALDO_CONTI:
                 route = $"{nameof(MonitoreoPage)}";
                 break;
+
             default:
                 IsBusy = false;
                 IsLoading = false;
@@ -372,7 +424,7 @@ public partial class MenuSuiteViewModel : ViewModelBase {
     }
 
     [RelayCommand]
-    async Task Logout() {
+    private async Task Logout() {
         IsLoading = true;
         await Task.Delay(200);
         UserSession.ClearSession();
@@ -380,14 +432,13 @@ public partial class MenuSuiteViewModel : ViewModelBase {
         IsLoading = false;
     }
 
-    bool CanExecuteNextPage() {
+    private bool CanExecuteNextPage() {
         return !IsBusy;
     }
 
     public async Task<string> ObtenerRutaAsync(string origen, string destino, List<string> waypoints = null) {
         origen = "19.617324, -99.289483";
         destino = "19.36478456915744, -99.1724843795433";
-
 
         var url = $"https://maps.googleapis.com/maps/api/directions/json?origin={origen}&destination={destino}&key={_apiKey}";
 
