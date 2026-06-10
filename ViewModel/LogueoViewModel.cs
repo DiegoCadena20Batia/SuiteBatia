@@ -1,9 +1,11 @@
 ﻿using BatiaSuite.Data;
 using BatiaSuite.Models;
-using BatiaSuite.Models.Apps;
+using BatiaSuite.Popups.VersionApp;
 using BatiaSuite.Utils;
+using CommunityToolkit.Maui.Core.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Mopups.Services;
 
 namespace BatiaSuite.ViewModel;
 
@@ -34,7 +36,8 @@ public partial class LogueoViewModel : ViewModelBase {
         if(await ValidarVersion()) {
 
         } else {
-
+            await MopupService.Instance.PushAsync(new VersionAppPopup());
+            return;
         }
         
     }
@@ -61,7 +64,7 @@ plataforma = "2";
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<List<VersionApp>>(jsonResponse);
+            var result = System.Text.Json.JsonSerializer.Deserialize<List<Models.AppVersion.VersionApp>>(jsonResponse);
 
             if(result != null && result[0] != null) {
                 if(result[0].nomversion == version) {

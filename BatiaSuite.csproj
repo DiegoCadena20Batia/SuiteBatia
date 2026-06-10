@@ -187,6 +187,9 @@
 		<Compile Update="Popups\LocationUsePopup.xaml.cs">
 			<DependentUpon>LocationUsePopup.xaml</DependentUpon>
 		</Compile>
+		<Compile Update="Popups\VersionApp\VersionAppPopup.xaml.cs">
+		  <DependentUpon>VersionAppPopup.xaml</DependentUpon>
+		</Compile>
 		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasResumenPage.xaml.cs">
 			<DependentUpon>CheckListAparadoresPreguntasResumenPage.xaml</DependentUpon>
 		</Compile>
@@ -316,14 +319,14 @@
 		<MauiXaml Update="Popups\LocationUsePopup.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Popups\VersionApp\VersionAppPopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Resources\Styles\Converters.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Resources\Styles\Resources.xaml">
 			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Popups\VersionApp\VersionPopup.xaml">
-		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasResumenPage.xaml">
 			<Generator>MSBuild:Compile</Generator>

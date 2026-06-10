@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+    xmlns:const="clr-namespace:BatiaSuite.Utils"
+    x:Class="BatiaSuite.Popups.VersionApp.VersionAppPopup"
+    BackgroundColor="{StaticResource BackgroundPopup}"
+    Style="{StaticResource PopupStyle}">
+
+
+    <ScrollView Margin="0" VerticalOptions="Center">
+        <Grid>
+            <Frame
+                CornerRadius="25"
+                BackgroundColor="White"
+                BorderColor="Transparent"
+                Margin="25"
+                Padding="0">
+                <Grid RowDefinitions="auto, auto, auto, auto, auto">
+
+                    <Label
+                        Grid.Row="0"
+                        Text="⚠️ Actualización requerida"
+                        FontSize="{OnPlatform Android={OnIdiom Phone=20, Tablet=40}, iOS=18}"
+                        FontFamily="Regular"
+                        TextColor="#3875b4"
+                        Margin="{OnPlatform Android={OnIdiom Phone=10, Tablet=30}, iOS=15}"/>
+
+                    <Grid 
+                        Grid.Row="1"
+                        BackgroundColor="#d4bc88"
+                        HeightRequest="1">
+                        <Grid.Shadow>
+                            <Shadow Brush="#d4bc88" Radius="18" Opacity="0.9" />
+                        </Grid.Shadow>
+                    </Grid>
+
+                    <Label
+                        Grid.Row="2"
+                        Padding="15"
+                        Margin="0,0,0,15"
+                        Text="Debes actualizar a la última versión para continuar usando la aplicación."
+                        TextColor="#3875b4"
+                        FontSize="{OnPlatform Android={OnIdiom Phone=16, Tablet=40}, iOS=15}"
+                        FontFamily="Regular"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap">
+                    </Label>
+
+                    <HorizontalStackLayout
+                        Grid.Row="3"
+                        Margin="0,0,0,15" 
+                        HorizontalOptions="Center">
+                        <Button
+                            BackgroundColor="#3875b4"
+                            BorderColor="Transparent"
+                            TextColor="White"
+                            HeightRequest="50"
+                            WidthRequest="240"
+                            FontSize="16"
+                            Text="{OnPlatform Android='Ver en Play Store', iOS='Ver en App Store' }"
+                            Command="{Binding VerTiendaCommand}"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                            HorizontalOptions="Center" 
+                            ImageSource="{OnPlatform Android='playstore.png', iOS='appstore.png'}"
+                            ContentLayout="Right,10">
+                            <Button.Shadow>
+                                <Shadow Brush="Black" Radius="8" Opacity="0.5" />
+                            </Button.Shadow>
+                        </Button>
+                    </HorizontalStackLayout>
+                </Grid>
+            </Frame>
+
+            <Frame
+                CornerRadius="25"
+                BackgroundColor="#80000000"
+                IsVisible="{Binding IsLoading}"
+                Margin="25"
+                Padding="{OnPlatform Android='10, 20, 20, 10', iOS='5'}"
+                HasShadow="False"
+                BorderColor="Transparent"
+                InputTransparent="False">
+                <Grid VerticalOptions="Center" HorizontalOptions="Center">
+                    <ActivityIndicator
+                        IsRunning="{Binding IsLoading}"
+                        Color="White"
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        Margin="30"/>
+                    <Label
+                        Text="{Binding TextLoading}"
+                        TextColor="White"
+                        FontSize="14"
+                        VerticalOptions="End"
+                        HorizontalTextAlignment="Center"
+                        Margin="0,10,0,0"/>
+                </Grid>
+            </Frame>
+        </Grid>
+    </ScrollView>
+
+</mopup:PopupPage>

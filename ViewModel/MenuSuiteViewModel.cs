@@ -1,5 +1,6 @@
 ﻿using BatiaSuite.Models;
 using BatiaSuite.Models.Apps;
+using BatiaSuite.Popups.VersionApp;
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
@@ -19,6 +20,7 @@ using BatiaSuite.Views.SupplierDeliveries;
 using BatiaSuite.Views.Vacantes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Mopups.Services;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Net.Http;
@@ -62,6 +64,15 @@ public partial class MenuSuiteViewModel : ViewModelBase {
         InitValuesAsync();
     }
 
+    public async Task InitAsync() {
+        if(await ValidarVersion()) {
+            // Continuar con la inicialización normal
+        } else {
+            await MopupService.Instance.PushAsync(new VersionAppPopup());
+            return;
+        }
+    }
+
     public async Task<bool> ValidarVersion() {
         try {
             string version = AppInfo.Current.VersionString;
@@ -84,7 +95,7 @@ plataforma = "2";
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var result = System.Text.Json.JsonSerializer.Deserialize<List<VersionApp>>(jsonResponse);
+            var result = System.Text.Json.JsonSerializer.Deserialize<List<Models.AppVersion.VersionApp>>(jsonResponse);
 
             if(result != null && result[0] != null) {
                 if(result[0].nomversion == version) {
@@ -159,7 +170,7 @@ plataforma = "2";
             }
         }
         Monkeys = await GenerarMenu();
-        await ValidarVersion();
+        await InitAsync();
         IsBusy = false;
         IsLoading = false;
         //CreateMonkeyCollection();
