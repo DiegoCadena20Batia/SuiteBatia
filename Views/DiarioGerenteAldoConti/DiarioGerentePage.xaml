@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.DiarioGerenteAldoConti.DiarioGerentePage"
+             xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             xmlns:models="clr-namespace:BatiaSuite.Models.CheckListSupervisionesAldoConti.singamobiletest.Models"
+             xmlns:selectors="clr-namespace:BatiaSuite.Selectors"
+             xmlns:viewmodels="clr-namespace:BatiaSuite.ViewModel.DiarioGerenteAldoConti"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:DataType="viewmodels:DiarioGerenteViewModel"
+             Title="DIARIO DE GERENTE"
+             BackgroundColor="{AppThemeBinding Light='#F5F5F5', Dark='#121212'}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="BooleanoTemplate" x:DataType="models:PreguntaTemplate">
+                <VerticalStackLayout Padding="5,10" Spacing="8">
+                    <Label Text="{Binding TextoPregunta}" LineBreakMode="WordWrap" FontSize="14" TextColor="{AppThemeBinding Light='#2B2B2B', Dark='#EAEAEA'}" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="¿Cumple con el estándar?" FontSize="12" TextColor="Gray" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding RespuestaBool}" OnColor="#2196F3" ThumbColor="DarkBlue" BackgroundColor="#FFFFFF" />
+                    </Grid>
+                    <Entry Placeholder="Añadir observaciones opcionales..." Text="{Binding Observaciones}" FontSize="12" Margin="0,2,0,0" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#2D2D2D}" Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </DataTemplate>
+
+            <DataTemplate x:Key="EnteroTemplate" x:DataType="models:PreguntaTemplate">
+                <VerticalStackLayout Padding="5,10" Spacing="8">
+                    <Label Text="{Binding TextoPregunta}" FontSize="14" TextColor="{AppThemeBinding Light='#2B2B2B', Dark='#EAEAEA'}" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Cantidad entera:" FontSize="12" TextColor="Gray" VerticalOptions="Center" />
+                        <Entry Grid.Column="1" Placeholder="0" Text="{Binding ValorRespondido}" Keyboard="Numeric" HorizontalTextAlignment="Center" WidthRequest="100" HeightRequest="40" />
+                    </Grid>
+                    <Entry Placeholder="Observaciones..." Text="{Binding Observaciones}" FontSize="12" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#2D2D2D}" Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </DataTemplate>
+
+            <DataTemplate x:Key="DecimalTemplate" x:DataType="models:PreguntaTemplate">
+                <VerticalStackLayout Padding="5,10" Spacing="8">
+                    <Label Text="{Binding TextoPregunta}" FontSize="14" TextColor="{AppThemeBinding Light='#2B2B2B', Dark='#EAEAEA' }" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Monto registrado ($):" FontSize="12" TextColor="Gray" VerticalOptions="Center" />
+                        <Entry Grid.Column="1" Placeholder="0.00" Text="{Binding ValorRespondido}" Keyboard="Numeric" HorizontalTextAlignment="Center" WidthRequest="120" HeightRequest="40" />
+                    </Grid>
+                    <Entry Placeholder="Observaciones..." Text="{Binding Observaciones}" FontSize="12" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#2D2D2D}" Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </DataTemplate>
+
+            <DataTemplate x:Key="TextoTemplate" x:DataType="models:PreguntaTemplate">
+                <VerticalStackLayout Padding="5,10" Spacing="8">
+                    <Label Text="{Binding TextoPregunta}" FontSize="14" TextColor="{AppThemeBinding Light='#2B2B2B', Dark='#EAEAEA' }" />
+                    <Editor Placeholder="Escribe la respuesta o hallazgo aquí..." Text="{Binding ValorRespondido}" AutoSize="TextChanges" HeightRequest="70" FontSize="13" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#2D2D2D}" Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </DataTemplate>
+
+            <DataTemplate x:Key="FechaTemplate" x:DataType="models:PreguntaTemplate">
+                <VerticalStackLayout Padding="5,10" Spacing="8">
+                    <Label Text="{Binding TextoPregunta}" FontSize="14" TextColor="{AppThemeBinding Light='#2B2B2B', Dark='#EAEAEA' }" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="Selecciona la fecha:" FontSize="12" TextColor="Gray" VerticalOptions="Center" />
+                        <DatePicker Grid.Column="1" Date="{Binding FechaSeleccionada, Mode=TwoWay}" Format="dd/MM/yyyy" MinimumHeightRequest="40" />
+                    </Grid>
+                    <Entry Placeholder="Observaciones..." Text="{Binding Observaciones}" FontSize="12" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#2D2D2D}" Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </DataTemplate>
+
+            <!-- RECURSO NUEVO: Template para renderizar las tablas de vendedores -->
+            <DataTemplate x:Key="TablaVentasTemplate" x:DataType="models:PreguntaTemplate">
+                <VerticalStackLayout Padding="10" Spacing="5">
+                    <Label Text="{Binding TextoPregunta}" FontAttributes="Bold" FontSize="14" Margin="0,5,0,10"/>
+
+                    <Grid ColumnDefinitions="10, 50, 60, 60, 60" ColumnSpacing="5" Margin="0,0,0,5">
+                        <Label Grid.Column="0" Text="#" FontAttributes="Bold" FontSize="11" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Gray"/>
+                        <Label Grid.Column="1" Text="Vendedor" FontAttributes="Bold" FontSize="11" VerticalOptions="Center" TextColor="Gray"/>
+                        <Label Grid.Column="2" Text="Cuánto Lleva" FontAttributes="Bold" FontSize="11" HorizontalOptions="End" VerticalOptions="Center" TextColor="Gray"/>
+                        <Label Grid.Column="3" Text="Cuánto Debería" FontAttributes="Bold" FontSize="11" HorizontalOptions="End" VerticalOptions="Center" TextColor="Gray"/>
+                        <Label Grid.Column="4" Text="Diferencia" FontAttributes="Bold" FontSize="11" HorizontalOptions="End" VerticalOptions="Center" TextColor="Gray"/>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="Fill" Margin="0,0,0,5"/>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding FilasTablaVentas}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:DataType="selectors:FilaVentaModel" 
+                          ColumnDefinitions="10, 50, 60, 60, 60" 
+                          RowDefinitions="Auto" 
+                          Margin="0,2" 
+                          ColumnSpacing="5">
+
+                                    <Label Grid.Column="0" 
+                               Text="{Binding NumeroFila}" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Center" />
+
+                                    <Entry Grid.Column="1" 
+                               Text="{Binding NombreVendedor, Mode=TwoWay, UpdateSourceEventName=TextChanged}" 
+                               Placeholder="Nombre..." 
+                               FontSize="12" 
+                               HeightRequest="38" />
+
+                                    <Entry Grid.Column="2" 
+                               Text="{Binding CuantoLleva, Mode=TwoWay, UpdateSourceEventName=TextChanged}" 
+                               Keyboard="Numeric" 
+                               HorizontalTextAlignment="End" 
+                               FontSize="12" 
+                               HeightRequest="38" />
+
+                                    <Entry Grid.Column="3" 
+                               Text="{Binding CuantoDeberia, Mode=TwoWay, UpdateSourceEventName=TextChanged}" 
+                               Keyboard="Numeric" 
+                               HorizontalTextAlignment="End" 
+                               FontSize="12" 
+                               HeightRequest="38" />
+
+                                    <Entry Grid.Column="4" 
+                               Text="{Binding Diferencia, Mode=OneWay}" 
+                               IsReadOnly="True" 
+                               TextColor="Gray" 
+                               HorizontalTextAlignment="End" 
+                               FontSize="12" 
+                               HeightRequest="38" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </DataTemplate>
+            <selectors:PreguntaTemplateSelector x:Key="MiPreguntaSelector"
+    BooleanoTemplate="{StaticResource BooleanoTemplate}"
+    EnteroTemplate="{StaticResource EnteroTemplate}"
+    DecimalTemplate="{StaticResource DecimalTemplate}"
+    TextoTemplate="{StaticResource TextoTemplate}"
+    FechaTemplate="{StaticResource FechaTemplate}"
+    TablaVentasTemplate="{StaticResource TablaVentasTemplate}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *" Padding="16" RowSpacing="12">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="8">
+            <Label Text="NUEVO DIARIO DE GERENTE" FontSize="15" FontAttributes="Bold" HorizontalOptions="Center" CharacterSpacing="1" TextColor="#2196F3" HorizontalTextAlignment="Center" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,0,0,2">
+                <Label Text="Cliente:" FontAttributes="Bold" FontSize="13" TextColor="Gray" />
+                <Label Text="{Binding NombreSupervisor}" FontAttributes="Bold" FontSize="13" TextColor="#2196F3" />
+            </HorizontalStackLayout>
+
+            <Border StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}" Padding="10" Stroke="{AppThemeBinding Light='#E0E0E0', Dark='#2D2D2D'}">
+                <VerticalStackLayout Spacing="10">
+
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Tienda / Sucursal" FontSize="11" TextColor="Gray" Margin="4,0,0,0" />
+                        <Picker Title="Seleccionar Tienda..."
+                                ItemsSource="{Binding ListaInmuebles}"
+                                ItemDisplayBinding="{Binding Nombre}"
+                                SelectedItem="{Binding InmuebleSeleccionado}"
+                                TextColor="{AppThemeBinding Light='Black', Dark='White'}"
+                                BackgroundColor="{AppThemeBinding Light='#F5F5F5', Dark='#2A2A2A'}"
+                                HeightRequest="42"
+                                FontSize="14"
+                                HorizontalOptions="Fill" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="2*, *, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="Nombre del Gerente" FontSize="11" TextColor="Gray" Margin="4,0,0,0" />
+                            <Entry Placeholder="Gerente en tienda" Text="{Binding GerenteNombre}" FontSize="13" HeightRequest="40" />
+                        </VerticalStackLayout>
+
+                        <!--<VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="F. Última Visita" FontSize="11" TextColor="Gray" Margin="4,0,0,0" />
+                            <DatePicker Date="{Binding FechaUltimaVisita, Mode=TwoWay}"
+                                        Format="dd/MM/yyyy"
+                                        TextColor="{AppThemeBinding Light='Black', Dark='White'}"
+                                        BackgroundColor="{AppThemeBinding Light='#F5F5F5', Dark='#2A2A2A'}"
+                                        HeightRequest="40"
+                                        FontSize="12" />
+                        </VerticalStackLayout>-->
+
+                        <VerticalStackLayout Grid.Column="1"  Grid.ColumnSpan="2" Spacing="2">
+                            <Label Text="Fecha Registro" FontSize="11" TextColor="Gray" Margin="4,0,0,0" />
+                            <Border StrokeShape="RoundRectangle 4"
+                                    StrokeThickness="0"
+                                    BackgroundColor="{AppThemeBinding Light='#E0E0E0', Dark='#2A2A2A'}"
+                                    HeightRequest="40"
+                                    Padding="5,0">
+                                <Label Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:dd/MM/yyyy}'}"
+                                       TextColor="{AppThemeBinding Light='#555555', Dark='#BBBBBB'}"
+                                       FontSize="12"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+
+        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="12">
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Secciones}" Margin="0,0,0,4">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:SeccionTemplate">
+                            <Border StrokeShape="RoundRectangle 12"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light='#E0E0E0', Dark='#2D2D2D'}"
+                            BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}"
+                            Margin="0,0,0,16"
+                            Padding="16">
+                                <VerticalStackLayout Spacing="10">
+                                    <VerticalStackLayout Spacing="4">
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                            <BoxView WidthRequest="4" HeightRequest="16" Color="#2196F3" CornerRadius="2" />
+                                            <Label Text="{Binding Nombre}" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light='#1A237E', Dark='#9FA8DA'}" CharacterSpacing="0.5" />
+                                        </HorizontalStackLayout>
+                                        <BoxView HeightRequest="2" Color="#2196F3" Opacity="0.3" Margin="0,2,0,5" />
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Preguntas}"
+                                                 BindableLayout.ItemTemplateSelector="{StaticResource MiPreguntaSelector}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Border StrokeShape="RoundRectangle 12"
+                StrokeThickness="1"
+                Stroke="{AppThemeBinding Light='#E0E0E0', Dark='#2D2D2D'}"
+                BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}"
+                Padding="12"
+                Margin="0,0,0,4">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{AppThemeBinding Light='#E0E0E0', Dark='#2D2D2D'}" BackgroundColor="{AppThemeBinding Light='#FAFAFA', Dark='#2A2A2A'}" Padding="10">
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" Text="SUPERVISOR " FontAttributes="Bold" FontSize="11" TextColor="#2196F3" VerticalOptions="Center" />
+                                    <Button Grid.Column="1" Text="Limpiar" Clicked="OnBtnLimpiarSupervisorClicked" FontSize="10" HeightRequest="26" Padding="5,0" BackgroundColor="#FF5252" TextColor="White" />
+                                </Grid>
+                                <views:DrawingView x:Name="PadSupervisor"
+                   HeightRequest="110"
+                   LineWidth="3"
+                   LineColor="Black"
+                   DrawingLineCompleted="PadSupervisor_DrawingLineCompleted"
+                   BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}" />
+                                <BoxView HeightRequest="1" Color="Gray" Margin="0,2,0,0" />
+                                <Label Text="NOMBRE/FIRMA Y FECHA" FontSize="10" HorizontalOptions="Center" TextColor="Gray" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{AppThemeBinding Light='#E0E0E0', Dark='#2D2D2D'}" BackgroundColor="{AppThemeBinding Light='#FAFAFA', Dark='#2A2A2A'}" Padding="10">
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" Text="GERENTE TIENDA" FontAttributes="Bold" FontSize="11" TextColor="#2196F3" VerticalOptions="Center" />
+                                    <Button Grid.Column="1" Text="Limpiar" Clicked="OnBtnLimpiarGerenteClicked" FontSize="10" HeightRequest="26" Padding="5,0" BackgroundColor="#FF5252" TextColor="White" />
+                                </Grid>
+                                <views:DrawingView x:Name="PadGerente" HeightRequest="110" LineWidth="3" LineColor="Black" BackgroundColor="{AppThemeBinding Light='White', Dark='#1E1E1E'}" />
+                                <BoxView HeightRequest="1" Color="Gray" Margin="0,2,0,0" />
+                                <Label Text="FIRMA" FontSize="10" HorizontalOptions="Center" TextColor="Gray" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Button Text="FINALIZAR Y ENVIAR DIARIO"
+                Command="{Binding EnviarChecklistCommand}"
+                FontAttributes="Bold"
+                FontSize="14"
+                BackgroundColor="#2196F3"
+                TextColor="White"
+                CornerRadius="8"
+                HeightRequest="50"
+                Margin="0,0,0,10" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

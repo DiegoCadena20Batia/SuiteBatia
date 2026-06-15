@@ -9,9 +9,11 @@ using BatiaSuite.Views.ChecklistLimpieza;
 using BatiaSuite.Views.ChecklistMantenimiento;
 using BatiaSuite.Views.ChecklistMonitoreo;
 using BatiaSuite.Views.CheckListSupervisionesAldoConti;
+using BatiaSuite.Views.DiarioGerenteAldoConti;
 using BatiaSuite.Views.EntregasInteligentes;
 using BatiaSuite.Views.IncidenciasBiometa;
 using BatiaSuite.Views.OrdenesTrabajo;
+using BatiaSuite.Views.ReporteMantenimientoAldoConti;
 using BatiaSuite.Views.Sanitizacion;
 using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.Supervision;
@@ -298,35 +300,47 @@ plataforma = "2";
             ImageUrl = "supervisionmantenimientoiconnew.png",
             IdModulo = 7
         },
+        //new Monkey {
+        //    Name = Constants.SUPERVISION_ALDO_CONTI,
+        //    Details = Constants.DETALLES_SUPERVISION_ALDO_CONTI,
+        //    ImageUrl = "supervisionaldoconti.png",
+        //    IdModulo = 11
+        //},
+        //new Monkey {
+        //    Name = Constants.APARADORISTAS_ALDO_CONTI,
+        //    Details = Constants.DETALLES_APARADORISTAS_ALDO_CONTI,
+        //    ImageUrl = "aparadoristas.png",
+        //    IdModulo = 12
+        //},
+        //new Monkey {
+        //    Name = Constants.LIMPIEZA_ALDO_CONTI,
+        //    Details = Constants.DETALLES_LIMPIEZA_ALDO_CONTI,
+        //    ImageUrl = "limpieza.png",
+        //    IdModulo = 13
+        //},
+        //new Monkey {
+        //    Name = Constants.MANTENIMIENTO_ALDO_CONTI,
+        //    Details = Constants.DETALLES_MANTENIMIENTO_ALDO_CONTI,
+        //    ImageUrl = "mantenimientoac.png",
+        //    IdModulo = 14
+        //},
+        //new Monkey {
+        //    Name = Constants.MONITOREO_ALDO_CONTI,
+        //    Details = Constants.DETALLES_MONITOREO_ALDO_CONTI,
+        //    ImageUrl = "monitoreo.png",
+        //    IdModulo = 15
+        //},
         new Monkey {
-            Name = Constants.SUPERVISION_ALDO_CONTI,
-            Details = Constants.DETALLES_SUPERVISION_ALDO_CONTI,
-            ImageUrl = "supervisionaldoconti.png",
-            IdModulo = 11
+            Name = Constants.DIARIO_GERENTE_ALDO_CONTI,
+            Details = Constants.DETALLES_DIARIO_GERENTE_ALDO_CONTI,
+            ImageUrl = "diariogerente.png",
+            IdModulo = 16
         },
         new Monkey {
-            Name = Constants.APARADORISTAS_ALDO_CONTI,
-            Details = Constants.DETALLES_APARADORISTAS_ALDO_CONTI,
-            ImageUrl = "aparadoristas.png",
-            IdModulo = 12
-        },
-        new Monkey {
-            Name = Constants.LIMPIEZA_ALDO_CONTI,
-            Details = Constants.DETALLES_LIMPIEZA_ALDO_CONTI,
-            ImageUrl = "limpieza.png",
-            IdModulo = 13
-        },
-        new Monkey {
-            Name = Constants.MANTENIMIENTO_ALDO_CONTI,
-            Details = Constants.DETALLES_MANTENIMIENTO_ALDO_CONTI,
-            ImageUrl = "mantenimientoac.png",
-            IdModulo = 14
-        },
-        new Monkey {
-            Name = Constants.MONITOREO_ALDO_CONTI,
-            Details = Constants.DETALLES_MONITOREO_ALDO_CONTI,
-            ImageUrl = "monitoreo.png",
-            IdModulo = 15
+            Name = Constants.REPORTE_MANTENIMIENTO_ALDO_CONTI,
+            Details = Constants.DETALLES_REPORTE_MANTENIMIENTO_ALDO_CONTI,
+            ImageUrl = "reportemantenimiento.png",
+            IdModulo = 17
         }
         //,
         //new Monkey {
@@ -420,6 +434,12 @@ plataforma = "2";
 
             case Constants.MONITOREO_ALDO_CONTI:
                 route = $"{nameof(MonitoreoPage)}";
+                break;
+            case Constants.DIARIO_GERENTE_ALDO_CONTI:
+                route = $"{nameof(DiarioGerentePage)}";
+                break;
+            case Constants.REPORTE_MANTENIMIENTO_ALDO_CONTI:
+                route = $"{nameof(ReporteMantenimientoPage)}";
                 break;
 
             default:

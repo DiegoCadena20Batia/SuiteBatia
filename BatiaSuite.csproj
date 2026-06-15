@@ -373,6 +373,9 @@
 		<MauiXaml Update="Views\DeliveriesDetail.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Views\DiarioGerenteAldoConti\DiarioGerentePage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\Encuestas\EncuestaPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
@@ -414,6 +417,9 @@
 		</MauiXaml>
 		<MauiXaml Update="Views\RegistrosCorrctivosM.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ReporteMantenimientoAldoConti\ReporteMantenimientoPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\Sanitizacion\EvidenciasPage.xaml">
 			<Generator>MSBuild:Compile</Generator>

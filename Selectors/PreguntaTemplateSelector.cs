@@ -1,33 +1,39 @@
 ﻿using BatiaSuite.Models.CheckListSupervisionesAldoConti;
 using BatiaSuite.Models.CheckListSupervisionesAldoConti.singamobiletest.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls; // Asegura la referencia limpia de MAUI
+using Microsoft.Maui.Controls;
 
 namespace BatiaSuite.Selectors {
+
     public class PreguntaTemplateSelector : DataTemplateSelector {
-        // Estas propiedades se asignarán desde el XAML principal
         public DataTemplate BooleanoTemplate { get; set; } = null!;
         public DataTemplate EnteroTemplate { get; set; } = null!;
         public DataTemplate DecimalTemplate { get; set; } = null!;
         public DataTemplate TextoTemplate { get; set; } = null!;
         public DataTemplate FechaTemplate { get; set; } = null!;
+        public DataTemplate TablaVentasTemplate { get; set; } = null!;
+
+        public DataTemplate SeleccionSiNoTemplate { get; set; } = null!;
+        public DataTemplate SeleccionMultipleTemplate { get; set; } = null!;
 
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container) {
             if(item is not PreguntaTemplate pregunta)
-                return TextoTemplate; // Por defecto
+                return TextoTemplate;
 
-            // Ahora evaluamos por el ID entero (TipoDatoId) que mapeamos desde SQL Server
+            if(!string.IsNullOrEmpty(pregunta.TextoPregunta) &&
+                pregunta.TextoPregunta.StartsWith("TABLA:", StringComparison.OrdinalIgnoreCase)) {
+                return TablaVentasTemplate;
+            }
+
             return pregunta.TipoDatoId switch {
-                1 => BooleanoTemplate, // Booleano_SiNo
-                2 => EnteroTemplate,   // Entero
-                3 => DecimalTemplate,  // Decimal
-                4 => TextoTemplate,    // Texto
-                5 => FechaTemplate,    // Fecha
-                _ => TextoTemplate     // Por defecto si viene cualquier otro valor
+                1 => BooleanoTemplate,
+                2 => EnteroTemplate,
+                3 => DecimalTemplate,
+                4 => TextoTemplate,
+                5 => FechaTemplate,
+                6 => SeleccionMultipleTemplate,
+                7=>SeleccionSiNoTemplate,
+                _ => TextoTemplate
             };
         }
     }

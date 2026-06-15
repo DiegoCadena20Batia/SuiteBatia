@@ -200,6 +200,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 </RefreshView>
+            
             <Grid
                 BackgroundColor="#F5F5F5"
                 Grid.Row="3"

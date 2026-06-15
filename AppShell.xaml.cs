@@ -1,20 +1,22 @@
 ﻿using BatiaSuite.Views;
-using BatiaSuite.Views.Encuestas;
-using BatiaSuite.Views.OrdenesTrabajo;
-using BatiaSuite.Views.Sanitizacion;
-using BatiaSuite.Views.Supervision;
-using BatiaSuite.Views.SupervisionMantenimiento;
-using BatiaSuite.Views.Vacantes;
-using BatiaSuite.Views.EntregasInteligentes;
-using BatiaSuite.Views.SupplierDeliveries;
-using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.CheckListAparadores;
-using BatiaSuite.Views.IncidenciasBiometa;
-using BatiaSuite.Views.CheckListSupervisionesAldoConti;
 using BatiaSuite.Views.CheckListAparadoristasAldoConti;
 using BatiaSuite.Views.ChecklistLimpieza;
 using BatiaSuite.Views.ChecklistMantenimiento;
 using BatiaSuite.Views.ChecklistMonitoreo;
+using BatiaSuite.Views.CheckListSupervisionesAldoConti;
+using BatiaSuite.Views.DiarioGerenteAldoConti;
+using BatiaSuite.Views.Encuestas;
+using BatiaSuite.Views.EntregasInteligentes;
+using BatiaSuite.Views.IncidenciasBiometa;
+using BatiaSuite.Views.OrdenesTrabajo;
+using BatiaSuite.Views.ReporteMantenimientoAldoConti;
+using BatiaSuite.Views.Sanitizacion;
+using BatiaSuite.Views.SolicitudCotizacion;
+using BatiaSuite.Views.Supervision;
+using BatiaSuite.Views.SupervisionMantenimiento;
+using BatiaSuite.Views.SupplierDeliveries;
+using BatiaSuite.Views.Vacantes;
 
 namespace BatiaSuite;
 
@@ -134,7 +136,9 @@ public partial class AppShell : Shell {
         Routing.RegisterRoute(nameof(AparadoristasPage), typeof(AparadoristasPage));
         Routing.RegisterRoute(nameof(LimpiezaPage), typeof(LimpiezaPage));
         Routing.RegisterRoute(nameof(MantenimientoPage), typeof(MantenimientoPage));
-        Routing.RegisterRoute(nameof(MonitoreoPage), typeof(MonitoreoPage));
+        Routing.RegisterRoute(nameof(MantenimientoPage), typeof(MantenimientoPage));
+        Routing.RegisterRoute(nameof(DiarioGerentePage), typeof(DiarioGerentePage));
+        Routing.RegisterRoute(nameof(ReporteMantenimientoPage), typeof(ReporteMantenimientoPage));
 
         #endregion SUPERVICION_ALDOCONTI
     }
