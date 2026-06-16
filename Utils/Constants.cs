@@ -113,6 +113,7 @@ public static class Constants {
     public const string MONITOREO_ALDO_CONTI = "Supervisión monitoreo de Aldo Conti";
     public const string DIARIO_GERENTE_ALDO_CONTI = "Diario Gerente de Aldo Conti";
     public const string REPORTE_MANTENIMIENTO_ALDO_CONTI = "Reporte de Mantenimiento de Aldo Conti";
+    public const string DIARIO_LIMPIEZA_ALDO_CONTI = "Checklist diario de limpieza de Aldo Conti";
 
     public const string VACANTES = "Vacantes";
     public const string DATOS_GENERALES = "Datos generales";
@@ -339,7 +340,8 @@ public static class Constants {
     public const string DETALLES_MANTENIMIENTO_ALDO_CONTI = "Se realiza la supervisión en Aldo Conti a mantenimiento mediante un checklist detallado.";
     public const string DETALLES_MONITOREO_ALDO_CONTI = "Se realiza la supervisión en Aldo Conti a monitoreo mediante un checklist detallado.";
     public const string DETALLES_DIARIO_GERENTE_ALDO_CONTI = "Se realiza el diario de gerente mediante un checklist detallado.";
-    public const string DETALLES_REPORTE_MANTENIMIENTO_ALDO_CONTI = "Se realiza el resporte de mantenimiento mediante un checklist detallado.";
+    public const string DETALLES_REPORTE_MANTENIMIENTO_ALDO_CONTI = "Se realiza el reporte de mantenimiento mediante un checklist detallado.";
+    public const string DETALLES_DIARIO_LIMPIEZA_ALDO_CONTI = "Se realiza el reporte de limpieza diario mediante un checklist detallado.";
 
     #region MONTHS
     public static List<object> MonthList = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];

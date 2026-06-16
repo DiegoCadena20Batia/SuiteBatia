@@ -10,6 +10,7 @@ using BatiaSuite.Views.ChecklistMantenimiento;
 using BatiaSuite.Views.ChecklistMonitoreo;
 using BatiaSuite.Views.CheckListSupervisionesAldoConti;
 using BatiaSuite.Views.DiarioGerenteAldoConti;
+using BatiaSuite.Views.DiarioLimpieza;
 using BatiaSuite.Views.EntregasInteligentes;
 using BatiaSuite.Views.IncidenciasBiometa;
 using BatiaSuite.Views.OrdenesTrabajo;
@@ -341,6 +342,12 @@ plataforma = "2";
             Details = Constants.DETALLES_REPORTE_MANTENIMIENTO_ALDO_CONTI,
             ImageUrl = "reportemantenimiento.png",
             IdModulo = 17
+        },
+        new Monkey {
+            Name = Constants.DIARIO_LIMPIEZA_ALDO_CONTI,
+            Details = Constants.DETALLES_DIARIO_LIMPIEZA_ALDO_CONTI,
+            ImageUrl = "limpieza.png",
+            IdModulo = 18
         }
         //,
         //new Monkey {
@@ -440,6 +447,9 @@ plataforma = "2";
                 break;
             case Constants.REPORTE_MANTENIMIENTO_ALDO_CONTI:
                 route = $"{nameof(ReporteMantenimientoPage)}";
+                break;
+            case Constants.DIARIO_LIMPIEZA_ALDO_CONTI:
+                route = $"{nameof(DiarioLimpiezaPage)}";
                 break;
 
             default:
