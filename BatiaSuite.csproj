@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<!-- ✅ Plataformas objetivo unificadas (Android, iOS y Windows) -->
 		<TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
 
@@ -12,18 +11,14 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
-		<!-- Display name -->
 		<ApplicationTitle>BatiaSuite</ApplicationTitle>
 
-		<!-- App Identifier -->
 		<ApplicationId>com.companyname.batiasuite</ApplicationId>
 		<ApplicationIdGuid>c32f8002-8c0d-47c2-a53b-d2a8e250d3db</ApplicationIdGuid>
 
-		<!-- Versions -->
 		<ApplicationDisplayVersion>2.9.0</ApplicationDisplayVersion>
 		<ApplicationVersion>55</ApplicationVersion>
 
-		<!-- Versiones mínimas de SO soportadas -->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
@@ -36,85 +31,75 @@
 		<AndroidSigningKeyStore>SuiteBatiaFirma.keystore</AndroidSigningKeyStore>
 	</PropertyGroup>
 
-	<!-- ✅ Soporte para Mapas en todas las plataformas de forma nativa -->
 	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) or $(TargetFramework.Contains('-ios')) or $(TargetFramework.Contains('-windows'))">
 		<UseMauiMaps>true</UseMauiMaps>
 	</PropertyGroup>
 
-	<!-- ✅ CONFIGURACIÓN ANDROID DEBUG -->
-	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
-		<AndroidUseAapt2>True</AndroidUseAapt2>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<AndroidKeyStore>True</AndroidKeyStore>
-		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
-		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
-		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
-	</PropertyGroup>-->
-
-	<!-- ✅ CONFIGURACIÓN ANDROID RELEASE (Compatibilidad total 32 y 64 bits) -->
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
-		<AndroidPackageFormat>aab</AndroidPackageFormat>
-		<AndroidUseAapt2>True</AndroidUseAapt2>
-		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-		<AndroidLinkTool>r8</AndroidLinkTool>
-		<RuntimeIdentifiers>android-arm64;android-arm;android-x64;android-x86</RuntimeIdentifiers>
-		<PublishTrimmed>true</PublishTrimmed>
-		<RunAOTCompilation>false</RunAOTCompilation>
-		<AndroidKeyStore>True</AndroidKeyStore>
-		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
-		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
-		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
-	</PropertyGroup>
-
-	<!-- ✅ CONFIGURACIÓN IOS COMPILACIÓN REMOTA EN MAC -->
-	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true'">
+	<!-- 1️⃣ CONFIGURACIÓN CUANDO ESTÁS EN VISUAL STUDIO (DEBUG / DESARROLLO) -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true' And '$(Configuration)' == 'Debug'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<ServerAddress>192.168.11.33</ServerAddress>
 		<ServerUser>ricardoberistain</ServerUser>
 		<ServerTcpPort>52852</ServerTcpPort>
-
 		<ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
 		<ApplicationTitle>Suite Batia</ApplicationTitle>
+		
+		<ProvisioningType>manual</ProvisioningType>
+		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
+		<CodesignProvision>SuiteBatia_AdHoc</CodesignProvision>
+		
+		<!-- 🛠️ ENTORNO SEGURO PARA NO CRASHEAR EN EL IPHONE 🛠️ -->
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>copyused</TrimMode>
+		<MtouchLink>None</MtouchLink>
+		<UseInterpreter>true</UseInterpreter>
+		<MtouchFastDev>false</MtouchFastDev>
+		
+		<BuildIpa>true</BuildIpa>
+		<ArchiveOnBuild>true</ArchiveOnBuild>
+	</PropertyGroup>
 
+	<!-- 2️⃣ CONFIGURACIÓN COMPLETA PARA GENERAR EL ARCHIVE (RELEASE) -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<ServerAddress>192.168.11.33</ServerAddress>
+		<ServerUser>ricardoberistain</ServerUser>
+		<ServerTcpPort>52852</ServerTcpPort>
+		<ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
+		<ApplicationTitle>Suite Batia</ApplicationTitle>
+		
 		<ProvisioningType>manual</ProvisioningType>
 		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
 		<CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
-
+		
+		<!-- 🛠️ EL TRUCO DE EMERGENCIA PARA PASAR EL VALIDADOR DE ARCHIVE DE .NET 9 🛠️ -->
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>copyused</TrimMode>
+		<MtouchLink>None</MtouchLink>
+		<UseInterpreter>true</UseInterpreter>
+		<EnableAssemblyILStripping>false</EnableAssemblyILStripping>
+		<MtouchFastDev>false</MtouchFastDev>
+		
 		<BuildIpa>true</BuildIpa>
 		<ArchiveOnBuild>true</ArchiveOnBuild>
-	</PropertyGroup>-->
+	</PropertyGroup>
 
-	<!-- ✅ CONFIGURACIÓN IOS RELEASE OPTIMIZACIONES -->
-	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
-		<MtouchLink>SdkOnly</MtouchLink>
-		<MtouchUseLlvm>False</MtouchUseLlvm>
-	</PropertyGroup>-->
-
-	<!-- RECURSOS -->
 	<ItemGroup>
-		<!-- App Icon -->
 		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appiconandroid.svg" ForegroundFile="Resources\AppIcon\appiconfgandroid.svg" />
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
 
-		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#53c7e0" BaseSize="200,200" />
 
-		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
 
-		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
-		<!-- Custom Icons Fonts -->
 		<MauiFont Include="Resources\IconFonts\*" />
 		<MauiFont Include="Resources\IconFonts\icons.ttf" Alias="Icon fonts family" />
 
-		<!-- Raw Assets -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
-	<!-- LIMPIEZA DE ENLACES DE RECURSOS -->
 	<ItemGroup>
 		<Compile Remove="Resources\IconFonts\FontAwesome.cs" />
 	</ItemGroup>
@@ -139,7 +124,6 @@
 		<EmbeddedResource Include="Resources\IconFonts\icons.ttf" />
 	</ItemGroup>
 
-	<!-- PAQUETES (NUGETS) -->
 	<ItemGroup>
 		<PackageReference Include="Camera.MAUI" Version="1.5.1" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.0" />
@@ -167,13 +151,16 @@
 		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.2" />
 	</ItemGroup>
 
-	<!-- Paquetes condicionales de Android -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+	<ItemGroup Condition="$(TargetFramework.Contains('-android'))">
 		<PackageReference Include="Xamarin.AndroidX.LocalBroadcastManager" Version="1.1.0.22" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core" Version="2.8.7.3" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.8.7.3" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="2.8.7.3" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="2.8.7.3" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel" Version="2.8.7.3" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState" Version="2.8.7.3" />
 	</ItemGroup>
 
-
-	<!-- ACTUALIZACIONES DE COMPILACIÓN DE VISTAS (XAML) -->
 	<ItemGroup>
 		<Compile Update="Controls\OptionsViewMantenimiento.xaml.cs">
 			<DependentUpon>OptionsViewMantenimiento.xaml</DependentUpon>
@@ -188,7 +175,7 @@
 			<DependentUpon>LocationUsePopup.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Popups\VersionApp\VersionAppPopup.xaml.cs">
-		  <DependentUpon>VersionAppPopup.xaml</DependentUpon>
+			<DependentUpon>VersionAppPopup.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\CheckListAparadores\CheckListAparadoresPreguntasResumenPage.xaml.cs">
 			<DependentUpon>CheckListAparadoresPreguntasResumenPage.xaml</DependentUpon>
@@ -320,7 +307,7 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Popups\VersionApp\VersionAppPopup.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Resources\Styles\Converters.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -350,13 +337,13 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\ChecklistLimpieza\LimpiezaPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\ChecklistMantenimiento\MantenimientoPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\ChecklistMonitoreo\MonitoreoPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CheckListSupervisionesAldoConti\ChecklistPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -374,10 +361,10 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\DiarioGerenteAldoConti\DiarioGerentePage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\DiarioLimpieza\DiarioLimpiezaPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\Encuestas\EncuestaPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -422,7 +409,7 @@
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\ReporteMantenimientoAldoConti\ReporteMantenimientoPage.xaml">
-		  <Generator>MSBuild:Compile</Generator>
+			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\Sanitizacion\EvidenciasPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -523,12 +510,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Models\ChecklistLimpieza\" />
-	  <Folder Include="Models\ChecklistMantenimiento\" />
-	  <Folder Include="Models\ChecklistMonitoreo\" />
+		<Folder Include="Models\ChecklistLimpieza\" />
+		<Folder Include="Models\ChecklistMantenimiento\" />
+		<Folder Include="Models\ChecklistMonitoreo\" />
 	</ItemGroup>
 
-	<!-- ENTIDAD DE VISUAL STUDIO -->
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties XamarinHotReloadDebuggerTimeoutExceptionBatiaSuiteHideInfoBar="True" XamarinHotReloadGenericExceptionInfoBarBatiaSuiteHideInfoBar="True" />
