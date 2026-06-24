@@ -126,6 +126,9 @@ public static class MauiProgram {
         //Correctivos Mayores
         builder.Services.AddTransient<CorrectivosMayoresViewModel>();
 
+
+        builder.Services.AddSingleton<LocalDatabaseService>();
+
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();
 #endif

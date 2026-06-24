@@ -34,12 +34,10 @@ public partial class LogueoViewModel : ViewModelBase {
 
     private async Task InitAsync() {
         if(await ValidarVersion()) {
-
         } else {
             await MopupService.Instance.PushAsync(new VersionAppPopup());
             return;
         }
-        
     }
 
     public async Task<bool> ValidarVersion() {
@@ -97,20 +95,26 @@ plataforma = "2";
 
         LogueoModel response = await _httpHelper.GetAsync<LogueoModel>(url);
 
-        if(response is not null) {
-            if(!string.IsNullOrEmpty(response.per_Nombre)) {
-                UserSession.SetData(response);
-                if(Utils.InternetUtil.IsConnectedInternet()) {
-                    await _dbContext.GuardarDataOrdenesTrabajoLocal();
-                }
+        if(!string.IsNullOrEmpty(response.per_Nombre)) {
+            UserSession.SetData(response);
 
-                App.Current.MainPage = new AppShell();
-            } else {
-                await App.Current.MainPage.DisplayAlert(string.Empty, Constants.USER_PASS_INCORRECTOS, Constants.ACEPTAR);
+            try {
+                var syncService = new SyncService();
+
+                // 📌 ¡UNA SOLA LLAMADA PARA LAS 20 ENTIDADES!
+                await syncService.SincronizarTodoElEcosistemaAsync(UserSession.IdCliente);
+
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error en la sincronización automatizada: {ex.Message}");
             }
+
+            MainThread.BeginInvokeOnMainThread(() => {
+                App.Current.MainPage = new AppShell();
+            });
         } else {
             await App.Current.MainPage.DisplayAlert(string.Empty, Constants.ERROR_API, Constants.ACEPTAR);
         }
+
         IsBusy = false;
     }
 

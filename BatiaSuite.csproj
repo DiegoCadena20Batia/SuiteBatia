@@ -509,12 +509,6 @@
 		</MauiXaml>
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Models\ChecklistLimpieza\" />
-		<Folder Include="Models\ChecklistMantenimiento\" />
-		<Folder Include="Models\ChecklistMonitoreo\" />
-	</ItemGroup>
-
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties XamarinHotReloadDebuggerTimeoutExceptionBatiaSuiteHideInfoBar="True" XamarinHotReloadGenericExceptionInfoBarBatiaSuiteHideInfoBar="True" />
