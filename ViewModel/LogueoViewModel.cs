@@ -101,8 +101,7 @@ plataforma = "2";
             try {
                 var syncService = new SyncService();
 
-                // 📌 ¡UNA SOLA LLAMADA PARA LAS 20 ENTIDADES!
-                await syncService.SincronizarTodoElEcosistemaAsync(UserSession.IdCliente);
+                await syncService.SincronizarTodoElEcosistemaAsync(UserSession.Cliente);
 
             } catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine($"Error en la sincronización automatizada: {ex.Message}");

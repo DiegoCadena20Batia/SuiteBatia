@@ -103,8 +103,7 @@ namespace BatiaSuite.ViewModel.DiarioGerenteAldoConti {
 
               
                 List<InmuebleEntity> inmueblesLocal = await localDb.ObtenerListaLocalAsync<InmuebleEntity>(x =>
-                    x.IdCliente == ClienteId &&
-                    x.IdEstado == idEstadoDefault
+                    x.IdCliente == ClienteId 
                 );
 
                 MainThread.BeginInvokeOnMainThread(() => {
