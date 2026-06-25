@@ -81,8 +81,8 @@ namespace BatiaSuite.ViewModel.DiarioGerenteAldoConti {
         }
 
         private async Task InitializeAsync() {
-            await CargarTemplateAsync();
             await CargarInmueblesClienteAsync();
+            await CargarTemplateAsync();
         }
 
         [RelayCommand]
@@ -110,7 +110,6 @@ namespace BatiaSuite.ViewModel.DiarioGerenteAldoConti {
                 MainThread.BeginInvokeOnMainThread(() => {
                     ListaInmuebles.Clear();
                     foreach(var entity in inmueblesLocal) {
-                        // Reconstruimos tu modelo original de la UI basándonos en la entidad SQLite
                         ListaInmuebles.Add(new Inmueble {
                             IdInmueble = entity.IdInmueble,
                             Nombre = entity.Nombre
