@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BatiaSuite.Interfaz {
     public interface IDescargable {
-        string ClaveCatalogo { get; }
-        string ObtenerUrlDescarga(string baseUrl, int clienteId);
+        string ClaveCatalogo => this.GetType().Name;
+        string ObtenerUrlDescarga(string baseUrl, int Parametro);
     }
 }
