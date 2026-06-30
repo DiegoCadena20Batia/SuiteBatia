@@ -8,10 +8,17 @@ public partial class Deliveries : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
-    private async void Frame_Tapped(object sender, TappedEventArgs e) {
-        Frame selectedFrame = (Frame)sender;
-        selectedFrame.BackgroundColor = Color.FromArgb("#FFC8C8C8");
-        await Task.Delay(100);
-        selectedFrame.BackgroundColor = Color.FromArgb("#FFFFFFFF");
+
+    protected override void OnAppearing() {
+        base.OnAppearing();
+
+        // Si en el futuro necesitas forzar alguna recarga visual o de red 
+        // CADA VEZ que la pantalla vuelve al frente, se hace aquí.
+        // Por ahora, la inicialización de GetMes() y GetRutas() ya vive 
+        // en el constructor de tu ViewModel.
+    }
+
+    protected override void OnDisappearing() {
+        base.OnDisappearing();
     }
 }

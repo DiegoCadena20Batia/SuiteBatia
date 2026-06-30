@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopup:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mopup="clr-namespace:Mopups.Pages;assembly=Mopups"
+             x:Class="BatiaSuite.Popups.RutasEntregas.ConfirmarInicioRutaPopup"
+             BackgroundColor="{AppThemeBinding Light=#CC000000, Dark=#CC111111}">
+
+    <Frame VerticalOptions="Center" 
+           HorizontalOptions="Center" 
+           WidthRequest="320"
+           Margin="20"
+           Padding="24"
+           CornerRadius="16"
+           BorderColor="Transparent"
+           
+           HasShadow="True">
+
+        <VerticalStackLayout Spacing="20" HorizontalOptions="FillAndExpand">
+
+            <Image Source="ic_location_on.png" 
+                   HeightRequest="50" 
+                   WidthRequest="50"
+                   HorizontalOptions="Center"
+                   Margin="0,10,0,0">
+                <Image.Behaviors>
+                </Image.Behaviors>
+            </Image>
+
+            <Label Text="¿Iniciar Ruta?" 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"
+                   TextColor="{AppThemeBinding Light=#0F172A, Dark=#1E293B}" />
+
+            <Label Text="Para poder consultar las sucursales y realizar tus entregas, es necesario activar el rastreo GPS de tu ruta en tiempo real." 
+                   FontSize="14" 
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light=#5F6368, Dark=#C4C7C5}" />
+
+            <Line HorizontalOptions="FillAndExpand" 
+                  StrokeThickness="1" 
+                  Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#444746}" />
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+
+                <Button Grid.Column="0"
+                        Text="No, salir"
+                        Clicked="OnCancelarClicked"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light=#1A73E8, Dark=#A8C7FA}"
+                        BorderColor="{AppThemeBinding Light=#DADCE0, Dark=#8E918F}"
+                        BorderWidth="1"
+                        CornerRadius="8"
+                        HeightRequest="44" />
+
+                <Button Grid.Column="1"
+                        Text="Sí, activar"
+                        Clicked="OnConfirmarClicked"
+                        BackgroundColor="#1A73E8"
+                        TextColor="White"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        HeightRequest="44" />
+
+            </Grid>
+        </VerticalStackLayout>
+    </Frame>
+</mopup:PopupPage>

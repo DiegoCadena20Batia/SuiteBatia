@@ -1,5 +1,6 @@
 ﻿using BatiaSuite.Data;
 using BatiaSuite.Models;
+using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using BatiaSuite.Models.Entregas;
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
@@ -10,14 +11,12 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Text;
-using System.Windows.Input;
-
 
 namespace BatiaSuite.ViewModel {
-    public partial class DeliveriesDetailViewModel : ViewModelBase, IQueryAttributable
-    {
+    public partial class DeliveriesDetailViewModel : ViewModelBase, IQueryAttributable {
         [ObservableProperty]
         bool _isDelivering;
+
         [ObservableProperty]
         bool _isLoading;
 
@@ -25,224 +24,201 @@ namespace BatiaSuite.ViewModel {
         string _textLoading;
 
         [ObservableProperty]
-        string origen;
+        string _origen;
 
         [ObservableProperty]
-        string destino;
-        [ObservableProperty]
-        string clienteEntry;
+        string _destino;
 
-        DbContext _dbContext;
+        [ObservableProperty]
+        string _rutaEntry;
+
+        [ObservableProperty]
+        string _userName;
+
+        // Cambiamos el nombre conceptual para reflejar que son Sucursales/Inmuebles de la Ruta
+        [ObservableProperty]
+        ObservableCollection<RutasInmuebles> _listSucursales;
+
+        [ObservableProperty]
+        bool _availableDeliveries;
+
+        private readonly LocalDbContext _dbContext;
         public BackButtonBehavior BackButtonBehavior { get; set; }
 
-        private string _userName ;
-
-        public string UserName
-        {
-            get { return _userName; }
-            set { _userName = value; OnPropertyChanged(); }
-        }
-
-        private ObservableCollection<ListApp> listApps;
-
-        public ObservableCollection<ListApp> ListApps
-        {
-            get { return listApps; }
-            set { listApps = value; OnPropertyChanged(); }
-        }
-        public string Inmueble { get; set; }
-        public string Cliente { get; set; }
-        public ICommand CommandListadoSelec { get; set; }
-        public DeliveriesDetailViewModel()
-        {
-            BackButtonBehavior = new BackButtonBehavior
-            {
-                Command = new Command(async () =>
-                {
-                    // Do something here
+        public DeliveriesDetailViewModel() {
+            BackButtonBehavior = new BackButtonBehavior {
+                Command = new Command(async () => {
                     await Shell.Current.GoToAsync("..");
                 })
             };
-            UserName += UserSession.NOMBRE;
-            CommandListadoSelec = new Command<ListApp>(async (l) => await ListadoSelec(l));
+
+            UserName = UserSession.NOMBRE;
             IsDelivering = UserSession.IsDelivering;
-            _dbContext = new DbContext();
+            _dbContext = new LocalDbContext();
         }
 
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
-        {
-            //SI SE REDIRECCIONA DESDE UNA ENTREGA
-            if (query.Count == 0) {
-                //OBTENER LISTADOS CON LA INFORMACION GUARDADA EN SESIÓN
-                RutaEnCurso();
-                //SI YA NO HAY LISTADOS DISPONIBLES ENTONCES REGRESAR A LA SELECCION DE INMUEBLE 
-
+        public void ApplyQueryAttributes(IDictionary<string, object> query) {
+            // Validamos de forma segura si venimos de regreso o sin parámetros
+            if(query == null || !query.ContainsKey("json")) {
+                _ = CargarSucursalesDeRuta();
             } else {
-                string content = query["json"].ToString();
-                ListApps = JsonConvert.DeserializeObject<ObservableCollection<ListApp>>(content);
-                Inmueble = ListApps[0].inmueble;
-                Cliente = query["clienteselected"].ToString();
+                string content = query["json"]?.ToString() ?? string.Empty;
+                if(!string.IsNullOrEmpty(content)) {
+                    ListSucursales = JsonConvert.DeserializeObject<ObservableCollection<RutasInmuebles>>(content);
+                }
             }
-            ClienteEntry = UserSession.ClienteNameTracking + " - " + UserSession.InmuebleNameTracking;
+
+            RutaEntry = $"Ruta: {UserSession.RutaNameTracking}"; // Muestra la ruta actual
+            AvailableDeliveries = ListSucursales != null && ListSucursales.Count > 0;
         }
-        public async Task RutaEnCurso() {
+
+        public async Task CargarSucursalesDeRuta() {
             try {
                 if(!InternetUtil.IsConnectedInternet()) {
-                    await ObtenerListadosLocal();
+                    await ObtenerSucursalesLocal();
                 } else {
-                    IniciaCarga("Cargando...");
+                    IniciaCarga("Cargando sucursales...");
                     await Task.Delay(500);
-                    var request = new HttpRequestMessage();
-                    int idInmueble = UserSession.IdInmuebleTracking;
-                    int idMes = UserSession.IdMesTracking;
-                    int IdAnio = UserSession.IdAnioTracking;
-                    if(idInmueble == 0 || idMes == 0 || IdAnio == 0) {
-                        // el usuario aun no selecciona una ruta o acaba de actualizar su app
+
+                    int idRuta = UserSession.IdRutaTracking;
+
+                    if(idRuta == 0) {
+                        DetenerCarga();
                         return;
                     }
 
-                    request.RequestUri = new Uri(Constants.API_BASE_URL + $"ListadoApp?idinmueble={idInmueble}&anio={IdAnio}&mes={idMes}");
-
-                    request.Method = HttpMethod.Get;
-
+                    // Consumimos tu endpoint pasando el ID de la ruta actual
+                    var request = new HttpRequestMessage {
+                        RequestUri = new Uri(Constants.API_BASE_URL + $"RutasOperador?idoperador={UserSession.IdPersonal}"), // O el endpoint que acoples para tu ruta
+                        Method = HttpMethod.Get
+                    };
                     request.Headers.Add("Accept", "application/json");
 
-                    var client = new HttpClient {
-                        Timeout = TimeSpan.FromSeconds(10)
-                    };
-
+                    var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
                     HttpResponseMessage response = await client.SendAsync(request);
 
                     if(response.StatusCode == HttpStatusCode.OK) {
-
                         string content = await response.Content.ReadAsStringAsync();
-                        if(content != null) {
-                            ListApps = JsonConvert.DeserializeObject<ObservableCollection<ListApp>>(content);
-                            DetenerCarga();
-                        }
-                        if(content == "[]") {
-                            await FinalizarEntrega();
+                        if(!string.IsNullOrEmpty(content)) {
+                            // 1. Deserializamos la lista completa de artículos desnormalizados
+                            var todasLasFilas = JsonConvert.DeserializeObject<List<RutasInmuebles>>(content);
+
+                            // 2. Agrupamos por IdInmueble y extraemos la primera ocurrencia para la tarjeta única
+                            var sucursalesUnicas = todasLasFilas
+                                .Where(r => r.IdRuta == idRuta) // Filtramos por la ruta seleccionada si el API trae de más
+                                .GroupBy(r => r.IdInmueble)
+                                .Select(g => g.First())
+                                .ToList();
+
+                            ListSucursales = new ObservableCollection<RutasInmuebles>(sucursalesUnicas);
+                            AvailableDeliveries = ListSucursales.Count > 0;
                         }
                         DetenerCarga();
                     } else {
-                        await ObtenerListadosLocal();
+                        await ObtenerSucursalesLocal();
                     }
                 }
-                
-            }
-            catch(Exception ex) {
+            } catch(Exception ex) {
                 DetenerCarga();
                 await Shell.Current.DisplayAlert("Error", ex.Message, "ok");
             }
-
         }
 
-        //OBTENER LISTADOS LOCAL
-        public async Task ObtenerListadosLocal() {
-            //Obtener listados restantes del local
-            var entregasLocal = await _dbContext.ObtenerListadosEntregaPrecargaByIdInmueble(UserSession.IdInmuebleTracking);
+        public async Task ObtenerSucursalesLocal() {
+            var todasLasFilasLocal = await _dbContext.ObtenerListaLocalAsync<RutasInmuebles>(r => r.IdRuta == UserSession.IdRutaTracking);
 
-            if(entregasLocal != null && entregasLocal.Count > 0) {
-                //AUN HAY ENTREGAS DISPONIBLES, ASIGNAR AL MODELO PARA CONTINUAR
-                ListApps = new ObservableCollection<ListApp>();
-                foreach(var entrega in entregasLocal) {
-                    ListApps.Add(new ListApp {
-                        idlistado = entrega.IdListado,
-                        inmueble = UserSession.InmuebleNameTracking,
-                    });
-                }
+            if(todasLasFilasLocal != null && todasLasFilasLocal.Count > 0) {
+                var sucursalesUnicasLocal = todasLasFilasLocal
+                    .GroupBy(r => r.IdInmueble)
+                    .Select(g => g.First())
+                    .ToList();
+
+                ListSucursales = new ObservableCollection<RutasInmuebles>(sucursalesUnicasLocal);
+                AvailableDeliveries = true;
             } else {
-                //SE TERMINARON LAS ENTREGAS, FINALIZAR RUTA
-                await FinalizarEntrega();
+                AvailableDeliveries = false;
             }
-
             DetenerCarga();
         }
-        //metodo que reciba todos los datos del id que halla tocado el usuario
-        private async Task ListadoSelec(ListApp listApp)//pasa como tipo de dato
-        {
-            try
-            {
-                IniciaCarga("Cargando listado");
+
+        [RelayCommand]
+        private async Task SucursalSelec(RutasInmuebles sucursal) {
+            if(sucursal == null) return;
+
+            try {
+                IniciaCarga("Abriendo listados...");
                 await Task.Delay(500);
-                var idlistado = listApp.idlistado;
 
-                Dictionary<string, object> data = new Dictionary<string, object>
-                    {
-                        { "idlist", idlistado },
-                        {"inmueble",UserSession.InmuebleNameTracking },
-                        {"clienteselected", UserSession.ClienteNameTracking }
-                    };
-                //var route = $"{nameof(ListadoMateriales)}";
-                //await Shell.Current.GoToAsync(route, data);
-                await Shell.Current.GoToAsync(nameof(ListadoMateriales), true, data);
+                // Guardamos los datos de tracking de la sucursal elegida en la sesión global antes de avanzar
+                UserSession.IdInmuebleTracking = sucursal.IdInmueble;
+                UserSession.InmuebleNameTracking = sucursal.Ruta; // En tu JSON la propiedad "ruta" trae el nombre de la sucursal (ej: "CHOPO XOCHIMILCO")
+                UserSession.InmuebleLatitudTracking = sucursal.Latitud;
+                UserSession.InmuebleLongitudTracking = sucursal.Longitud;
 
+                // Avanzamos limpios hacia la pantalla de materiales
+                await Shell.Current.GoToAsync(nameof(ListadoMateriales), true);
                 DetenerCarga();
-
-                //await Shell.Current.GoToAsync($"/MyDeliveries/MyListaMaterales", true, data);
-            }
-            catch (Exception ex)
-            {
+            } catch(Exception ex) {
                 DetenerCarga();
                 await Shell.Current.DisplayAlert("Error", ex.Message, "ok");
             }
-            
         }
+
         public async Task<bool> ValidarRutaDisponible() {
-            //VALIDAR UBICACION ACTUAL
             var ubicacionActual = await Utils.LocationUtil.GetCurrentLocationAsync();
             if(ubicacionActual != null) {
-                Origen = ubicacionActual.Latitude + ", " + ubicacionActual.Longitude;
+                Origen = $"{ubicacionActual.Latitude},{ubicacionActual.Longitude}";
             } else {
                 DetenerCarga();
                 await Shell.Current.DisplayAlert("Alerta", "No se pudo obtener la ubicación actual", "OK");
                 return false;
             }
-            //VALIDAR SI ESTA SELECCIONADO UN INMUEBLE O NO
-            //SI NO ESTA SELECCIONADO
-            if(UserSession.InmuebleLatitudTracking == "" || UserSession.InmuebleLongitudTracking == "") {
+
+            // Buscamos las coordenadas de la primera sucursal pendiente para guiar al operador
+            var proximaSucursal = ListSucursales?.FirstOrDefault();
+            if(proximaSucursal == null || string.IsNullOrEmpty(proximaSucursal.Latitud) || string.IsNullOrEmpty(proximaSucursal.Longitud)) {
                 DetenerCarga();
-                await Shell.Current.DisplayAlert("Alerta", "No se han registrado coordenadas para el inmueble seleccionado", "OK");
+                await Shell.Current.DisplayAlert("Alerta", "No hay coordenadas disponibles para la siguiente sucursal", "OK");
                 return false;
             } else {
-                Destino = UserSession.InmuebleLatitudTracking + ", " + UserSession.InmuebleLongitudTracking;
+                Destino = $"{proximaSucursal.Latitud},{proximaSucursal.Longitud}";
                 return true;
             }
-
         }
 
         [RelayCommand]
         public async Task IniciarEntrega() {
-            if(ListApps!= null && ListApps.Count > 0) {
-                IniciaCarga("Iniciando entrega");
+            if(ListSucursales != null && ListSucursales.Count > 0) {
+                IniciaCarga("Iniciando ruta...");
                 await Task.Delay(500);
                 IsDelivering = true;
                 UserSession.IsDelivering = true;
-                await ReportarUbicacion(3);
+                await ReportarUbicacion(3); // Código 3: Inicio de ruta
                 DetenerCarga();
             } else {
                 DetenerCarga();
-                await App.Current.MainPage.DisplayAlert("Error", "No hay entregas disponibles", "Cerrar");
+                await App.Current.MainPage.DisplayAlert("Error", "No hay sucursales en esta ruta", "Cerrar");
             }
         }
 
         [RelayCommand]
         public async Task FinalizarEntrega() {
-            IniciaCarga("Finalizando entrega");
+            IniciaCarga("Finalizando ruta...");
             await Task.Delay(500);
             IsDelivering = false;
             UserSession.IsDelivering = false;
-            await ReportarUbicacion(5);
+            await ReportarUbicacion(5); // Código 5: Fin de ruta
             DetenerCarga();
 
-            await App.Current.MainPage.DisplayAlert("Alerta", "Se terminaron las entregas para el inmueble especificado", "Ok");
+            await App.Current.MainPage.DisplayAlert("Éxito", "Se ha concluido la ruta de entregas", "Ok");
+
             var pages = Shell.Current.Navigation.NavigationStack.ToList();
-            Shell.Current.Navigation.RemovePage(pages[1]);
-            Shell.Current.Navigation.RemovePage(pages[2]);
-            string route = $"{nameof(Deliveries)}";
-            await Constants.GoToAsync(route);
-            DetenerCarga();
-            return;
+            if(pages.Count > 2) {
+                Shell.Current.Navigation.RemovePage(pages[1]);
+                Shell.Current.Navigation.RemovePage(pages[2]);
+            }
+
+            await Constants.GoToAsync(nameof(Deliveries));
         }
 
         public async Task<bool> ReportarUbicacion(int idTipo) {
@@ -253,8 +229,8 @@ namespace BatiaSuite.ViewModel {
                 var data = new {
                     IdPersonal = UserSession.IdPersonal,
                     IdInmueble = UserSession.IdInmuebleTracking,
-                    Latitud = location.Latitude,
-                    Longitud = location.Longitude,
+                    Latitud = location?.Latitude ?? 0,
+                    Longitud = location?.Longitude ?? 0,
                     IdListado = 0,
                     IdTipo = idTipo
                 };
@@ -263,46 +239,34 @@ namespace BatiaSuite.ViewModel {
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var _httpClient = new HttpClient();
                 var response = await _httpClient.PostAsync(url, content);
+
                 if(!response.IsSuccessStatusCode) {
-                    //SI EL SERVIDOR NO ESTA DISPONIBLE-------------------------------------------->
-                    string errorBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error al enviar ubicación: {response.StatusCode} - {errorBody}");
                     if(location != null) {
-                        var entrega = new EntregaReporteUbicacionLocal {
-                            IdPersonal = UserSession.IdPersonal,
-                            IdInmueble = UserSession.IdInmuebleTracking,
-                            Latitud = location.Latitude.ToString(),
-                            Longitud = location.Longitude.ToString(),
-                            IdListado = 0,
-                            IdTipo = idTipo,
-                            Fecha = DateTime.Now
-                        };
-                        _dbContext = new DbContext();
-                        await _dbContext.InsertarUbicacionesEntrega(entrega);
+                        await GuardarUbicacionLocal(location, idTipo);
                     }
                     return false;
                 }
                 return true;
-                //SI SE PRODUCION UN ERROR AL ENVIAR EL REGISTRO-------------------------------------------->
             } catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
-                Console.WriteLine($"Sin conexión o timeout: {ex.Message}");
-                if(location != null) // 👈 Validar que sí se haya obtenido antes del fallo
-                    {
-                    var entrega = new EntregaReporteUbicacionLocal {
-                        IdPersonal = UserSession.IdPersonal,
-                        IdInmueble = UserSession.IdInmuebleTracking,
-                        Latitud = location.Latitude.ToString(),
-                        Longitud = location.Longitude.ToString(),
-                        IdListado = 0,
-                        IdTipo = idTipo,
-                        Fecha = DateTime.Now
-                    };
-                    _dbContext = new DbContext();
-                    await _dbContext.InsertarUbicacionesEntrega(entrega);
+                if(location != null) {
+                    await GuardarUbicacionLocal(location, idTipo);
                 }
-
                 return false;
             }
+        }
+
+        private async Task GuardarUbicacionLocal(Location location, int idTipo) {
+            var entrega = new EntregaReporteUbicacionLocal {
+                IdPersonal = UserSession.IdPersonal,
+                IdInmueble = UserSession.IdInmuebleTracking,
+                Latitud = location.Latitude.ToString(),
+                Longitud = location.Longitude.ToString(),
+                IdListado = 0,
+                IdTipo = idTipo,
+                Fecha = DateTime.Now
+            };
+
+            await _dbContext.GuardarLocalAsync(entrega);
         }
 
         [RelayCommand]
@@ -310,19 +274,16 @@ namespace BatiaSuite.ViewModel {
             IniciaCarga("Iniciando Google Maps...");
             await Task.Delay(500);
             if(await ValidarRutaDisponible()) {
-                string url = $"https://www.google.com/maps/dir/?api=1&origin={Origen}&destination={Destino}&travelmode=driving";
-
+                string url = $"geo:0,0?q={Destino}";
                 try {
                     await Launcher.Default.OpenAsync(new Uri(url));
-                    DetenerCarga();
                 } catch(Exception ex) {
-                    DetenerCarga();
-                    Console.WriteLine($"Error al abrir Google Maps: {ex.Message}");
+                    Console.WriteLine($"Error al abrir Google Maps nativo: {ex.Message}");
                 }
             }
             DetenerCarga();
-
         }
+
         [RelayCommand]
         public async Task AbrirWaze() {
             IniciaCarga("Iniciando Waze...");
@@ -331,9 +292,7 @@ namespace BatiaSuite.ViewModel {
                 string wazeUrl = $"https://waze.com/ul?ll={Destino}&navigate=yes";
                 try {
                     await Launcher.Default.OpenAsync(new Uri(wazeUrl));
-                    DetenerCarga();
                 } catch(Exception ex) {
-                    DetenerCarga();
                     Console.WriteLine($"Error al abrir Waze: {ex.Message}");
                 }
             }
@@ -344,6 +303,7 @@ namespace BatiaSuite.ViewModel {
             IsLoading = true;
             TextLoading = mensaje;
         }
+
         public void DetenerCarga() {
             IsLoading = false;
             TextLoading = "";

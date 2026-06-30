@@ -30,9 +30,9 @@ public static class Constants {
 
     #region API URI´s 
     //URL BASE PARA PRODUCCIÓN
-    public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
+    //public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
     //URL BASE PARA PRUEBAS
-    //public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
+    public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
     public const string ENT_GET_PRECARGA_API = "entregaprecarga";
     public const string GET_MODULOS_MENU = "ObtenerModulos";
     public const string GET_TECNICOS_ORDENES_TRABAJO_API = "OTTecnico";
@@ -47,7 +47,6 @@ public static class Constants {
     public const string OT_PRODUCTOS_API = "OTProductos";
     public const string OT_FILES_API = "FilesOrdenesTrabajo";
     public const string OT_ENVIAR_ORDEN_EJECUTADA_API = "OrdenTrabajoB";
-
     public const string SUP_GET_ORDENES_API = "OrdenSupervision";
     public const string SUP_GET_ORDENES_TOTALES_API = "OrdenSupervisionTotales";
     public const string SUP_GET_MATERIALES_API = "ListadoMatSupervision";

@@ -12,6 +12,11 @@ public class UserSession {
     static readonly string MODULO_KEY = "Modulo key";
     static readonly string SEGUIMIENTO_KEY = "Seguimiento key";
     static readonly string LISTADOS_DISPONIBLES = "ListadosDisponibles key";
+
+    // --- NUEVAS CLAVES PARA EL CONTROL DE RUTAS ---
+    static readonly string ID_RUTA_TRACKING = "IdRutaTracking key";
+    static readonly string RUTA_NAME_TRACKING = "RutaNameTracking key";
+
     static readonly string ID_INMUEBLE_TRACKING = "IdInmuebleTracking key";
     static readonly string INMUEBLE_TRACKING = "InmuebleTracking key";
     static readonly string ID_MES_TRACKING = "IdMesTracking key";
@@ -67,6 +72,20 @@ public class UserSession {
         set => Preferences.Default.Set(SEGUIMIENTO_KEY, value);
     }
 
+    // --- NUEVAS PROPIEDADES PARA RUTA ---
+    public static int IdRutaTracking {
+        get => Preferences.Default.ContainsKey(ID_RUTA_TRACKING)
+            ? Preferences.Default.Get<int>(ID_RUTA_TRACKING, 0) : 0;
+        set => Preferences.Default.Set(ID_RUTA_TRACKING, value);
+    }
+
+    public static string RutaNameTracking {
+        get => Preferences.Default.ContainsKey(RUTA_NAME_TRACKING)
+            ? Preferences.Default.Get<string>(RUTA_NAME_TRACKING, "") : "";
+        set => Preferences.Default.Set(RUTA_NAME_TRACKING, value);
+    }
+
+    // --- PROPIEDADES DE SUCURSAL / INMUEBLE ---
     public static int IdInmuebleTracking {
         get => Preferences.Default.ContainsKey(ID_INMUEBLE_TRACKING)
             ? (int)Preferences.Default.Get(ID_INMUEBLE_TRACKING, 0) : 0;
@@ -101,11 +120,13 @@ public class UserSession {
         get => Preferences.Default.ContainsKey(CLIENTE_NAME_TRACKING)
             ? (string)Preferences.Default.Get(CLIENTE_NAME_TRACKING, "") : "";
         set => Preferences.Default.Set(CLIENTE_NAME_TRACKING, value);
-    }public static string InmuebleLatitudTracking {
+    }
+    public static string InmuebleLatitudTracking {
         get => Preferences.Default.ContainsKey(INMUEBLE_LATITUD_TRACKING)
             ? (string)Preferences.Default.Get(INMUEBLE_LATITUD_TRACKING, "") : "";
         set => Preferences.Default.Set(INMUEBLE_LATITUD_TRACKING, value);
-    }public static string InmuebleLongitudTracking {
+    }
+    public static string InmuebleLongitudTracking {
         get => Preferences.Default.ContainsKey(INMUEBLE_LONGITUD_TRACKING)
             ? (string)Preferences.Default.Get(INMUEBLE_LONGITUD_TRACKING, "") : "";
         set => Preferences.Default.Set(INMUEBLE_LONGITUD_TRACKING, value);
@@ -153,6 +174,8 @@ public class UserSession {
         ShowAcceptTracking = false;
         IdClienteCheckList = 0;
         IdInmuebleCheckList = 0;
+        IdRutaTracking = 0;
+        RutaNameTracking = "";
     }
 
     public static void ClearSession() {

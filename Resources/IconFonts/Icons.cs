@@ -36,4 +36,6 @@ public static class Icons {
     public const string EyeOff = "\u0122";
     public const string Videocam = "\u0123";
     public const string Play = "\u0124";
+
+    public const string Building = "\ue800"; 
 }

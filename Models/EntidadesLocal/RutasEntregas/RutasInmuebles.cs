@@ -13,6 +13,7 @@ namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
         public string Nomenclatura { get; set; }
         public int IdOperador { get; set; }
         public int IdInmueble { get; set; }
+        public string Inmueble { get; set; }
         public string Latitud { get; set; }
         public string Longitud { get; set; }
         public int Consecutivo { get; set; }
