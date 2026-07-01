@@ -12,6 +12,7 @@ using BatiaSuite.Views.EntregasInteligentes;
 using BatiaSuite.Views.IncidenciasBiometa;
 using BatiaSuite.Views.OrdenesTrabajo;
 using BatiaSuite.Views.ReporteMantenimientoAldoConti;
+using BatiaSuite.Views.RutasEntregas;
 using BatiaSuite.Views.Sanitizacion;
 using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.Supervision;
@@ -143,5 +144,7 @@ public partial class AppShell : Shell {
         Routing.RegisterRoute(nameof(DiarioLimpiezaPage), typeof(DiarioLimpiezaPage));
 
         #endregion SUPERVICION_ALDOCONTI
+
+        Routing.RegisterRoute(nameof(TiposListadoPage), typeof(TiposListadoPage));
     }
 }

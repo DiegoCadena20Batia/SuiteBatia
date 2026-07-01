@@ -6,9 +6,9 @@ namespace BatiaSuite.Views;
 
 public partial class DeliveriesDetail : ContentPage
 {
-	public DeliveriesDetail()
+	public DeliveriesDetail(DeliveriesDetailViewModel viewModel)
 	{
 		InitializeComponent();
-		BindingContext = new DeliveriesDetailViewModel();
+		BindingContext = viewModel;
 	}
 }

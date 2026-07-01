@@ -413,6 +413,9 @@
 		<MauiXaml Update="Views\ReporteMantenimientoAldoConti\ReporteMantenimientoPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Views\RutasEntregas\TiposListadoPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Views\Sanitizacion\EvidenciasPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

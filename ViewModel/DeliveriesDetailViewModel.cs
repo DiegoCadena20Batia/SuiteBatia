@@ -4,6 +4,7 @@ using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using BatiaSuite.Models.Entregas;
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
+using BatiaSuite.Views.RutasEntregas;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Devices.Sensors;
@@ -13,39 +14,43 @@ using System.Net;
 using System.Text;
 
 namespace BatiaSuite.ViewModel {
+
     public partial class DeliveriesDetailViewModel : ViewModelBase, IQueryAttributable {
-        [ObservableProperty]
-        bool _isDelivering;
 
         [ObservableProperty]
-        bool _isLoading;
+        private bool _isDelivering;
 
         [ObservableProperty]
-        string _textLoading;
+        private bool _isLoading;
 
         [ObservableProperty]
-        string _origen;
+        private string _textLoading;
 
         [ObservableProperty]
-        string _destino;
+        private string _origen;
 
         [ObservableProperty]
-        string _rutaEntry;
+        private string _destino;
 
         [ObservableProperty]
-        string _userName;
+        private string _rutaEntry;
+
+        [ObservableProperty]
+        private string _userName;
 
         // Cambiamos el nombre conceptual para reflejar que son Sucursales/Inmuebles de la Ruta
         [ObservableProperty]
-        ObservableCollection<RutasInmuebles> _listSucursales;
+        private ObservableCollection<RutasInmuebles> _listSucursales;
 
         [ObservableProperty]
-        bool _availableDeliveries;
+        private bool _availableDeliveries;
 
         private readonly LocalDbContext _dbContext;
         public BackButtonBehavior BackButtonBehavior { get; set; }
+        private readonly HttpHelper _httpHelper;
 
-        public DeliveriesDetailViewModel() {
+        public DeliveriesDetailViewModel(HttpHelper httpHelper) {
+            _httpHelper = httpHelper;
             BackButtonBehavior = new BackButtonBehavior {
                 Command = new Command(async () => {
                     await Shell.Current.GoToAsync("..");
@@ -74,48 +79,38 @@ namespace BatiaSuite.ViewModel {
 
         public async Task CargarSucursalesDeRuta() {
             try {
-                if(!InternetUtil.IsConnectedInternet()) {
-                    await ObtenerSucursalesLocal();
+                IniciaCarga("Cargando sucursales...");
+                await Task.Delay(500);
+                var listaInmuebeles = await ObtenerSucursalesLocal();
+                 DetenerCarga();
+                if(listaInmuebeles.Any()) {
+                    ListSucursales = new ObservableCollection<RutasInmuebles>(listaInmuebeles);
                 } else {
-                    IniciaCarga("Cargando sucursales...");
-                    await Task.Delay(500);
+                    if(InternetUtil.IsConnectedInternet()) {
+                        int idRuta = UserSession.IdRutaTracking;
+                        if(idRuta == 0) {
+                            DetenerCarga();
+                            return;
+                        }
 
-                    int idRuta = UserSession.IdRutaTracking;
+                        string urlEndpoint = $"RutasOperador?idoperador={UserSession.IdPersonal}&mes={UserSession.IdMesTracking}&anio={UserSession.IdAnioTracking}";
 
-                    if(idRuta == 0) {
-                        DetenerCarga();
-                        return;
-                    }
+                        var todasLasFilas = await _httpHelper.GetAsync<List<RutasInmuebles>>(urlEndpoint);
 
-                    // Consumimos tu endpoint pasando el ID de la ruta actual
-                    var request = new HttpRequestMessage {
-                        RequestUri = new Uri(Constants.API_BASE_URL + $"RutasOperador?idoperador={UserSession.IdPersonal}"), // O el endpoint que acoples para tu ruta
-                        Method = HttpMethod.Get
-                    };
-                    request.Headers.Add("Accept", "application/json");
-
-                    var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-                    HttpResponseMessage response = await client.SendAsync(request);
-
-                    if(response.StatusCode == HttpStatusCode.OK) {
-                        string content = await response.Content.ReadAsStringAsync();
-                        if(!string.IsNullOrEmpty(content)) {
-                            // 1. Deserializamos la lista completa de artículos desnormalizados
-                            var todasLasFilas = JsonConvert.DeserializeObject<List<RutasInmuebles>>(content);
-
-                            // 2. Agrupamos por IdInmueble y extraemos la primera ocurrencia para la tarjeta única
+                        if(todasLasFilas != null) {
                             var sucursalesUnicas = todasLasFilas
-                                .Where(r => r.IdRuta == idRuta) // Filtramos por la ruta seleccionada si el API trae de más
+                                .Where(r => r.IdRuta == idRuta)
                                 .GroupBy(r => r.IdInmueble)
                                 .Select(g => g.First())
                                 .ToList();
 
                             ListSucursales = new ObservableCollection<RutasInmuebles>(sucursalesUnicas);
                             AvailableDeliveries = ListSucursales.Count > 0;
+
+                            DetenerCarga();
+                        } else {
+                            await ObtenerSucursalesLocal();
                         }
-                        DetenerCarga();
-                    } else {
-                        await ObtenerSucursalesLocal();
                     }
                 }
             } catch(Exception ex) {
@@ -124,7 +119,7 @@ namespace BatiaSuite.ViewModel {
             }
         }
 
-        public async Task ObtenerSucursalesLocal() {
+        public async Task<List<RutasInmuebles>> ObtenerSucursalesLocal() {
             var todasLasFilasLocal = await _dbContext.ObtenerListaLocalAsync<RutasInmuebles>(r => r.IdRuta == UserSession.IdRutaTracking);
 
             if(todasLasFilasLocal != null && todasLasFilasLocal.Count > 0) {
@@ -133,10 +128,11 @@ namespace BatiaSuite.ViewModel {
                     .Select(g => g.First())
                     .ToList();
 
-                ListSucursales = new ObservableCollection<RutasInmuebles>(sucursalesUnicasLocal);
                 AvailableDeliveries = true;
+                return sucursalesUnicasLocal;
             } else {
                 AvailableDeliveries = false;
+                return null;
             }
             DetenerCarga();
         }
@@ -149,14 +145,15 @@ namespace BatiaSuite.ViewModel {
                 IniciaCarga("Abriendo listados...");
                 await Task.Delay(500);
 
-                // Guardamos los datos de tracking de la sucursal elegida en la sesión global antes de avanzar
+                // 1. Guardamos los datos de tracking de la sucursal elegida en la sesión global
                 UserSession.IdInmuebleTracking = sucursal.IdInmueble;
-                UserSession.InmuebleNameTracking = sucursal.Ruta; // En tu JSON la propiedad "ruta" trae el nombre de la sucursal (ej: "CHOPO XOCHIMILCO")
+                UserSession.InmuebleNameTracking = sucursal.Ruta; // "CHOPO XOCHIMILCO"
                 UserSession.InmuebleLatitudTracking = sucursal.Latitud;
                 UserSession.InmuebleLongitudTracking = sucursal.Longitud;
 
-                // Avanzamos limpios hacia la pantalla de materiales
-                await Shell.Current.GoToAsync(nameof(ListadoMateriales), true);
+                // 2. NUEVA NAVEGACIÓN: Avanzamos hacia la pantalla intermedia de selección de tipos
+                await Shell.Current.GoToAsync(nameof(TiposListadoPage), true);
+
                 DetenerCarga();
             } catch(Exception ex) {
                 DetenerCarga();

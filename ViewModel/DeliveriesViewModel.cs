@@ -72,6 +72,8 @@ namespace BatiaSuite.ViewModel {
                 if(_idMesSelected != value && value != null) {
                     _idMesSelected = value;
                     OnPropertyChanged();
+
+                    _ = ValidarYBuscarRutasAsync();
                 }
             }
         }
@@ -87,11 +89,19 @@ namespace BatiaSuite.ViewModel {
 
         #region Picker: Año
 
-        private int _year = DateTime.Today.Year;
+        private string _year = DateTime.Today.Year.ToString(); // Ahora es string
 
-        public int Year {
+        public string Year {
             get { return _year; }
-            set { _year = value; OnPropertyChanged(); }
+            set {
+                if(_year != value) {
+                    _year = value;
+                    OnPropertyChanged();
+
+                    // Disparar la validación con cada dígito que cambia
+                    _ = ValidarYBuscarRutasAsync();
+                }
+            }
         }
 
         #endregion Picker: Año
@@ -118,40 +128,134 @@ namespace BatiaSuite.ViewModel {
 
         private async void InicializarDatos() {
             GetMes();
-            await GetRutas();
+
+            int mesActual = DateTime.Now.Month;
+
+            if(MesList != null && MesList.Any()) {
+                IdMesSelected = MesList.FirstOrDefault(x => x.idMes == mesActual);
+            }
+
+            string mesFormateado = IdMesSelected != null ? IdMesSelected.idMes.ToString("D2") : mesActual.ToString("D2");
+
+            await GetRutas(mesFormateado, Year);
         }
 
-        private async Task GetRutas() {
-            if(!InternetUtil.IsConnectedInternet()) {
-                var tablaRutasInmueblesLocal = await _localDbContext.ObtenerTodosLocalAsync<Models.EntidadesLocal.RutasEntregas.RutasInmuebles>();
-                if(tablaRutasInmueblesLocal != null && tablaRutasInmueblesLocal.Any()) {
-                    var rutasUnicasLocal = tablaRutasInmueblesLocal.DistinctBy(x => x.IdRuta);
-                    Rutas = new ObservableCollection<RutasInmuebles>(rutasUnicasLocal);
+        private async Task ValidarYBuscarRutasAsync() {
+            if(string.IsNullOrWhiteSpace(Year) || Year.Length != 4) {
+                LimpiarRutas();
+                return;
+            }
+
+            if(IdMesSelected == null || IdMesSelected.idMes <= 0) {
+                return;
+            }
+
+            string mesFormateado = IdMesSelected.idMes.ToString("D2");
+
+            await GetRutas(mesFormateado, Year);
+        }
+
+        private async Task<List<RutasInmuebles>> ConfirmarRutasLocal() {
+            try {
+                var todasLasRutasGuardadas = await _localDbContext.ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+
+                if(todasLasRutasGuardadas.Count > 0) {
+                    return todasLasRutasGuardadas;
+                } else {
+                    return null;
+                }
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener: {ex.Message}");
+                return null;
+            }
+        }
+
+        private async Task GetRutas(string mes, string anio) {
+            /* if(!internetutil.isconnectedinternet()) {
+                 var tablarutasinmuebleslocal = await _localdbcontext.obtenertodoslocalasync<models.entidadeslocal.rutasentregas.rutasinmuebles>();
+                 if(tablarutasinmuebleslocal != null && tablarutasinmuebleslocal.any()) {
+                     var rutasunicaslocal = tablarutasinmuebleslocal.distinctby(x => x.idruta);
+                     rutas = new observablecollection<rutasinmuebles>(rutasunicaslocal);
+                 }
+                 return; // terminamos ejecución local
+             }*/
+
+            var listaRutas = await ConfirmarRutasLocal();
+
+            if(listaRutas.Any()) {
+                var datosFiltrados = listaRutas.DistinctBy(x => x.IdRuta);
+                Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
+
+                try {
+                    System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasInmuebles ({listaRutas.Count} registros) ---");
+
+                    foreach(var r in listaRutas) {
+                        System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble}");
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
+                } catch(Exception ex) {
+                    System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
                 }
             } else {
-                var request = new HttpRequestMessage();
-                request.RequestUri = new Uri(Constants.API_BASE_URL + $"RutasOperador?idoperador={UserSession.IdPersonal}");
-                request.Method = HttpMethod.Get;
-                request.Headers.Add("Accept", "application/json");
+                if(InternetUtil.IsConnectedInternet()) {
+                    try {
+                        IniciaCarga("Cargando rutas...");
 
-                var client = new HttpClient();
-                HttpResponseMessage response = await client.SendAsync(request);
+                        string urlEndpoint = $"RutasOperador?idoperador={UserSession.IdPersonal}&mes={mes}&anio={anio}";
 
-                if(response.StatusCode == HttpStatusCode.OK) {
-                    string content = await response.Content.ReadAsStringAsync();
+                        var listaCompleta = await _httpHelper.GetAsync<List<RutasInmuebles>>(urlEndpoint);
 
-                    // 1. Deserializas a la lista plana desde el API
-                    var listaCompleta = JsonConvert.DeserializeObject<List<RutasInmuebles>>(content);
+                        if(listaCompleta != null) {
+                            if(listaCompleta.Any()) {
+                                await _localDbContext.BorrarTablaCompletaAsync<RutasInmuebles>();
 
-                    if(listaCompleta != null) {
-                        // 2. Aplicas el DistinctBy para obtener los objetos únicos por IdRuta
-                        var datosFiltrados = listaCompleta.DistinctBy(x => x.IdRuta);
+                                /* try {
+                                     var todasLasRutasGuardadas = await _localDbContext.ObtenerListaLocalAsync<RutasInmuebles>(x => true);
 
-                        // 3. Pasas directamente la colección de objetos únicos a la propiedad Rutas
-                        Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
+                                     System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasInmuebles ({todasLasRutasGuardadas.Count} registros) ---");
+
+                                     foreach(var r in todasLasRutasGuardadas) {
+                                         System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble} | Operador: {UserSession.IdPersonal}");
+                                     }
+
+                                     System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
+                                 } catch(Exception ex) {
+                                     System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
+                                 }*/
+
+                                foreach(var ruta in listaCompleta) {
+                                    await _localDbContext.GuardarLocalAsync<RutasInmuebles>(ruta);
+                                }
+
+                                var datosFiltrados = listaCompleta.DistinctBy(x => x.IdRuta);
+                                Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
+                            } else {
+                                LimpiarRutas();
+                                await App.Current.MainPage.DisplayAlert("Aviso", "No se encontraron rutas asignadas para el mes y año seleccionados.", "OK");
+                            }
+
+                            DetenerCarga();
+                        } else {
+                            LimpiarRutas();
+                            DetenerCarga();
+
+                            await App.Current.MainPage.DisplayAlert("Aviso", "No se pudo obtener la información del servidor. Verifique su conexión o intente más tarde.", "OK");
+                        }
+                    } catch(Exception ex) {
+                        LimpiarRutas();
+                        await App.Current.MainPage.DisplayAlert("Error de Conexión", "No se pudo comunicar con el servidor. Verifique su señal de internet.", "OK");
                     }
+                } else {
+                    LimpiarRutas();
+                    await App.Current.MainPage.DisplayAlert("Error", "No hay datos locales ni conexión a internet. Por favor, verifique su señal.", "OK");
                 }
             }
+        }
+
+        private void LimpiarRutas() {
+            Rutas = new ObservableCollection<RutasInmuebles>();
+            IdRutaSelected = null;
         }
 
         private async Task GetMes() {
@@ -201,7 +305,7 @@ namespace BatiaSuite.ViewModel {
 
                     // 1. Guardamos el periodo (Mes y Año) en la sesión global
                     UserSession.IdMesTracking = IdMesSelected.idMes;
-                    UserSession.IdAnioTracking = Year;
+                    UserSession.IdAnioTracking = int.Parse(Year);
 
                     // 2. Guardamos la información de la RUTA seleccionada en las nuevas propiedades
                     UserSession.IdRutaTracking = IdRutaSelected.IdRuta;

@@ -35,7 +35,6 @@ namespace BatiaSuite.Data {
 
                 string rawJson = await response.Content.ReadAsStringAsync();
 
-               
                 if(typeof(T) == typeof(CatalogoCacheEntity)) {
                     var cache = new CatalogoCacheEntity {
                         Clave = instanciador.ClaveCatalogo,
@@ -44,22 +43,23 @@ namespace BatiaSuite.Data {
                     };
 
                     await _dbContext.GuardarLocalAsync(cache as T);
-                }   
-
-                else {
+                } else {
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
                     var listaEntidades = JsonSerializer.Deserialize<List<T>>(rawJson, options);
 
-                    if(listaEntidades != null && listaEntidades.Count > 0) {
-                      
-                        foreach(var entidad in listaEntidades) {
-                            if(entidad is InmuebleEntity inmueble) {
-                                inmueble.IdCliente = clienteId;
-                                inmueble.IdEstado = 0; 
-                            }
+                    if(listaEntidades != null) { 
+                       
+                        await _dbContext.BorrarTablaCompletaAsync<T>();
 
-                            await _dbContext.GuardarLocalAsync<T>(entidad);
+                        if(listaEntidades.Count > 0) {
+                            foreach(var entidad in listaEntidades) {
+                                if(entidad is InmuebleEntity inmueble) {
+                                    inmueble.IdCliente = clienteId;
+                                    inmueble.IdEstado = 0;
+                                }
+
+                                await _dbContext.GuardarLocalAsync<T>(entidad);
+                            }
                         }
                     }
                 }

@@ -13,8 +13,8 @@
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#F8FAFC" Offset="0.0" />
-                <GradientStop Color="#E2E8F0" Offset="1.0" />
+                <GradientStop Color="#EEF2FF" Offset="0.0" />
+                <GradientStop Color="SkyBlue" Offset="1.0" />
             </LinearGradientBrush>
         </Grid.Background>
 
@@ -43,47 +43,28 @@
                     StrokeThickness="1"
                     Stroke="#F1F5F9"
                     StrokeShape="RoundRectangle 24"
-                    Padding="24, 32, 24, 32">
+                    Padding="24, 32, 24, 32"
+                    HeightRequest="500">
+                    
                     <Border.Shadow>
                         <Shadow Brush="#0F172A" Offset="0,12" Radius="24" Opacity="0.08" />
                     </Border.Shadow>
 
                     <VerticalStackLayout Spacing="24">
 
-                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                        <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
                             <Label 
-                                Text="Parámetros de Entrega"
+                                Text="Rutas para Entrega"
                                 FontFamily="MontBold"
                                 FontSize="22"
                                 TextColor="#0F172A"
                                 HorizontalOptions="Center" />
                             <Label 
-                                Text="Configura la ruta y fecha para continuar"
+                                Text="Selecciona la fecha y ruta para continuar"
                                 FontFamily="MontRegular"
-                                FontSize="13"
+                                FontSize="12"
                                 TextColor="#64748B"
                                 HorizontalOptions="Center" />
-                        </VerticalStackLayout>
-
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="Ruta" FontFamily="MontSemibold" FontSize="13" TextColor="#334155" Margin="4,0" />
-                            <Border Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" HeightRequest="52">
-                                <Grid ColumnDefinitions="40, *">
-                                    <Label Grid.Column="0" Text="👤" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" TextColor="#64748B"/>
-                                    <Picker
-                                        Grid.Column="1"
-                                        Title="Selecciona la ruta..."
-                                        TitleColor="#94A3B8"
-                                        FontFamily="MontRegular"
-                                        FontSize="15"
-                                        TextColor="#1E293B"
-                                        HorizontalOptions="FillAndExpand"
-                                        Margin="0,0,10,0"
-                                        ItemsSource="{Binding Rutas}"
-                                        ItemDisplayBinding="{Binding Ruta}"
-                                        SelectedItem="{Binding IdRutaSelected}" />
-                                </Grid>
-                            </Border>
                         </VerticalStackLayout>
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
@@ -94,6 +75,7 @@
                                     <Grid ColumnDefinitions="35, *">
                                         <Label Grid.Column="0" Text="📅" FontSize="15" VerticalOptions="Center" HorizontalOptions="Center" Margin="5,0,0,0"/>
                                         <Picker
+                                            x:Name="pkrMes"
                                             Grid.Column="1"
                                             Title="Mes"
                                             TitleColor="#94A3B8"
@@ -102,6 +84,7 @@
                                             TextColor="#1E293B"
                                             HorizontalOptions="FillAndExpand"
                                             Margin="0,0,10,0"
+                                            SelectedIndexChanged="pkrMes_SelectedIndexChanged"
                                             ItemsSource="{Binding MesList}"
                                             ItemDisplayBinding="{Binding mes}"
                                             SelectedItem="{Binding IdMesSelected}" />
@@ -128,6 +111,29 @@
                             </VerticalStackLayout>
                         </Grid>
 
+
+                        <VerticalStackLayout Spacing="8" Margin="0,10,0,0">
+                            <Label Text="Ruta" FontFamily="MontSemibold" FontSize="13" TextColor="#334155" Margin="4,0" />
+                            <Border Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 12" BackgroundColor="#F8FAFC" HeightRequest="52">
+                                <Grid ColumnDefinitions="40, *">
+                                    <Label Grid.Column="0" Text="👤" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" TextColor="#64748B"/>
+                                    <Picker
+                                        Grid.Column="1"
+                                        Title="Selecciona la ruta..."
+                                        TitleColor="#94A3B8"
+                                        FontFamily="MontRegular"
+                                        FontSize="15"
+                                        TextColor="#1E293B"
+                                        HorizontalOptions="FillAndExpand"
+                                        Margin="0,0,10,0"
+                                        ItemsSource="{Binding Rutas}"
+                                        ItemDisplayBinding="{Binding Ruta}"
+                                        SelectedItem="{Binding IdRutaSelected}" />
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+
+
                         <Button
                             Text="Cargar listados"
                             Command="{Binding RegisterCommand}"
@@ -137,7 +143,7 @@
                             HeightRequest="54"
                             CornerRadius="14"
                             FontSize="16"
-                            Margin="0,10,0,0">
+                            Margin="0,40,0,0">
                             <Button.Shadow>
                                 <Shadow Brush="#2563EB" Offset="0,6" Radius="12" Opacity="0.35" />
                             </Button.Shadow>

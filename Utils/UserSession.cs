@@ -16,6 +16,7 @@ public class UserSession {
     // --- NUEVAS CLAVES PARA EL CONTROL DE RUTAS ---
     static readonly string ID_RUTA_TRACKING = "IdRutaTracking key";
     static readonly string RUTA_NAME_TRACKING = "RutaNameTracking key";
+    static readonly string TIPO_LISTADO_TRACKING = "TipoListado key";
 
     static readonly string ID_INMUEBLE_TRACKING = "IdInmuebleTracking key";
     static readonly string INMUEBLE_TRACKING = "InmuebleTracking key";
@@ -110,6 +111,11 @@ public class UserSession {
         get => Preferences.Default.ContainsKey(LISTADOS_DISPONIBLES)
             ? (int)Preferences.Default.Get(LISTADOS_DISPONIBLES, 0) : 0;
         set => Preferences.Default.Set(LISTADOS_DISPONIBLES, value);
+    }
+    public static string TipoListadoTracking {
+        get => Preferences.Default.ContainsKey(TIPO_LISTADO_TRACKING)
+            ? (string)Preferences.Default.Get(TIPO_LISTADO_TRACKING, "") : "";
+        set => Preferences.Default.Set(TIPO_LISTADO_TRACKING, value);
     }
     public static string InmuebleNameTracking {
         get => Preferences.Default.ContainsKey(INMUEBLE_NAME_TRACKING)

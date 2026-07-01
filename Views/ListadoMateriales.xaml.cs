@@ -8,7 +8,7 @@ public partial class ListadoMateriales : ContentPage
 	public ListadoMateriales()
 	{
 		InitializeComponent();
-		BindingContext = new LiatadoMaterialesViewModel();
+		BindingContext = new ListadoMaterialesViewModel();
 	}
 
     private void txt_Entregado_Completed(object sender, EventArgs e)

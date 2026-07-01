@@ -1,4 +1,5 @@
 ﻿using BatiaSuite.Interfaz;
+using BatiaSuite.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,18 @@ namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
         public int Cantidad { get; set; }
         public int Entregado { get; set; }
         public string Unidad { get; set; }
+        public string Mes { get; set; }
+        public string Anio { get; set; }
 
         public string ClaveCatalogo => string.Empty;
 
         public string ObtenerUrlDescarga(string baseUrl, int ParametroId) {
-            return $"{baseUrl}RutasOperador?idoperador={ParametroId}";
+            if(UserSession.IdPersonal != 0) {
+                ParametroId = UserSession.IdPersonal;
+                return $"{baseUrl}RutasOperador?idoperador={ParametroId}&mes={DateTime.Now.Month}&anio={DateTime.Now.Year}";
+            } else {
+                return "";
+            }
         }
     }
 }

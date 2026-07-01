@@ -1,37 +1,36 @@
 ﻿using BatiaSuite.Data;
 using BatiaSuite.Resources.IconFonts;
-using BatiaSuite.Views;
-using Camera.MAUI;
-using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Handlers;
-using Mopups.Hosting;
-using Shiny;
 using BatiaSuite.Services;
-using BatiaSuite.ViewModel.EntregasInteligentes;
-using BatiaSuite.Views.EntregasInteligentes;
-using Shiny.Infrastructure;
-using Shiny.Locations;
 using BatiaSuite.Utils;
 using BatiaSuite.ViewModel;
-using BatiaSuite.ViewModel.SupplierDeliveries;
-using BatiaSuite.Views.SupplierDeliveries;
+
 //using Plugin.Maui.SegmentedControl;
 using BatiaSuite.ViewModel.CheckListAparadores;
-using BatiaSuite.Views.CheckListAparadores;
+using BatiaSuite.ViewModel.EntregasInteligentes;
+using BatiaSuite.ViewModel.RutasEntregas;
 using BatiaSuite.ViewModel.Supervisionmantenimiento;
-using BatiaSuite.Views.SupervisionMantenimiento;
-using BatiaSuite.Models.SupervisionMantenimiento;
 using BatiaSuite.ViewModel.SupervisionMantenimiento;
-namespace BatiaSuite;
-public static class MauiProgram {
-    public static MauiApp CreateMauiApp() {
+using BatiaSuite.Views;
+using BatiaSuite.Views.CheckListAparadores;
+using BatiaSuite.Views.EntregasInteligentes;
+using BatiaSuite.Views.RutasEntregas;
+using BatiaSuite.Views.SupervisionMantenimiento;
+using BatiaSuite.Views.SupplierDeliveries;
+using Camera.MAUI;
+using CommunityToolkit.Maui;
+using Mopups.Hosting;
+using Shiny;
 
+namespace BatiaSuite;
+
+public static class MauiProgram {
+
+    public static MauiApp CreateMauiApp() {
         var builder = MauiApp.CreateBuilder();
 
         builder
             .UseMauiApp<App>()
-            
+
             //.UseSegmentedControl()
             .UseMauiMaps()
             .UseShiny()
@@ -71,9 +70,22 @@ public static class MauiProgram {
         builder.Services.AddTransient<Deliveries>();
         builder.Services.AddTransient<DeliveriesRoute>();
 
+        builder.Services.AddSingleton<HttpHelper>();
+
+        #region viewmodels Entregas
+
+        builder.Services.AddTransient<DeliveriesDetailViewModel>();
+
+        #endregion viewmodels Entregas
+
+        #region xaml pages Entregas
+
+        builder.Services.AddTransient<DeliveriesDetail>();
+
+        #endregion xaml pages Entregas
+
         // CHECKLIST APARADORES
         builder.Services.AddSingleton<CheckListService>();
-
 
         builder.Services.AddTransient<CheckListAparadoresInmuebleViewModel>();
         builder.Services.AddTransient<CheckListAparadoresInmueblePage>();
@@ -126,14 +138,16 @@ public static class MauiProgram {
         //Correctivos Mayores
         builder.Services.AddTransient<CorrectivosMayoresViewModel>();
 
-
         builder.Services.AddSingleton<LocalDatabaseService>();
+
+        //EntregasRutas
+        builder.Services.AddTransient<TiposListadoPage>();
+        builder.Services.AddTransient<TiposListadoViewModel>();
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();
 #endif
 
         return builder.Build();
-
     }
 }

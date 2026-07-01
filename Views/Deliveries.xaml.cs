@@ -21,4 +21,8 @@ public partial class Deliveries : ContentPage
     protected override void OnDisappearing() {
         base.OnDisappearing();
     }
+
+    private void pkrMes_SelectedIndexChanged(object sender, EventArgs e) {
+
+    }
 }

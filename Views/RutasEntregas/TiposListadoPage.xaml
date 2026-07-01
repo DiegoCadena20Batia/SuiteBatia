@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:BatiaSuite.Resources.IconFonts;assembly=BatiaSuite"
+             x:Class="BatiaSuite.Views.RutasEntregas.TiposListadoPage"
+           Title="Tipos de Listado"
+    BackgroundColor="#F8F9FA"
+    Shell.FlyoutBehavior="Disabled">
+
+    <Grid RowDefinitions="*, Auto">
+
+        <CollectionView
+            Grid.Row="0"
+            x:Name="lisTipos"
+            ItemsSource="{Binding ListTipos}"
+            Margin="16,10,16,0">
+
+            <CollectionView.Header>
+                <VerticalStackLayout Spacing="8" Margin="0,10,0,20">
+                    <Label
+                        Text="{Binding NombreSucursal}"
+                        FontFamily="MontBold"
+                        FontSize="22"
+                        TextColor="#1A3B60" />
+                    <HorizontalStackLayout>
+                        <Label
+      Text="Folio Listado: "
+      FontFamily="MontBold"
+      FontSize="15"
+      TextColor="#1A3B60" />
+                        <Label
+      Text="{Binding FolioListado}"
+      FontFamily="MontBold"
+      FontSize="16"
+      TextColor="#1A3B60" />
+                    </HorizontalStackLayout>
+                    <Label
+                        Text="Selecciona la categoría del listado que deseas revisar y entregar en esta sucursal."
+                        FontFamily="MontRegular"
+                        FontSize="14"
+                        TextColor="#6C757D" />
+                </VerticalStackLayout>
+            </CollectionView.Header>
+
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="14" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="0,60" Spacing="10">
+                    <Label 
+                        Text="No se encontraron categorías para esta sucursal." 
+                        FontFamily="MontSemibold" 
+                        FontSize="16" 
+                        TextColor="#6C757D" 
+                        HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border 
+            StrokeShape="RoundRectangle 14"
+            StrokeThickness="1"
+            Stroke="#E9ECEF"
+            BackgroundColor="White"
+            Padding="18,16">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                    Command="{Binding Path=BindingContext.TipoSelecCommand, Source={x:Reference lisTipos}}"
+                    CommandParameter="{Binding .}"/>
+                        </Border.GestureRecognizers>
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,3" Radius="5" Opacity="0.04" />
+                        </Border.Shadow>
+
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16" VerticalOptions="Center">
+
+                            <!-- Icono de Paquete / Caja Estilizado -->
+                            <Border 
+                    Grid.Column="0"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="#EEF4FA"
+                    HeightRequest="48"
+                    WidthRequest="48"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                                <!-- Cambiado a texto plano temporal o usa un carácter unicode directo si prefieres -->
+                                <Label
+                        Text="📦" 
+                        FontSize="22"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center" />
+                            </Border>
+
+                            <!-- Nombre del Tipo de Listado -->
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label
+                        Text="{Binding .}"
+                        FontSize="18"
+                        TextColor="#1A3B60"
+                        FontFamily="MontBold" />
+                                <Label
+                        Text="Ver materiales y productos"
+                        FontSize="13"
+                        TextColor="#6C757D"
+                        FontFamily="MontRegular" />
+                            </VerticalStackLayout>
+
+                            <!-- Flecha Indicadora de Navegación -->
+                            <Label
+                    Grid.Column="2"
+                    Text="➔"
+                    TextColor="#B0BCC7"
+                    FontSize="18"
+                    VerticalOptions="Center"
+                    HorizontalOptions="End" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            RowDefinitions="*, *"
+            BackgroundColor="#B3000000"
+            IsVisible="{Binding IsLoading}">
+            <ActivityIndicator Grid.Row="0" VerticalOptions="End" Color="White" IsRunning="{Binding IsLoading}" HeightRequest="60" WidthRequest="60"/>
+            <Label Grid.Row="1" VerticalOptions="Start" HorizontalOptions="Center" TextColor="White" FontFamily="MontSemibold" FontSize="16" Margin="0,16,0,0" Text="{Binding TextLoading}" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

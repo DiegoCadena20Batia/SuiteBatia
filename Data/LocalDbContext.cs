@@ -117,5 +117,21 @@ namespace BatiaSuite.Data {
             // Filtra directamente en la base de datos de SQLite antes de hacer el ToListAsync
             return await _database.Table<T>().Where(predicado).ToListAsync();
         }
+
+        /// <summary>
+        /// Elimina absolutamente todos los registros de la tabla especificada por el tipo <T>.
+        /// Retorna la cantidad de filas que fueron eliminadas.
+        /// </summary>
+        public async Task<int> BorrarTablaCompletaAsync<T>() where T : class, new() {
+            await InitAsync();
+            if(_database == null) throw new InvalidOperationException("Base de datos no inicializada.");
+
+            // DeleteAllAsync borra todo el contenido de la tabla mapeada al tipo T de forma masiva
+            int filasEliminadas = await _database.DeleteAllAsync<T>();
+
+            System.Diagnostics.Debug.WriteLine($"[SQLite_Debug] Se vació la tabla {typeof(T).Name}. Filas eliminadas: {filasEliminadas}");
+
+            return filasEliminadas;
+        }
     }
 }
