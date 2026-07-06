@@ -12,10 +12,8 @@ public partial class RegisterDelivery : ContentPage
         InitializeComponent();
         //this.mediaPicker = mediaPicker;
 
-        
-        registerDeliveryViewModel = new RegisterDeliveryViewModel(drawingView);
-        registerDeliveryViewModel.mediaPicker = mediaPicker;
-        BindingContext = registerDeliveryViewModel;
+
+        BindingContext = new RegisterDeliveryViewModel(this.drawingView);
     }
 
     private async void btn_Firmar_Clicked(object sender, EventArgs e)

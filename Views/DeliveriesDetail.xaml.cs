@@ -11,4 +11,11 @@ public partial class DeliveriesDetail : ContentPage
 		InitializeComponent();
 		BindingContext = viewModel;
 	}
+
+    protected override async void OnAppearing() {
+        base.OnAppearing();
+        if(BindingContext is DeliveriesDetailViewModel vm) {
+            await vm.CargarSucursalesDeRuta();
+        }
+    }
 }

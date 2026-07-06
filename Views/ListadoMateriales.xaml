@@ -145,7 +145,7 @@
             <VerticalStackLayout Spacing="14">
 
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12" VerticalOptions="CenterAndExpand">
-                    <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="CenterAndExpand">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="CenterAndExpand" Grid.ColumnSpan="2">
                         <Label Text="Nombre de quien recibe" FontSize="12" FontFamily="MontSemibold" TextColor="#495057" Margin="4,0"/>
                         <Border StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="#CED4DA" Padding="10,0" HeightRequest="48">
                             <Entry
@@ -158,7 +158,7 @@
                         </Border>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="EndAndExpand">
+                    <!--<VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="EndAndExpand">
                         <Label Text="Bidones Recuperados" FontSize="12" FontFamily="MontSemibold" TextColor="#495057" Margin="4,0"/>
                         <Border StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="#CED4DA" Padding="10,0" HeightRequest="48">
                             <Entry
@@ -170,7 +170,7 @@
                                 Placeholder="Cantidad"
                                 PlaceholderColor="#ADB5BD" />
                         </Border>
-                    </VerticalStackLayout>
+                    </VerticalStackLayout>-->
                 </Grid>
 
                 <VerticalStackLayout Spacing="4">

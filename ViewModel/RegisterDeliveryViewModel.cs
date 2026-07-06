@@ -1,12 +1,12 @@
 ﻿using BatiaSuite.Data;
 using BatiaSuite.Models;
 using BatiaSuite.Models.Entregas;
+using BatiaSuite.Models.EntidadesLocal.RutasEntregas; // Namespace donde reside RutasInmuebles y tu cola de pendientes
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Devices.Sensors;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Net;
@@ -17,10 +17,11 @@ namespace BatiaSuite.ViewModel;
 
 public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributable {
 
-    DrawingView _drawingView;
-    DbContext _dbContext;
+    private readonly DrawingView _drawingView;
+    private readonly LocalDbContext _dbContext; // Uso de tu contexto genérico universal
 
-    ObservableCollection<ListadoMaterialesModel> materiales;
+    // Eliminada la entidad intermedia; ahora usamos directamente la colección pura de la base de datos
+    private ObservableCollection<RutasInmuebles> materiales;
 
     private ObservableCollection<PhotosModel> _photoPaths = new ObservableCollection<PhotosModel>();
     public ObservableCollection<PhotosModel> photoPaths {
@@ -31,8 +32,12 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
         }
     }
 
-    string _NombreRecibe = string.Empty, _Comentarios = string.Empty;
-    int _Bidones = 0, _IdListado = 0, CountPhoto = 0;
+    private string _NombreRecibe = string.Empty;
+    private string _Comentarios = string.Empty;
+    private int _Bidones = 0;
+    private int _IdListado = 0;
+    private int CountPhoto = 0;
+
     public IMediaPicker mediaPicker;
 
     public ICommand RegisterCommand { get; set; }
@@ -41,28 +46,24 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
     public ICommand ClearDrawingCommand { get; }
 
     private bool _isSignature;
-
     public bool IsSignature {
         get { return _isSignature; }
         set { _isSignature = value; OnPropertyChanged(); }
     }
 
     private string _pathPhotoLocal;
-
     public string PathPhotoLocal {
         get { return _pathPhotoLocal; }
         set { _pathPhotoLocal = value; OnPropertyChanged(); }
     }
 
     private string _pathFirmaLocal;
-
     public string PathFirmaLocal {
         get { return _pathFirmaLocal; }
         set { _pathFirmaLocal = value; }
     }
 
     public RegisterDeliveryViewModel(DrawingView drawingView) {
-        
         RegisterCommand = new Command(async () => await RegisterMaterials());
         PhotoCommand = new Command(async () => await Photo());
         ClearDrawingCommand = new Command(async () => await ClearDrawingView());
@@ -70,22 +71,26 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             photoPaths.Remove(elemento);
             CountPhoto--;
         });
+
         _drawingView = drawingView;
         IsSignature = true;
         IsBusy = false;
-        _dbContext = new DbContext();
+        _dbContext = new LocalDbContext(); // Inicialización de tu nuevo contexto genérico
     }
 
+    /// <summary>
+    /// Recibe la información directa de navegación tipada como RutasInmuebles
+    /// </summary>
     public void ApplyQueryAttributes(IDictionary<string, object> query) {
-        materiales = (ObservableCollection<ListadoMaterialesModel>)query["MaterialsList"];
+        materiales = (ObservableCollection<RutasInmuebles>)query["MaterialsList"];
         _NombreRecibe = query["NombreRecibe"].ToString();
         _Comentarios = query["Comentarios"].ToString();
-        if(query["Bidones"] is null)
-            _Bidones = 0;
-        else if(query["Bidones"].ToString() == "")
+
+        if(query["Bidones"] is null || query["Bidones"].ToString() == "")
             _Bidones = 0;
         else
             _Bidones = Convert.ToInt32(query["Bidones"]);
+
         _IdListado = (int)query["IdListado"];
     }
 
@@ -94,8 +99,9 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
         PathFirmaLocal = null;
     }
 
-    async Task<bool> ValidarFirma() {
+    private async Task<bool> ValidarFirma() {
         try {
+            // Se genera una ruta temporal en caché para las validaciones en caliente
             PathFirmaLocal = Path.Combine(FileSystem.CacheDirectory, $"Firma_{Guid.NewGuid()}.png");
 
             using(Stream stream = await _drawingView.GetImageStream(512, 512)) {
@@ -109,105 +115,101 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             return false;
         }
     }
-    async Task  GuardarLocal() {
-        try {
-            if(!await ValidarFirma()) {
-                await DisplayAlert("Alerta", "Debe enviar Foto y Firma", "Cerrar");
-                IsBusy = false;
-                return;
-            }
-            if(photoPaths.Count == 0 || photoPaths == null || PathFirmaLocal == null) {
-                await DisplayAlert("Alerta", "Debe enviar Foto y Firma", "Cerrar");
-                IsBusy = false;
-                return;
-            }
-            var materialesConvertidos = materiales.Select(m => new RegisterMaterialsModel.Materiale {
-                Entregado = m.entregado,
-                Cantidad = m.cantidad,
-                Clave = m.clave,
 
+    /// <summary>
+    /// Guarda el registro en la cola de pendientes moviendo los archivos físicos a AppDataDirectory
+    /// </summary>
+    private async Task GuardarEnPendientesOffline() {
+        try {
+            var fotosPermanentes = new List<string>();
+
+            // 1. Mover Fotos del Carrusel a AppDataDirectory (Seguro y Permanente)
+            foreach(var item in photoPaths) {
+                if(File.Exists(item.UrlPhoto)) {
+                    string destinoFoto = Path.Combine(FileSystem.AppDataDirectory, Path.GetFileName(item.UrlPhoto));
+                    File.Copy(item.UrlPhoto, destinoFoto, true);
+                    fotosPermanentes.Add(destinoFoto);
+                }
+            }
+
+            // 2. Mover la Firma a AppDataDirectory
+            string destinoFirma = string.Empty;
+            if(!string.IsNullOrEmpty(PathFirmaLocal) && File.Exists(PathFirmaLocal)) {
+                destinoFirma = Path.Combine(FileSystem.AppDataDirectory, Path.GetFileName(PathFirmaLocal));
+                File.Copy(PathFirmaLocal, destinoFirma, true);
+            }
+
+            // 3. Mapear Materiales (Usando las propiedades en Mayúsculas correspondientes a RutasInmuebles)
+            var materialesConvertidos = materiales.Select(m => new RegisterMaterialsModel.Materiale {
+                Entregado = m.Entregado,
+                Cantidad = m.Cantidad,
+                Clave = m.Clave
             }).ToArray();
 
-            //HEADER =>
-            var entregaLocal = new EntregaLocal {
+            // 4. Armar el payload JSON idéntico anexando las rutas fijas del disco local
+            var payloadCompleto = new {
                 Usuario = UserSession.IdPersonal,
                 NombreRecibe = _NombreRecibe,
                 ComentarioMateriales = _Comentarios,
                 Bidones = _Bidones,
                 IdListado = _IdListado,
+                Materiales = materialesConvertidos,
                 Fentrega = DateTime.Now,
+                RutasFotosLocales = fotosPermanentes,
+                RutaFirmaLocal = destinoFirma
             };
-            //MATERIALES =>
-            var entregaMaterialLocal = new List<EntregaMaterialLocal>();
-            foreach(var mat in materialesConvertidos) {
-                var material = new EntregaMaterialLocal {
-                    Entregado = mat.Entregado,
-                    Cantidad = mat.Cantidad,
-                    Clave = mat.Clave,
-                };
-                entregaMaterialLocal.Add(material);
-            }
-            //ARCHIVOS => 
-            //FOTO
-            var fotosLocal = new List<FotoEntregaLocal>();
-            if(photoPaths != null) {
-                foreach(var item in photoPaths) {
-                    var foto = new FotoEntregaLocal {
-                        IdEntregaLocal = 0,
-                        Path = item.UrlPhoto
-                    };
-                    fotosLocal.Add(foto);
+
+            // 5. Instanciar tu objeto ISincronizable
+            var pendiente = new RutaInmueblePendiente {
+                JsonData = JsonConvert.SerializeObject(payloadCompleto),
+                FechaCaptura = DateTime.Now
+            };
+
+            // 6. Guardar usando tu método genérico universal
+            await _dbContext.GuardarLocalAsync(pendiente);
+
+            // 7. Intentar reportar ubicación en local si falla red
+            await ReportarUbicacionDeEntrega();
+
+            // 8. ACTUALIZACIÓN LOCAL: Marcamos los materiales como entregados en la base de datos local
+            var materialesLocal = await _dbContext.ObtenerListaLocalAsync<RutasInmuebles>(m => m.IdListado == _IdListado);
+            if(materialesLocal != null && materialesLocal.Count > 0) {
+                foreach(var material in materialesLocal) {
+                    // Buscamos el valor capturado en la pantalla actual para este producto específico
+                    var modificado = materiales.FirstOrDefault(x => x.Clave == material.Clave);
+                    if(modificado != null) {
+                        material.Entregado = modificado.Entregado; // Actualizamos con la cantidad real entregada
+                        material.Estatusl = "Entregado";            // Modificamos su estatus si lo usas para tus estilos de celda
+                    }
+
+                    // Guardamos la actualización usando tu método genérico universal (hace un InsertOrReplace)
+                    await _dbContext.GuardarLocalAsync(material);
                 }
             }
-            //FIRMA
 
-            if(PathFirmaLocal != null) {
-                var firma = new FotoEntregaLocal {
-                    IdEntregaLocal = 0,
-                    Path = PathFirmaLocal
-                };
-                fotosLocal.Add(firma);
-            }
-            await _dbContext.InsertarEntrega(entregaLocal, entregaMaterialLocal, fotosLocal);
-
-
-            //SI TODO SALE BIEN ENTONCES SE REPORTA LA UBICACION DE ENTREGA, SE ELIMINA EL LISTADO DEL LOCAL
-
-            await ReportarUbicacionDeEntrega();
-            await _dbContext.EliminarListadoMaterialPrecarga(_IdListado);
-            //DetenerCarga();
-            await DisplayAlert("Mensaje", "Sin conexión a internet, la entrega se guardó en el dispositivo para un envío posterior", "Ok");
+            await DisplayAlert("Modo Offline", "Sin conexión a internet. La entrega se guardó en el dispositivo para un envío posterior automático.", "Ok");
             IsBusy = false;
 
-            // Limpiar la pila de navegación
+            // Limpieza e historial de la pila de navegación
             var pages = Shell.Current.Navigation.NavigationStack.ToList();
             Shell.Current.Navigation.RemovePage(pages[2]);
             Shell.Current.Navigation.RemovePage(pages[3]);
             Shell.Current.Navigation.RemovePage(pages[4]);
 
             await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
-
-            return;
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             await DisplayAlert("Error", "Ocurrió un error al guardar localmente: " + ex.Message, "Cerrar");
-            return;
+            IsBusy = false;
         }
     }
-    //try {
 
-    //    } 
-    //    catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
-    //    await DisplayAlert("Error", "Ocurrió un error: " + ex.Message, "Cerrar");
-    //    return;
-    //}
+    /// <summary>
+    /// Método principal de ejecución híbrida (Online/Offline)
+    /// </summary>
     private async Task RegisterMaterials() {
         try {
-            //SI NO TIENE INTERNET GUARDAR EN LOCAL DIRECTAMENTE
-
-            //CONTINUAR NORMALMENTE SI HAY CONEXION A INTERNET
-
             IsBusy = true;
+
             if(!await ValidarFirma()) {
                 await DisplayAlert("Alerta", "Debe enviar Foto y Firma", "Cerrar");
                 IsBusy = false;
@@ -218,30 +220,23 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                 IsBusy = false;
                 return;
             }
-            if(!InternetUtil.IsConnectedInternet()) {
-                await GuardarLocal();
 
+            // Validación de conectividad por Utilería
+            if(!InternetUtil.IsConnectedInternet()) {
+                await GuardarEnPendientesOffline();
             } else {
-                //IniciaCarga("Enviando archivos...");
-                // Crear una instancia del modelo RegisterMaterialsModel con los datos proporcionados
+                // Modo Online: Intenta subir archivos físicos al API
                 if(!await SendFiles()) {
-                    //await DisplayAlert("Error", "Ocurrió un error al subir los archivos", "Cerrar");
-                    
-                    //AQUI SE GUARDARA EL OBJETO EN EL LOCAL DEL DISPOSITIVO: RegisterMaterialsModel
-                    await GuardarLocal();
-                    IsBusy = false;
+                    await GuardarEnPendientesOffline();
                     return;
                 }
-                //IniciaCarga("Enviando registro...");
-                // Convertir los materiales de ListadoMaterialesModel a RegisterMaterialsModel.Materiale
-                var materialesConvertidos = materiales.Select(m => new RegisterMaterialsModel.Materiale {
-                    Entregado = m.entregado,
-                    Cantidad = m.cantidad,
-                    Clave = m.clave,
 
+                var materialesConvertidos = materiales.Select(m => new RegisterMaterialsModel.Materiale {
+                    Entregado = m.Entregado,
+                    Cantidad = m.Cantidad,
+                    Clave = m.Clave
                 }).ToArray();
 
-                // Crear una instancia del modelo RegisterMaterialsModel con los datos proporcionados
                 var data = new RegisterMaterialsModel {
                     Usuario = UserSession.IdPersonal,
                     NombreRecibe = _NombreRecibe,
@@ -249,8 +244,7 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                     Bidones = _Bidones,
                     IdListado = _IdListado,
                     Materiales = materialesConvertidos,
-                    Fentrega = DateTime.Now,
-
+                    Fentrega = DateTime.Now
                 };
 
                 Uri RequestUri = new Uri(Constants.API_BASE_URL + "EntregaAppN");
@@ -260,41 +254,32 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                 var response = await client.PostAsync(RequestUri, contentJson);
 
                 if(response.StatusCode == HttpStatusCode.OK) {
+                    // 1. Reportamos la coordenada en tiempo real al servidor
                     await ReportarUbicacionDeEntrega();
-                    //DetenerCarga();
+
+                    // [ELIMINADO]: El SP del servidor ya actualiza los estatus, no tocamos la BD local aquí.
+
                     await DisplayAlert("Mensaje", "Registrado correctamente", "Ok");
                     IsBusy = false;
 
-                    // Limpiar la pila de navegación
-                    var pages = Shell.Current.Navigation.NavigationStack.ToList();
-                    Shell.Current.Navigation.RemovePage(pages[2]);
-                    Shell.Current.Navigation.RemovePage(pages[3]);
-                    Shell.Current.Navigation.RemovePage(pages[4]);
-                    //string route = $"{nameof(DeliveriesDetail)}";
-                    //await Constants.GoToAsync(route);
-                    await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
 
-                    return;
+
+                    // 3. Regreso seguro al menú de sucursales
+                    await Shell.Current.GoToAsync($"///{nameof(DeliveriesDetail)}", true);
                 } else {
-                    IsBusy = false;
-                    await GuardarLocal();
-                    return;
-                    //await DisplayAlert("Error", "Ocurrió un error al registrar la información", "Cerrar");
+                    await GuardarEnPendientesOffline();
                 }
             }
-        } 
-        catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
-            //await DisplayAlert("Error", "Ocurrió un error: " + ex.Message, "Cerrar");
-            await GuardarLocal();
-            return;
+        } catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
+            await GuardarEnPendientesOffline();
         }
     }
+
     public async Task<bool> ReportarUbicacionDeEntrega() {
         Location location = null;
         try {
             location = await Utils.LocationUtil.GetCurrentLocationAsync();
-            //VERIFICAR QUE PASA CON ESE METODO PPARA GUARDAR E REPORTE DE UBICACION EN LOCAL
-             string url = Constants.API_BASE_URL + "SeguimientoRuta";
+            string url = Constants.API_BASE_URL + "SeguimientoRuta";
             var data = new {
                 IdPersonal = UserSession.IdPersonal,
                 IdInmueble = UserSession.IdInmuebleTracking,
@@ -309,10 +294,8 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var _httpClient = new HttpClient();
             var response = await _httpClient.PostAsync(url, content);
+
             if(!response.IsSuccessStatusCode) {
-                //SI EL SERVIDOR NO ESTA DISPONIBLE-------------------------------------------->
-                string errorBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Error al enviar ubicación: {response.StatusCode} - {errorBody}");
                 if(location != null) {
                     var entrega = new EntregaReporteUbicacionLocal {
                         IdPersonal = UserSession.IdPersonal,
@@ -323,16 +306,13 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                         IdTipo = 4,
                         Fecha = DateTime.Now
                     };
-                    _dbContext = new DbContext();
-                    await _dbContext.InsertarUbicacionesEntrega(entrega);
+                    await _dbContext.GuardarLocalAsync(entrega); // Metodo Genérico
                 }
                 return false;
-            } 
+            }
             return true;
-        } catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
-            Console.WriteLine($"Sin conexión o timeout: {ex.Message}");
-            if(location != null) // Validar que sí se haya obtenido antes del fallo
-                {
+        } catch(Exception) {
+            if(location != null) {
                 var entrega = new EntregaReporteUbicacionLocal {
                     IdPersonal = UserSession.IdPersonal,
                     IdInmueble = UserSession.IdInmuebleTracking,
@@ -342,10 +322,8 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                     IdTipo = 4,
                     Fecha = DateTime.Now
                 };
-                _dbContext = new DbContext();
-                await _dbContext.InsertarUbicacionesEntrega(entrega);
+                await _dbContext.GuardarLocalAsync(entrega); // Metodo Genérico
             }
-
             return false;
         }
     }
@@ -353,24 +331,21 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
     private async Task Photo() {
         try {
             if(CountPhoto < 5) {
-                if(this.mediaPicker.IsCaptureSupported) {
-                    FileResult photo = await MediaPicker.CapturePhotoAsync();
-                    if(photo != null) {
-                        string LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
-                        using(Stream source = await photo.OpenReadAsync()) {
-                            using FileStream localFile = File.OpenWrite(LocalFilePath);
-                            await source.CopyToAsync(localFile);
-                        }
-                        PhotosModel photosModel = new PhotosModel();
-                        photosModel.UrlPhoto = LocalFilePath;
-                        _photoPaths.Add(photosModel);
-                        //photoPaths.Add(photosModel);
-                        PathPhotoLocal = LocalFilePath;
-                        CountPhoto++;
+                FileResult photo = await MediaPicker.CapturePhotoAsync();
+                if(photo != null) {
+                    string LocalFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+                    using(Stream source = await photo.OpenReadAsync()) {
+                        using FileStream localFile = File.OpenWrite(LocalFilePath);
+                        await source.CopyToAsync(localFile);
                     }
+                    PhotosModel photosModel = new PhotosModel();
+                    photosModel.UrlPhoto = LocalFilePath;
+                    _photoPaths.Add(photosModel);
+                    PathPhotoLocal = LocalFilePath;
+                    CountPhoto++;
                 }
             } else {
-                await DisplayAlert("Mensaje", "Se a alcanzado el número máximo de fotos permitidas", "Cerrar");
+                await DisplayAlert("Mensaje", "Se ha alcanzado el número máximo de fotos permitidas", "Cerrar");
             }
         } catch(Exception ex) {
             await DisplayAlert("Error", ex.Message, "Cerrar");
@@ -381,25 +356,22 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
 
     public async Task<bool> SendFiles() {
         try {
+            archivos.Clear();
             if(photoPaths != null) {
                 foreach(var item in photoPaths) {
                     archivos.Add(item.UrlPhoto);
                 }
             }
-            //archivos.Add(PathPhotoLocal);
             if(PathFirmaLocal != null)
                 archivos.Add(PathFirmaLocal);
 
-            var UrlFiles = await UploadFiles(archivos, "Doctos");//ESTO DEVUELVE ASI: "a75cf246c74a4587b93b6a2d3a8fabb0.jpg|Firma_1cb30d0a-9181-4dad-bec8-acccbdbb753a.png"
-            if (UrlFiles != null) {
-                string[] splits = UrlFiles.Split("|");// AQUI DEBEMOS INCLUIR EL SIGNO "|" SIN ESPAICIOS  // SE SEPARAN LAS STRINGS POR |
-                var PathFile = string.Empty;
+            var UrlFiles = await UploadFiles(archivos, "Doctos");
+            if(UrlFiles != null) {
+                string[] splits = UrlFiles.Split("|");
                 foreach(string split in splits) {
                     if(split.Contains(".png")) {
-                        // Si la extensión es PDF, asigna a pathFile y rompe el bucle
                         PathFirmaLocal = split;
                     } else if(split.Contains(".jpg") || split.Contains(".jpeg")) {
-                        // Si es una imagen (JPG, JPEG o PNG), asigna a pathPhoto y continúa el bucle
                         PathPhotoLocal = split;
                     }
                 }
@@ -409,13 +381,9 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             } else {
                 return false;
             }
-            
-
-        } catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
-            await DisplayAlert("Error", "Ocurrió un error: " + ex.Message, "Cerrar");
+        } catch(Exception) {
             return false;
         }
-        
     }
 
     public async Task<string> UploadFiles(List<string> files, string folderName) {
@@ -424,23 +392,16 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             var formData = new MultipartFormDataContent();
 
             foreach(var file in files) {
-                // Leer la imagen original
                 byte[] fileBytes = await File.ReadAllBytesAsync(file);
-
-                // Determinar si es una firma (asumo que buscas en el nombre del archivo)
                 bool isSignature = Path.GetFileName(file).StartsWith("Firma", StringComparison.OrdinalIgnoreCase);
 
-                // Redimensionar la imagen
                 byte[] resizedImage = await ImageResizerHelper.ResizeImage(
                     fileBytes,
                     480,
                     640,
-                    !isSignature); // Invertir para posicionImagen si es necesario
+                    !isSignature);
 
-                // Crear el contenido para subir
                 var byteArrayContent = new ByteArrayContent(resizedImage);
-
-                // Agregar al formulario con el nombre original del archivo
                 formData.Add(byteArrayContent, "files", Path.GetFileName(file));
             }
 
@@ -451,9 +412,8 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             } else {
                 return null;
             }
-        } catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
+        } catch(Exception) {
             return null;
         }
-        
     }
 }

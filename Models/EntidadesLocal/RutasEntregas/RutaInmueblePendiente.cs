@@ -1,46 +1,115 @@
 ﻿using BatiaSuite.Interfaz;
-using SQLite;
+using BatiaSuite.Models.Entregas;
+using BatiaSuite.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
-
-    [Table("RutasInmueblesPendientes")]
     public class RutaInmueblePendiente : ISincronizable {
-
-        [PrimaryKey, AutoIncrement]
+        [SQLite.PrimaryKey, SQLite.AutoIncrement]
         public int Id { get; set; }
+        public string JsonData { get; set; }
+        public DateTime FechaCaptura { get; set; }
 
-        public string JsonData { get; set; } = string.Empty;
+        private PayloadContingencia _payloadCache;
+        private PayloadContingencia GetPayload() {
+            if(_payloadCache == null && !string.IsNullOrEmpty(JsonData)) {
+                _payloadCache = JsonConvert.DeserializeObject<PayloadContingencia>(JsonData);
+            }
+            return _payloadCache;
+        }
 
-        public DateTime FechaCaptura { get; set; } = DateTime.Now;
-
-        /// <summary>
-        /// Define el endpoint específico de del API donde se procesará la entrega.
-        /// </summary>
         public string ObtenerUrlApi(string baseUrl) {
-            // Ajusta este endpoint según el controlador real de tu API backend
-            return $"{baseUrl}RutasOperador/ActualizarEntrega";
+            return $"{baseUrl}EntregaAppN";
         }
 
         /// <summary>
-        /// Reconstruye el payload mapeado en un diccionario listo para enviarse por PostAsJsonAsync.
+        /// Satisface tu interfaz retornando el Dictionary con la estructura que el API espera recibir en el body
         /// </summary>
-        public Task<Dictionary<string, object>?> PrepararPayloadAsync() {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        public async Task<Dictionary<string, object>?> PrepararPayloadAsync() {
+            var payload = GetPayload();
+            if(payload == null) return null;
 
-            var payload = JsonSerializer.Deserialize<Dictionary<string, object>>(JsonData, options);
+            try {
+                // 1. Procesar archivos físicos en disco
+                var listaArchivos = new List<string>();
+                if(payload.RutasFotosLocales != null) listaArchivos.AddRange(payload.RutasFotosLocales);
+                if(!string.IsNullOrEmpty(payload.RutaFirmaLocal)) listaArchivos.Add(payload.RutaFirmaLocal);
 
-            return Task.FromResult(payload);
+                // Subida de archivos binarios en contingencia
+                if(listaArchivos.Count > 0 && (payload.RutaFirmaLocal.Contains("/") || payload.RutaFirmaLocal.Contains("\\"))) {
+                    using var client = new HttpClient();
+                    using var formData = new MultipartFormDataContent();
+
+                    foreach(var file in listaArchivos) {
+                        if(File.Exists(file)) {
+                            byte[] fileBytes = await File.ReadAllBytesAsync(file);
+                            bool isSignature = Path.GetFileName(file).StartsWith("Firma", StringComparison.OrdinalIgnoreCase);
+
+                            byte[] resizedImage = await ImageResizerHelper.ResizeImage(fileBytes, 480, 640, !isSignature);
+                            var byteArrayContent = new ByteArrayContent(resizedImage);
+                            formData.Add(byteArrayContent, "files", Path.GetFileName(file));
+                        }
+                    }
+
+                    var response = await client.PostAsync(Constants.API_BASE_URL + $"FilesEntregaApp/CargaMul?folio={payload.IdListado}", formData);
+
+                    if(!response.IsSuccessStatusCode) {
+                        return null; // Si fallan los archivos, frena el ciclo para reintentar después
+                    }
+                }
+
+                // 2. Construir el diccionario plano requerido por ISincronizable
+                var diccionarioPayload = new Dictionary<string, object>
+                {
+                    { "Usuario", payload.Usuario },
+                    { "NombreRecibe", payload.NombreRecibe },
+                    { "ComentarioMateriales", payload.ComentarioMateriales },
+                    { "Bidones", payload.Bidones },
+                    { "IdListado", payload.IdListado },
+                    { "Materiales", payload.Materiales },
+                    { "Fentrega", payload.Fentrega }
+                };
+
+                return diccionarioPayload;
+            } catch(Exception) {
+                return null;
+            }
         }
 
-        /// <summary>
-        /// Al no almacenar imágenes temporales en el disco duro, este método se queda vacío pero cumple con el contrato.
-        /// </summary>
-        public Task LimpiarArchivosLocalesAsync() {
-            return Task.CompletedTask;
+        public async Task LimpiarArchivosLocalesAsync() {
+            var payload = GetPayload();
+            if(payload == null) return;
+
+            try {
+                if(payload.RutasFotosLocales != null) {
+                    foreach(var foto in payload.RutasFotosLocales) {
+                        if(File.Exists(foto)) File.Delete(foto);
+                    }
+                }
+
+                if(!string.IsNullOrEmpty(payload.RutaFirmaLocal) && File.Exists(payload.RutaFirmaLocal)) {
+                    File.Delete(payload.RutaFirmaLocal);
+                }
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"[Sync_Disk] Error limpiando temporales: {ex.Message}");
+            }
+        }
+
+        private class PayloadContingencia {
+            public int Usuario { get; set; }
+            public string NombreRecibe { get; set; }
+            public string ComentarioMateriales { get; set; }
+            public int Bidones { get; set; }
+            public int IdListado { get; set; }
+            public RegisterMaterialsModel.Materiale[] Materiales { get; set; }
+            public DateTime Fentrega { get; set; }
+            public List<string> RutasFotosLocales { get; set; }
+            public string RutaFirmaLocal { get; set; }
         }
     }
 }

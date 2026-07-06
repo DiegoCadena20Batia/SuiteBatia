@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
 
     public class RutasInmuebles : IDescargable {
+
+        [SQLite.PrimaryKey, SQLite.AutoIncrement]
+        public int? IdLocal { get; set; } 
+
+        [SQLite.Ignore]
+        public bool IsCompleted { get; set; } = false;
+
         public int IdRuta { get; set; }
         public string Ruta { get; set; }
         public string Nomenclatura { get; set; }
@@ -35,6 +42,7 @@ namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
         public string ObtenerUrlDescarga(string baseUrl, int ParametroId) {
             if(UserSession.IdPersonal != 0) {
                 ParametroId = UserSession.IdPersonal;
+
                 return $"{baseUrl}RutasOperador?idoperador={ParametroId}&mes={DateTime.Now.Month}&anio={DateTime.Now.Year}";
             } else {
                 return "";

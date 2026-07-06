@@ -82,7 +82,7 @@ namespace BatiaSuite.ViewModel {
                 IniciaCarga("Cargando sucursales...");
                 await Task.Delay(500);
                 var listaInmuebeles = await ObtenerSucursalesLocal();
-                 DetenerCarga();
+                DetenerCarga();
                 if(listaInmuebeles.Any()) {
                     ListSucursales = new ObservableCollection<RutasInmuebles>(listaInmuebeles);
                 } else {
@@ -99,10 +99,14 @@ namespace BatiaSuite.ViewModel {
 
                         if(todasLasFilas != null) {
                             var sucursalesUnicas = todasLasFilas
-                                .Where(r => r.IdRuta == idRuta)
-                                .GroupBy(r => r.IdInmueble)
-                                .Select(g => g.First())
-                                .ToList();
+     .Where(r => r.IdRuta == idRuta)
+     .GroupBy(r => r.IdInmueble)
+     .Select(g => {
+         var sucursal = g.First();
+         sucursal.IsCompleted = g.All(r => r.Estatusl == "Entregado");
+         return sucursal;
+     })
+     .ToList();
 
                             ListSucursales = new ObservableCollection<RutasInmuebles>(sucursalesUnicas);
                             AvailableDeliveries = ListSucursales.Count > 0;
@@ -124,9 +128,25 @@ namespace BatiaSuite.ViewModel {
 
             if(todasLasFilasLocal != null && todasLasFilasLocal.Count > 0) {
                 var sucursalesUnicasLocal = todasLasFilasLocal
-                    .GroupBy(r => r.IdInmueble)
-                    .Select(g => g.First())
-                    .ToList();
+    .GroupBy(r => r.IdInmueble)
+    .Select(g => {
+        var sucursal = g.First();
+        sucursal.IsCompleted = g.All(r => r.Estatusl == "Entregado");
+        return sucursal;
+    })
+    .ToList();
+
+                try {
+                    System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM Rutas ({todasLasFilasLocal.Count} registros) ---");
+
+                    foreach(var r in todasLasFilasLocal) {
+                        System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble} | Estatus: {r.Estatusl}");
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM Rutas ---");
+                } catch(Exception ex) {
+                    System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en Rutas: {ex.Message}");
+                }
 
                 AvailableDeliveries = true;
                 return sucursalesUnicasLocal;
@@ -264,36 +284,6 @@ namespace BatiaSuite.ViewModel {
             };
 
             await _dbContext.GuardarLocalAsync(entrega);
-        }
-
-        [RelayCommand]
-        public async Task AbrirGoogleMaps() {
-            IniciaCarga("Iniciando Google Maps...");
-            await Task.Delay(500);
-            if(await ValidarRutaDisponible()) {
-                string url = $"geo:0,0?q={Destino}";
-                try {
-                    await Launcher.Default.OpenAsync(new Uri(url));
-                } catch(Exception ex) {
-                    Console.WriteLine($"Error al abrir Google Maps nativo: {ex.Message}");
-                }
-            }
-            DetenerCarga();
-        }
-
-        [RelayCommand]
-        public async Task AbrirWaze() {
-            IniciaCarga("Iniciando Waze...");
-            await Task.Delay(500);
-            if(await ValidarRutaDisponible()) {
-                string wazeUrl = $"https://waze.com/ul?ll={Destino}&navigate=yes";
-                try {
-                    await Launcher.Default.OpenAsync(new Uri(wazeUrl));
-                } catch(Exception ex) {
-                    Console.WriteLine($"Error al abrir Waze: {ex.Message}");
-                }
-            }
-            DetenerCarga();
         }
 
         public void IniciaCarga(string mensaje) {

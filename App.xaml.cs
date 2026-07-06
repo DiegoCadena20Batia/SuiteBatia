@@ -31,6 +31,7 @@ public partial class App : Application {
         if(UserSession.IdPersonal != 0) {
 
             MainPage = new AppShell();
+
         } else {
             MainPage = new Logueo();
         }

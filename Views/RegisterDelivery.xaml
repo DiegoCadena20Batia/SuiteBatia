@@ -5,223 +5,214 @@
     x:Class="BatiaSuite.Views.RegisterDelivery"
     xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
     xmlns:views="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
-    BackgroundColor="#F5F5F5"
-    Style="{StaticResource PageStyle}"
-    Title="Evidencias"
+    BackgroundColor="#F8F9FA"
+    Title="Evidencias de Entrega"
     NavigationPage.HasNavigationBar="True"
     Shell.FlyoutBehavior="Disabled">
+
     <Grid>
         <ScrollView>
-        
-        <Grid
-            RowDefinitions="auto, auto, auto, auto, 200, *"
-            ColumnDefinitions="*,*"
-            ColumnSpacing="5"
-            RowSpacing="5"
-            Margin="10,0">
+            <VerticalStackLayout Spacing="20" Padding="16,20,16,30">
 
-            <Label
-                Grid.ColumnSpan="2"
-                Text="Firma aqui"
-                HorizontalTextAlignment="Center"
-                FontSize="20"
-                FontFamily="MontBold"
-                TextColor="#3775B5" />
+                <VerticalStackLayout Spacing="4" Margin="0,0,0,5">
+                    <Label
+                        Text="Validación y Cierre"
+                        FontFamily="MontBold"
+                        FontSize="22"
+                        TextColor="#1A3B60" />
+                    <Label
+                        Text="Por favor, captura las fotografías requeridas y recaba la firma digital del cliente para completar la entrega."
+                        FontFamily="MontRegular"
+                        FontSize="13"
+                        TextColor="#6C757D" />
+                </VerticalStackLayout>
 
-            <Frame
-                Grid.Row="1"
-                Grid.ColumnSpan="2"
-                HeightRequest="200"
-                BorderColor="LightGray"
-                BackgroundColor="White"
-                CornerRadius="5"
-                Margin="0, 0, 0, 5">
+                <Border 
+                    StrokeShape="RoundRectangle 14"
+                    StrokeThickness="1"
+                    Stroke="#E9ECEF"
+                    BackgroundColor="White"
+                    Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="4" Opacity="0.03" />
+                    </Border.Shadow>
 
-                    <views:DrawingView
-                        
-                        Grid.Row="1"
-                        Grid.ColumnSpan="2"
-                        x:Name="drawingView"
-                        LineColor="Black"
-                        LineWidth="3"
-                        HeightRequest="190"
-                        IsMultiLineModeEnabled="True"
-                        ShouldClearOnFinish="False"
-                        BackgroundColor="White"
-                        DrawingLineCompletedCommand="{Binding DrawCommand}" />
-                </Frame>
-                
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Fotografías de Evidencia" FontFamily="MontBold" FontSize="16" TextColor="#1A3B60" />
+                                <Label Text="Máximo 5 imágenes de soporte" FontFamily="MontRegular" FontSize="12" TextColor="#6C757D" />
+                            </VerticalStackLayout>
 
-                <!--<Button
-                Grid.Row="2"
-                BackgroundColor="#2E3192"
-                HeightRequest="50"
-                CornerRadius="5"
-                TextColor="White"
-                FontFamily="MontBold"
-                FontSize="20"
-                Padding="0"
-                x:Name="btn_Firmar"
-                IsEnabled="{Binding IsSignature}"
-                Text="FIRMAR"
-                Clicked="btn_Firmar_Clicked"
-                Margin="10,0">
-                <Button.Shadow>
-                    <Shadow
-                        Brush="Black"
-                        Radius="8"
-                        Opacity="0.9" />
-                </Button.Shadow>
-            </Button>-->
+                            <Button
+                                Grid.Column="1"
+                                BackgroundColor="#EEF4FA"
+                                TextColor="#4A92FE"
+                                ImageSource="camera.png"
+                                ContentLayout="Left,8"
+                                Text="AÑADIR"
+                                FontFamily="MontBold"
+                                FontSize="13"
+                                HeightRequest="40"
+                                Padding="14,0"
+                                CornerRadius="8"
+                                Command="{Binding PhotoCommand}" />
+                        </Grid>
 
-            <Button
-                Grid.Row="2"
-                Grid.Column="0"
-                BackgroundColor="#4a92fe"
-                HeightRequest="60"
-                CornerRadius="5"
-                TextColor="White" 
-                FontFamily="MontBold"
-                FontSize="16"
-                Padding="0"
-                Text="LIMPIAR"
-                Command="{Binding ClearDrawingCommand}"
-                Margin="10,0">
-                <Button.Shadow>
-                    <Shadow
-                        Brush="Black"
-                        Radius="8"
-                         Opacity="{OnPlatform Android=0.9,iOS=0.3}" />
-                </Button.Shadow>
-            </Button>
+                        <Grid RowDefinitions="Auto, Auto" Margin="0,5,0,0">
+                            <CarouselView
+                                Grid.Row="0"
+                                x:Name="MiCarrusel"
+                                ItemsSource="{Binding photoPaths}"
+                                IndicatorView="MiIndicador"
+                                HeightRequest="180"
+                                PeekAreaInsets="20">
+                                <CarouselView.EmptyView>
+                                    <Border 
+                                        StrokeShape="RoundRectangle 10" 
+                                        StrokeThickness="1" 
+                                        StrokeDashArray="4,4" 
+                                        Stroke="#CED4DA" 
+                                        BackgroundColor="#FAFBCF" 
+                                        HeightRequest="150" 
+                                        Margin="5">
+                                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                                            <Label Text="📸" FontSize="28" HorizontalOptions="Center"/>
+                                            <Label Text="Ninguna foto capturada aún" FontFamily="MontSemibold" FontSize="13" TextColor="#6C757D" HorizontalTextAlignment="Center"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </CarouselView.EmptyView>
+                                <CarouselView.ItemTemplate>
+                                    <DataTemplate>
+                                        <SwipeView>
+                                            <Border
+                                                StrokeShape="RoundRectangle 10"
+                                                StrokeThickness="1"
+                                                Stroke="#E9ECEF"
+                                                Margin="6,5"
+                                                BackgroundColor="#F8F9FA">
+                                                <Grid>
+                                                    <Image
+                                                        Source="{Binding UrlPhoto}"
+                                                        Aspect="AspectFill"
+                                                        HorizontalOptions="FillAndExpand"
+                                                        VerticalOptions="FillAndExpand" />
 
-            <Button
-                Grid.Row="2"
-                Grid.Column="1"
-                Grid.ColumnSpan="2"
-                BackgroundColor="#4a92fe"
-                HeightRequest="60"
-                CornerRadius="5"
-                TextColor="White"
-                FontFamily="MontBold"
-                FontSize="16"
-                Padding="0"
-                Text="TOMAR FOTO"
-                Command="{Binding PhotoCommand}"
-                Margin="0,5"
-                ContentLayout="Right,10">
-                    <Button.ImageSource>
-                        <FileImageSource  
-                            File="camera.png"
-                            
-                            />
-                    </Button.ImageSource>
-                    <Button.Shadow>
-                    <Shadow
-                        Brush="Black"
-                        Radius="8"
-                         Opacity="{OnPlatform Android=0.9,iOS=0.3}" />
-                </Button.Shadow>
-            </Button>
-            
-            <CarouselView
-                Grid.Row="4"
-                Grid.ColumnSpan="2"
-                Margin="0"
-                x:Name="MiCarrusel"
-                ItemsSource="{Binding photoPaths}"
-                IndicatorView="MiIndicador">
-                
-                <CarouselView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <Frame
-                                BorderColor="Gray"
-                                BackgroundColor="Transparent"
-                                CornerRadius="5"
-                                HeightRequest="300"
-                                Margin="10"
-                                WidthRequest="190"
+                                                    <Border BackgroundColor="#CC000000" HorizontalOptions="End" VerticalOptions="Start" Margin="8" Padding="6,3" StrokeShape="RoundRectangle 4">
+                                                        <Label Text="Desliza para borrar" TextColor="White" FontSize="10" FontFamily="MontRegular"/>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                            <SwipeView.BottomItems>
+                                                <SwipeItems>
+                                                    <SwipeItem
+                                                        Text="Eliminar"
+                                                        BackgroundColor="#E63946"
+                                                        Command="{Binding Source={x:Reference MiIndicador}, Path=BindingContext.DeletePhotoCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                </SwipeItems>
+                                            </SwipeView.BottomItems>
+                                        </SwipeView>
+                                    </DataTemplate>
+                                </CarouselView.ItemTemplate>
+                            </CarouselView>
+
+                            <IndicatorView
+                                Grid.Row="1"
+                                x:Name="MiIndicador"
+                                IndicatorColor="#DDE2E5"
+                                SelectedIndicatorColor="#4A92FE"
                                 HorizontalOptions="Center"
-                                VerticalOptions="Center">
-                                
-                                <Image
-                                    Source="{Binding UrlPhoto}"
-                                    Aspect="Fill"
-                                    HeightRequest="200"
-                                    WidthRequest="150"
-                                    HorizontalOptions="Center" />
+                                Margin="0,10,0,0" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
 
-                            </Frame>
-                            
-                            <SwipeView.BottomItems>
-                                <SwipeItems>
-                                    <SwipeItem
-                                        Text="Eliminar"
-                                        BackgroundColor="Red"
-                                        Command="{Binding Source={x:Reference MiIndicador}, Path=BindingContext.DeletePhotoCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </SwipeItems>
-                            </SwipeView.BottomItems>
+                <Border 
+                    StrokeShape="RoundRectangle 14"
+                    StrokeThickness="1"
+                    Stroke="#E9ECEF"
+                    BackgroundColor="White"
+                    Padding="16">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="4" Opacity="0.03" />
+                    </Border.Shadow>
 
-                        </SwipeView>
-                    </DataTemplate>
-                </CarouselView.ItemTemplate>
-            </CarouselView>
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Firma de Conformidad" FontFamily="MontBold" FontSize="16" TextColor="#1A3B60" />
+                                <Label Text="Dibuje sobre el recuadro blanco" FontFamily="MontRegular" FontSize="12" TextColor="#6C757D" />
+                            </VerticalStackLayout>
 
-                <IndicatorView
-                Grid.Row="4"
-                Grid.ColumnSpan="2"
-                x:Name="MiIndicador"
-                IndicatorColor="LightBlue"
-                SelectedIndicatorColor="DarkBlue"
-                HorizontalOptions="Center"
-                VerticalOptions="End" />
+                            <Button
+                                Grid.Column="1"
+                                BackgroundColor="#FFF0F1"
+                                TextColor="#E63946"
+                                Text="LIMPIAR"
+                                FontFamily="MontBold"
+                                FontSize="12"
+                                HeightRequest="36"
+                                Padding="12,0"
+                                CornerRadius="6"
+                                Command="{Binding ClearDrawingCommand}" />
+                        </Grid>
+
+                        <Border
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="1"
+                            Stroke="#CED4DA"
+                            BackgroundColor="White"
+                            HeightRequest="180"
+                            Margin="0,5,0,0">
+                            <views:DrawingView
+                                x:Name="drawingView"
+                                LineColor="#1A3B60"
+                                LineWidth="4"
+                                IsMultiLineModeEnabled="True"
+                                ShouldClearOnFinish="False"
+                                BackgroundColor="White"
+                                DrawingLineCompletedCommand="{Binding DrawCommand}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
 
                 <Button
-                Grid.Row="6"
-                Grid.ColumnSpan="2"
-                BackgroundColor="Green"
-                HeightRequest="65"
-                WidthRequest="320"
-                CornerRadius="5"
-                TextColor="White"
-                FontFamily="MontBold"
-                FontSize="20"
-                Padding="0"
-                Text="REGISTRAR ENTREGA"
-                Command="{Binding RegisterCommand}"
-                Margin="25"
-                VerticalOptions="EndAndExpand"
-                ImageSource="successfuldelivery.png"
-                ContentLayout="Right,10" >
-                <Button.Shadow>
-                    <Shadow
-                        Brush="Black"
-                        Radius="8"
-                         Opacity="{OnPlatform Android=0.9,iOS=0.3}" />
-                </Button.Shadow>
-            </Button>
-        </Grid>
-    </ScrollView>
-        <Grid
-            RowDefinitions="*,*"
-            BackgroundColor="#88000000"
-            IsVisible="{Binding IsBusy}">
+                    BackgroundColor="#2A9D8F"
+                    HeightRequest="56"
+                    CornerRadius="12"
+                    TextColor="White"
+                    FontFamily="MontBold"
+                    FontSize="16"
+                    Text="REGISTRAR ENTREGA"
+                    Command="{Binding RegisterCommand}"
+                    ImageSource="successfuldelivery.png"
+                    ContentLayout="Right,12"
+                    Margin="0,10,0,0">
+                    <Button.Shadow>
+                        <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.12" />
+                    </Button.Shadow>
+                </Button>
 
-            <ActivityIndicator
-                Grid.Row="0"
-                VerticalOptions="End"
-                Color="White"
-                IsRunning="{Binding IsBusy}"
-                HeightRequest="{OnIdiom 70, Tablet=120}"/>
-            <Label
-                 VerticalOptions="Start"
-                 HorizontalOptions="Center"
-                 Grid.Row="1"
-                 TextColor="White"
-                 Text="Enviando registro..."
-            ></Label>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid
+            BackgroundColor="#B3000000"
+            IsVisible="{Binding IsBusy}">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
+                <ActivityIndicator
+                    Color="White"
+                    IsRunning="{Binding IsBusy}"
+                    HeightRequest="65"
+                    WidthRequest="65"/>
+                <Label
+                    TextColor="White"
+                    Text="Procesando registro..."
+                    FontFamily="MontSemibold"
+                    FontSize="16"
+                    HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
         </Grid>
     </Grid>
 </ContentPage>

@@ -1,5 +1,6 @@
 ﻿using BatiaSuite.Interfaz;
 using BatiaSuite.Models.EntidadesLocal;
+using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -132,6 +133,21 @@ namespace BatiaSuite.Data {
             System.Diagnostics.Debug.WriteLine($"[SQLite_Debug] Se vació la tabla {typeof(T).Name}. Filas eliminadas: {filasEliminadas}");
 
             return filasEliminadas;
+        }
+
+        public async Task VerificarRegistros() {
+            var todasLasRutasGuardadas = await ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasCompletas ({todasLasRutasGuardadas.Count} registros) ---");
+
+                foreach(var r in todasLasRutasGuardadas) {
+                    System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | ClaveProducto: {r.Clave} | Nombre: {r.Inmueble} | IdLocal: {r.IdLocal}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
+            }
         }
     }
 }

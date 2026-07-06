@@ -185,18 +185,6 @@ namespace BatiaSuite.ViewModel {
             if(listaRutas.Any()) {
                 var datosFiltrados = listaRutas.DistinctBy(x => x.IdRuta);
                 Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
-
-                try {
-                    System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasInmuebles ({listaRutas.Count} registros) ---");
-
-                    foreach(var r in listaRutas) {
-                        System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble}");
-                    }
-
-                    System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
-                } catch(Exception ex) {
-                    System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
-                }
             } else {
                 if(InternetUtil.IsConnectedInternet()) {
                     try {

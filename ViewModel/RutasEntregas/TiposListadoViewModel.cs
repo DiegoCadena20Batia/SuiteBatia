@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Maui.ApplicationModel; // Necesario para Launcher en .NET MAUI
 
 namespace BatiaSuite.ViewModel.RutasEntregas {
     public partial class TiposListadoViewModel : ViewModelBase, IQueryAttributable {
@@ -30,6 +31,10 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
         [ObservableProperty]
         private string _folioListado;
 
+        // Variables locales para retener las coordenadas de la sucursal
+        private string _latitud;
+        private string _longitud;
+
         private readonly LocalDbContext _dbContext;
 
         public TiposListadoViewModel() {
@@ -41,7 +46,7 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
         /// Se ejecuta al entrar a la pantalla
         /// </summary>
         public void ApplyQueryAttributes(IDictionary<string, object> query) {
-            NombreSucursal = UserSession.InmuebleNameTracking; 
+            NombreSucursal = UserSession.InmuebleNameTracking;
 
             _ = ObtenerTiposDeListado();
         }
@@ -53,7 +58,7 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
             try {
                 IsLoading = true;
                 TextLoading = "Consultando...";
-                await Task.Delay(300); 
+                await Task.Delay(300);
 
                 var registrosSucursal = await _dbContext.ObtenerListaLocalAsync<RutasInmuebles>(r =>
                     r.IdInmueble == UserSession.IdInmuebleTracking
@@ -67,7 +72,13 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
                         .ToList();
 
                     ListTipos = new ObservableCollection<string>(tiposUnicos);
-                    FolioListado = registrosSucursal.FirstOrDefault()?.IdListado.ToString() ?? "N/A";
+
+                    var primerRegistro = registrosSucursal.FirstOrDefault();
+                    FolioListado = primerRegistro?.IdListado.ToString() ?? "N/A";
+
+                    // Resguardamos las coordenadas de este inmueble específico
+                    _latitud = primerRegistro?.Latitud;
+                    _longitud = primerRegistro?.Longitud;
                 } else {
                     ListTipos = new ObservableCollection<string>();
                 }
@@ -92,7 +103,7 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
                 TextLoading = $"Abriendo {tipoSeleccionado}...";
                 await Task.Delay(300);
 
-                UserSession.TipoListadoTracking = tipoSeleccionado; 
+                UserSession.TipoListadoTracking = tipoSeleccionado;
 
                 // Avanzamos hacia la pantalla final de detalle de materiales
                 await Shell.Current.GoToAsync(nameof(ListadoMateriales), true);
@@ -101,6 +112,53 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
             } finally {
                 IsLoading = false;
                 TextLoading = "";
+            }
+        }
+
+        /// <summary>
+        /// Lanza de forma nativa la aplicación de Google Maps hacia la sucursal actual
+        /// </summary>
+        [RelayCommand]
+        private async Task AbrirGoogleMaps() {
+            if(string.IsNullOrEmpty(_latitud) || string.IsNullOrEmpty(_longitud)) {
+                await Shell.Current.DisplayAlert("GPS", "No se encontraron coordenadas válidas para esta sucursal.", "Ok");
+                return;
+            }
+
+            try {
+                string url = $"http://maps.google.com/?daddr={_latitud},{_longitud}";
+                if(await Launcher.CanOpenAsync(url)) {
+                    await Launcher.OpenAsync(url);
+                } else {
+                    await Shell.Current.DisplayAlert("Google Maps", "No se pudo abrir Google Maps en este dispositivo.", "Ok");
+                }
+            } catch(Exception ex) {
+                await Shell.Current.DisplayAlert("Error", $"Error al intentar abrir el mapa: {ex.Message}", "Ok");
+            }
+        }
+
+        /// <summary>
+        /// Lanza de forma nativa la aplicación de Waze hacia la sucursal actual (con fallback web)
+        /// </summary>
+        [RelayCommand]
+        private async Task AbrirWaze() {
+            if(string.IsNullOrEmpty(_latitud) || string.IsNullOrEmpty(_longitud)) {
+                await Shell.Current.DisplayAlert("GPS", "No se encontraron coordenadas válidas para esta sucursal.", "Ok");
+                return;
+            }
+
+            try {
+                string wazeUrl = $"waze://?ll={_latitud},{_longitud}&navigate=yes";
+                string webUrl = $"https://waze.com/ul?ll={_latitud},{_longitud}&navigate=yes";
+
+                if(await Launcher.CanOpenAsync(wazeUrl)) {
+                    await Launcher.OpenAsync(wazeUrl);
+                } else {
+                    // Si no tiene la app instalada, lo abre en el navegador web
+                    await Launcher.OpenAsync(webUrl);
+                }
+            } catch(Exception ex) {
+                await Shell.Current.DisplayAlert("Error", $"Error al intentar abrir Waze: {ex.Message}", "Ok");
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using BatiaSuite.Interfaz;
 using BatiaSuite.Models.EntidadesLocal;
+using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using BatiaSuite.Models.Supervision;
 using BatiaSuite.Utils;
 using System;
@@ -17,6 +18,7 @@ namespace BatiaSuite.Data {
         private readonly HttpClient _httpClient;
         private readonly LocalDbContext _dbContext;
         private readonly string _baseApiUrl = $"{Constants.API_BASE_URL}";
+        private static readonly HashSet<Type> _tablasLimpiadas = new HashSet<Type>();
 
         public SyncService() {
             _httpClient = new HttpClient();
@@ -25,45 +27,36 @@ namespace BatiaSuite.Data {
 
         public async Task<bool> SincronizarDatosInicialesAsync<T>(int clienteId) where T : class, IDescargable, new() {
             if(!InternetUtil.IsConnectedInternet()) return false;
-
             try {
                 var instanciador = new T();
                 string url = instanciador.ObtenerUrlDescarga(_baseApiUrl, clienteId);
-
                 var response = await _httpClient.GetAsync(url);
                 if(!response.IsSuccessStatusCode) return false;
-
                 string rawJson = await response.Content.ReadAsStringAsync();
-
                 if(typeof(T) == typeof(CatalogoCacheEntity)) {
                     var cache = new CatalogoCacheEntity {
                         Clave = instanciador.ClaveCatalogo,
                         JsonData = rawJson,
                         UltimaSincronizacion = DateTime.Now
                     };
-
                     await _dbContext.GuardarLocalAsync(cache as T);
                 } else {
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     var listaEntidades = JsonSerializer.Deserialize<List<T>>(rawJson, options);
-
-                    if(listaEntidades != null) { 
-                       
+                    if(listaEntidades != null) {
                         await _dbContext.BorrarTablaCompletaAsync<T>();
-
                         if(listaEntidades.Count > 0) {
                             foreach(var entidad in listaEntidades) {
                                 if(entidad is InmuebleEntity inmueble) {
                                     inmueble.IdCliente = clienteId;
                                     inmueble.IdEstado = 0;
                                 }
-
                                 await _dbContext.GuardarLocalAsync<T>(entidad);
+                                
                             }
                         }
                     }
                 }
-
                 return true;
             } catch(Exception ex) {
                 Console.WriteLine($"Error crítico en sincronización genérica de {typeof(T).Name}: {ex.Message}");

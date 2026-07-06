@@ -1,4 +1,5 @@
 ﻿using BatiaSuite.Data;
+using BatiaSuite.Models;
 using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
@@ -122,8 +123,12 @@ namespace BatiaSuite.ViewModel {
             );
 
             if(materialesLocal != null && materialesLocal.Count > 0) {
+                foreach(var item in materialesLocal) {
+                    item.Entregado = item.Cantidad;
+                }
                 FolioEntry = materialesLocal.First().IdListado.ToString();
                 ListMateriales = new ObservableCollection<RutasInmuebles>(materialesLocal);
+                
             } else {
                 ListMateriales = new ObservableCollection<RutasInmuebles>();
                 FolioEntry = "N/A";
@@ -144,18 +149,20 @@ namespace BatiaSuite.ViewModel {
                 IniciaCarga("Guardando información...");
                 await Task.Delay(300);
 
-                // Asegurar que comentarios no vaya como null
                 Comentarios = Comentarios ?? "";
+                Bidones = Bidones = "0";
 
-                // Mapeamos los datos al diccionario de navegación para la vista de firma
+                // Enviamos la lista original pura de RutasInmuebles envuelta en un ObservableCollection
+                var listaEnviar = new System.Collections.ObjectModel.ObservableCollection<BatiaSuite.Models.EntidadesLocal.RutasEntregas.RutasInmuebles>(ListMateriales);
+
                 var data = new Dictionary<string, object>
                 {
-                    { "MaterialsList", ListMateriales.ToList() },
-                    { "NombreRecibe", NombreRecibe },
-                    { "Comentarios", Comentarios },
-                    { "Bidones", Bidones ?? "0" },
-                    { "IdListado", ListMateriales.FirstOrDefault()?.IdListado ?? 0 }
-                };
+            { "MaterialsList", listaEnviar },
+            { "NombreRecibe", NombreRecibe },
+            { "Comentarios", Comentarios },
+            { "Bidones", Bidones ?? "0" },
+            { "IdListado", ListMateriales.FirstOrDefault()?.IdListado ?? 0 }
+        };
 
                 await Shell.Current.GoToAsync(nameof(RegisterDelivery), true, data);
                 DetenerCarga();
