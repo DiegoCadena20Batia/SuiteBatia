@@ -7,7 +7,8 @@ using SQLitePCL;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
-using BatiaSuite.Services; 
+using BatiaSuite.Services;
+
 #if IOS
 using UIKit;
 using Foundation;
@@ -16,22 +17,16 @@ using Foundation;
 namespace BatiaSuite;
 
 public partial class App : Application {
-    private DbContext _dbContext;
-    public readonly HttpHelper _httpHelper;
-    private readonly SyncService _syncService; 
+    private readonly SyncService _syncService;
 
-    public App(DbContext dbContext) {
-        _dbContext = dbContext;
-        _httpHelper = new HttpHelper();
-        _syncService = new SyncService(); 
+    public App() {
+        _syncService = new SyncService();
 
         SQLitePCL.Batteries_V2.Init();
         InitializeComponent();
 
         if(UserSession.IdPersonal != 0) {
-
             MainPage = new AppShell();
-
         } else {
             MainPage = new Logueo();
         }
@@ -48,7 +43,6 @@ public partial class App : Application {
                     var syncService = new SyncService();
 
                     await syncService.SincronizarTodoElEcosistemaAsync(UserSession.IdCliente);
-
                 } catch(Exception ex) {
                     Debug.WriteLine($"Error en la sincronización inicial de arranque: {ex.Message}");
                 }
@@ -57,7 +51,6 @@ public partial class App : Application {
     }
 
     private void CreateControls() {
-        // Tu lógica de mappers se queda exactamente igual...
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping(nameof(TransparentEntry), (handler, view) => {
             if(view is TransparentEntry) {
 #if ANDROID
