@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
-
+    [ModulosRequeridos(1,7)]
     public class RutasInmuebles : IDescargable {
 
         [SQLite.PrimaryKey, SQLite.AutoIncrement]

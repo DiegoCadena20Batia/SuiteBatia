@@ -1,4 +1,5 @@
 ﻿using BatiaSuite.Interfaz;
+using BatiaSuite.Utils;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BatiaSuite.Models.EntidadesLocal {
+    [ModulosRequeridos(11,12,13,14,15,16,17,18)]
     public class CatalogoCacheEntity : IDescargable {
         [PrimaryKey]
         public string Clave { get; set; } = string.Empty; 

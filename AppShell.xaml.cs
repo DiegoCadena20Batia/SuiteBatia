@@ -26,7 +26,6 @@ using Microsoft.Maui.Networking;
 namespace BatiaSuite;
 
 public partial class AppShell : Shell {
-
     private readonly SyncService _syncService;
     private bool _isSyncing = false;
 
@@ -153,30 +152,32 @@ public partial class AppShell : Shell {
 
         Routing.RegisterRoute(nameof(TiposListadoPage), typeof(TiposListadoPage));
 
-       
         _syncService = new SyncService();
         Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
     }
 
     private async void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e) {
         if(e.NetworkAccess == NetworkAccess.Internet && !_isSyncing) {
-            try {
-                _isSyncing = true;
-                System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión detectada. Procesando cola de entregas...");
+            Task.Run(async () => {
+                try {
+                    _isSyncing = true;
+                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión detectada. Procesando cola de entregas...");
 
-                // Despacha de forma asíncrona la cola específica de entregas de materiales
-                await _syncService.ProcesarPendientesAsync<RutaInmueblePendiente>();
+                    // Despacha de forma asíncrona la cola específica de entregas de materiales
+                    await _syncService.ProcesarPendientesAsync<RutaInmueblePendiente>();
 
-                System.Diagnostics.Debug.WriteLine("[Automated_Sync] Sincronización automática de entregas completada.");
-            } catch(Exception ex) {
-                System.Diagnostics.Debug.WriteLine($"[Automated_Sync_Error] Error de sincronización: {ex.Message}");
-            } finally {
-                _isSyncing = false;
-            }
+                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Sincronización automática de entregas completada.");
+                } catch(Exception ex) {
+                    System.Diagnostics.Debug.WriteLine($"[Automated_Sync_Error] Error de sincronización: {ex.Message}");
+                } finally {
+                    _isSyncing = false;
+                }
+            });
         }
     }
 
-    ~AppShell() {
+    public void Dispose() {
         Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged;
+        GC.SuppressFinalize(this);
     }
 }

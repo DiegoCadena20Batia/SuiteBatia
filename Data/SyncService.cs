@@ -98,6 +98,16 @@ namespace BatiaSuite.Data {
         public async Task SincronizarTodoElEcosistemaAsync(int clienteId) {
             if(!InternetUtil.IsConnectedInternet()) return;
 
+            List<int> modulosDelUsuario = new List<int>();
+
+            if(!string.IsNullOrWhiteSpace(UserSession.Modulos)) {
+                modulosDelUsuario = UserSession.Modulos
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(m => int.TryParse(m.Trim(), out _)) 
+                    .Select(m => int.Parse(m.Trim()))
+                    .ToList();
+            }
+
             var tiposDescargables = Assembly.GetExecutingAssembly()
                                             .GetTypes()
                                             .Where(t => typeof(IDescargable).IsAssignableFrom(t)
@@ -111,7 +121,19 @@ namespace BatiaSuite.Data {
 
             foreach(var tipo in tiposDescargables) {
                 try {
-                    System.Diagnostics.Debug.WriteLine($"[Sync] Detectada entidad automática: {tipo.Name}");
+                    var atributoPermiso = tipo.GetCustomAttribute<ModulosRequeridosAttribute>();
+
+                    if(atributoPermiso != null) {
+                        bool tienePermiso = atributoPermiso.Modulos.Intersect(modulosDelUsuario).Any();
+
+                        if(!tienePermiso) {
+                            System.Diagnostics.Debug.WriteLine($"[Sync] Saltando {tipo.Name}: El usuario no cuenta con los módulos requeridos.");
+                            continue; 
+                        }
+                    }
+                   
+
+                    System.Diagnostics.Debug.WriteLine($"[Sync] Detectada entidad automática y autorizada: {tipo.Name}");
 
                     MethodInfo metodoGenericoCerrado = metodoBase.MakeGenericMethod(tipo);
 
