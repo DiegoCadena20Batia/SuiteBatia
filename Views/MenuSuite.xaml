@@ -27,6 +27,7 @@
         <vm:MenuSuiteViewModel />
     </ContentPage.BindingContext>
 
+    <!-- 🌟 GRID PRINCIPAL -->
     <Grid>
         <Grid
             RowDefinitions="auto, auto, *, auto"
@@ -50,15 +51,15 @@
                 FontSize="{OnIdiom 18, Tablet=24}"
                 Margin="0, 0, 0, 10" />
 
+            <!-- Botón de Logout original en la esquina superior derecha -->
             <ImageButton
                 Grid.Column="1"
                 Grid.RowSpan="2"
                 VerticalOptions="Center"
-                HorizontalOptions="End"
                 HeightRequest="30"
                 Scale="{OnPlatform Android=1, iOS=1}"
-                Command="{Binding LogoutCommand}">
-
+                Command="{Binding LogoutCommand}"
+                Margin="0, 0, 15, 0">
                 <ImageButton.Source>
                     <FontImageSource
                         Glyph="{x:Static icons:Icons.Logout}"
@@ -66,6 +67,7 @@
                         Color="{StaticResource AzulClaro}" />
                 </ImageButton.Source>
             </ImageButton>
+
             <RefreshView
                 VerticalOptions="FillAndExpand"
                 Grid.Row="2"
@@ -77,27 +79,26 @@
                 Margin="0, 0">
                 <CollectionView
                     Grid.Row="2"
-                x:Name="collectionView"
-                ItemsSource="{Binding Monkeys}"
-                VerticalScrollBarVisibility="Never">
+                    x:Name="collectionView"
+                    ItemsSource="{Binding Monkeys}"
+                    VerticalScrollBarVisibility="Never">
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout
-                        Orientation="Vertical"
-                        ItemSpacing="0" />
-                </CollectionView.ItemsLayout>
-                <CollectionView.EmptyView>
-                    <Label
-                        Margin="20, 100"
-                        FontSize="{OnIdiom 18, Tablet=25}"
-                        VerticalOptions="Start"
-                        HorizontalOptions="Center"
-                        Text="Sin módulos asignados, verifique con su encargado"
-                        ></Label>
-                </CollectionView.EmptyView>
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout
+                            Orientation="Vertical"
+                            ItemSpacing="0" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.EmptyView>
+                        <Label
+                            Margin="20, 100"
+                            FontSize="{OnIdiom 18, Tablet=25}"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Center"
+                            Text="Sin módulos asignados, verifique con su encargado" />
+                    </CollectionView.EmptyView>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
                             <Frame
                                 Margin="5,2,5,2"
                                 Style="{StaticResource FrameStyle}"
@@ -105,102 +106,102 @@
                                 Padding="0"
                                 CornerRadius="20">
                                 <Frame.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Path=BindingContext.NextPageCommand, Source={x:Reference collectionView}}"
-                                    CommandParameter="{Binding Name}"
-                                    Tapped="TapGestureRecognizer_Tapped">
-                                </TapGestureRecognizer>
-                            </Frame.GestureRecognizers>
-
-                            <Grid
-                                ColumnDefinitions="auto, *"
-                                RowDefinitions="auto">
+                                    <TapGestureRecognizer
+                                        Command="{Binding Path=BindingContext.NextPageCommand, Source={x:Reference collectionView}}"
+                                        CommandParameter="{Binding Name}"
+                                        Tapped="TapGestureRecognizer_Tapped" />
+                                </Frame.GestureRecognizers>
 
                                 <Grid
-                                    RowDefinitions="auto, auto"
-                                    BindingContext="{Binding OrdenesTotales}"
-                                    WidthRequest="{Binding Width}"
-                                    HeightRequest="{Binding Height}"
-                                    VerticalOptions="Center">
+                                    ColumnDefinitions="auto, *"
+                                    RowDefinitions="auto">
 
-                                    <BoxView
-                                        Color="Green"
-                                        HeightRequest="{Binding HeightSupRealizadas}" />
+                                    <Grid
+                                        RowDefinitions="auto, auto"
+                                        BindingContext="{Binding OrdenesTotales}"
+                                        WidthRequest="{Binding Width}"
+                                        HeightRequest="{Binding Height}"
+                                        VerticalOptions="Center">
 
-                                    <Label
-                                        Text="{Binding PorcentajeSupRealizadas, StringFormat='{0:f0} %'}"
-                                        HorizontalTextAlignment="Center"
-                                        VerticalTextAlignment="Center"
-                                        FontSize="11"
-                                        TextColor="White"
-                                        IsVisible="{Binding PorcentajeSupRealizadas, Converter={StaticResource DoubleToBoolConverter}}" />
+                                        <BoxView
+                                            Color="Green"
+                                            HeightRequest="{Binding HeightSupRealizadas}" />
 
-                                    <BoxView
-                                        Grid.Row="1"
-                                        Color="Red"
-                                        HeightRequest="{Binding HeightSupNoRealizadas}" />
+                                        <Label
+                                            Text="{Binding PorcentajeSupRealizadas, StringFormat='{0:f0} %'}"
+                                            HorizontalTextAlignment="Center"
+                                            VerticalTextAlignment="Center"
+                                            FontSize="11"
+                                            TextColor="White"
+                                            IsVisible="{Binding PorcentajeSupRealizadas, Converter={StaticResource DoubleToBoolConverter}}" />
 
-                                    <Label
-                                        Grid.Row="1"
-                                        Text="{Binding PorcentajeSupNoRealizadas, StringFormat='{0:f0} %'}"
-                                        HorizontalTextAlignment="Center"
-                                        VerticalTextAlignment="Center"
-                                        FontSize="11"
-                                        TextColor="White"
-                                        IsVisible="{Binding PorcentajeSupNoRealizadas, Converter={StaticResource DoubleToBoolConverter}}" />
-                                </Grid>
+                                        <BoxView
+                                            Grid.Row="1"
+                                            Color="Red"
+                                            HeightRequest="{Binding HeightSupNoRealizadas}" />
 
-                                <Grid
-                                    Grid.Column="1"
-                                    ColumnDefinitions="auto, *, auto"
-                                    RowDefinitions="auto, auto"
-                                    ColumnSpacing="{OnIdiom 10, Tablet=20}"
-                                    Padding="10"
-                                    VerticalOptions="CenterAndExpand">
+                                        <Label
+                                            Grid.Row="1"
+                                            Text="{Binding PorcentajeSupNoRealizadas, StringFormat='{0:f0} %'}"
+                                            HorizontalTextAlignment="Center"
+                                            VerticalTextAlignment="Center"
+                                            FontSize="11"
+                                            TextColor="White"
+                                            IsVisible="{Binding PorcentajeSupNoRealizadas, Converter={StaticResource DoubleToBoolConverter}}" />
+                                    </Grid>
 
-                                    <Image
-                                        Grid.RowSpan="2"
-                                        Source="{Binding ImageUrl}"
-                                        Aspect="AspectFit"
-                                        HeightRequest="{OnIdiom 50, Tablet=100}"
-                                        WidthRequest="{OnIdiom 50, Tablet=100}" />
-
-                                    <Label
+                                    <Grid
                                         Grid.Column="1"
-                                        Text="{Binding Name, Converter={StaticResource TextCaseConverter}}"
-                                        FontSize="{OnIdiom 15, Tablet=20}"
-                                        TextColor="#3775B5"
-                                        VerticalTextAlignment="Center"
-                                        FontFamily="MontBold" />
+                                        ColumnDefinitions="auto, *, auto"
+                                        RowDefinitions="auto, auto"
+                                        ColumnSpacing="{OnIdiom 10, Tablet=20}"
+                                        Padding="10"
+                                        VerticalOptions="CenterAndExpand">
 
-                                    <Label
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        Text="{Binding Details}"
-                                        FontSize="{OnIdiom 11, Tablet=16}"
-                                        VerticalTextAlignment="Start"
-                                        TextColor="Gray"
-                                        FontFamily="MontRegular" />
+                                        <Image
+                                            Grid.RowSpan="2"
+                                            Source="{Binding ImageUrl}"
+                                            Aspect="AspectFit"
+                                            HeightRequest="{OnIdiom 50, Tablet=100}"
+                                            WidthRequest="{OnIdiom 50, Tablet=100}" />
 
-                                    <Label
-                                        Grid.Column="2"
-                                        Grid.RowSpan="2"
-                                        Style="{StaticResource ContentLabelStyle}"
-                                        Text="{x:Static icons:Icons.RightOpen}"
-                                        FontFamily="{x:Static icons:Icons.Family}"
-                                        TextColor="{StaticResource Gray}"
-                                        VerticalOptions="Center"
-                                        HorizontalOptions="End"
-                                        FontSize="{OnIdiom 40, Tablet=60}"
-                                        Margin="0, 10" />
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding Name, Converter={StaticResource TextCaseConverter}}"
+                                            FontSize="{OnIdiom 15, Tablet=20}"
+                                            TextColor="#3775B5"
+                                            VerticalTextAlignment="Center"
+                                            FontFamily="MontBold" />
+
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Text="{Binding Details}"
+                                            FontSize="{OnIdiom 11, Tablet=16}"
+                                            VerticalTextAlignment="Start"
+                                            TextColor="Gray"
+                                            FontFamily="MontRegular" />
+
+                                        <Label
+                                            Grid.Column="2"
+                                            Grid.RowSpan="2"
+                                            Style="{StaticResource ContentLabelStyle}"
+                                            Text="{x:Static icons:Icons.RightOpen}"
+                                            FontFamily="{x:Static icons:Icons.Family}"
+                                            TextColor="{StaticResource Gray}"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="End"
+                                            FontSize="{OnIdiom 40, Tablet=60}"
+                                            Margin="0, 10" />
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-</RefreshView>
-            
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+
+            <!-- Barra inferior limpia de antes (Gris #F5F5F5) -->
             <Grid
                 BackgroundColor="#F5F5F5"
                 Grid.Row="3"
@@ -235,8 +236,7 @@
                         TextColor="{StaticResource AzulClaro}"
                         FontAttributes="Italic"
                         VerticalTextAlignment="End"
-                        FontSize="15"
-                        Margin="0, 0, 0, 0" />
+                        FontSize="15" />
 
                     <Label
                         Text="{Binding AppVersionString}"
@@ -248,6 +248,45 @@
             </Grid>
         </Grid>
 
+        <!-- 🔔 CAMPANITA FLOTANTE (Fuera de la barra, encima de ella) -->
+        <Grid 
+            HorizontalOptions="Start" 
+            VerticalOptions="End"
+            WidthRequest="35" 
+            HeightRequest="35" 
+            Margin="30, 0, 0, 60">
+            <!-- Aumentando el margen inferior (50) la subes por encima de la barra -->
+
+            <ImageButton
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                HeightRequest="250"
+                Source="bell.png"
+                Command="{Binding IrAlCentroNotificacionesCommand}" />
+
+            <!-- Globo indicador rojo -->
+            <Border BackgroundColor="Red"
+                    StrokeThickness="0"
+                    WidthRequest="16"
+                    HeightRequest="16"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    TranslationX="3"
+                    TranslationY="-3"
+                    IsVisible="{Binding TieneNotificaciones}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8"/>
+                </Border.StrokeShape>
+                <Label Text="{Binding ConteoNotificaciones}"
+                       TextColor="White"
+                       FontSize="9"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Border>
+        </Grid>
+
+        <!-- Bloque original del ActivityIndicator para pantallas de carga -->
         <Grid
             BackgroundColor="#88000000"
             HorizontalOptions="FillAndExpand"

@@ -1,17 +1,19 @@
 ﻿using BatiaSuite.Data;
 using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
+using BatiaSuite.Utils;
+using BatiaSuite.Utils.NotificacionesSupervisor;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.CheckListAparadoristasAldoConti;
 using BatiaSuite.Views.ChecklistLimpieza;
 using BatiaSuite.Views.ChecklistMantenimiento;
-using BatiaSuite.Views.ChecklistMonitoreo;
 using BatiaSuite.Views.CheckListSupervisionesAldoConti;
 using BatiaSuite.Views.DiarioGerenteAldoConti;
 using BatiaSuite.Views.DiarioLimpieza;
 using BatiaSuite.Views.Encuestas;
 using BatiaSuite.Views.EntregasInteligentes;
 using BatiaSuite.Views.IncidenciasBiometa;
+using BatiaSuite.Views.NotificacionesSupervisores;
 using BatiaSuite.Views.OrdenesTrabajo;
 using BatiaSuite.Views.ReporteMantenimientoAldoConti;
 using BatiaSuite.Views.RutasEntregas;
@@ -21,16 +23,38 @@ using BatiaSuite.Views.Supervision;
 using BatiaSuite.Views.SupervisionMantenimiento;
 using BatiaSuite.Views.SupplierDeliveries;
 using BatiaSuite.Views.Vacantes;
-using Microsoft.Maui.Networking;
+using CommunityToolkit.Mvvm.Messaging;
+using Plugin.LocalNotification;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace BatiaSuite;
 
-public partial class AppShell : Shell {
+public partial class AppShell : Shell, INotifyPropertyChanged {
     private readonly SyncService _syncService;
-    private bool _isSyncing = false;
+    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService; private bool _isSyncing = false;
+
+    private int _conteoNotificaciones;
+
+    public int ConteoNotificaciones {
+        get => _conteoNotificaciones;
+        set {
+            _conteoNotificaciones = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(MostrarBadge));
+        }
+    }
+
+    public bool MostrarBadge => ConteoNotificaciones > 0;
+    public bool EsSupervisor { get; set; }
 
     public AppShell() {
         InitializeComponent();
+
+        EsSupervisor = UserSession.IdPuesto == 118;
+        BindingContext = this;
+
+        #region Rutas
 
         #region SUPPLIERDELIVERIES
 
@@ -143,7 +167,6 @@ public partial class AppShell : Shell {
         Routing.RegisterRoute(nameof(AparadoristasPage), typeof(AparadoristasPage));
         Routing.RegisterRoute(nameof(LimpiezaPage), typeof(LimpiezaPage));
         Routing.RegisterRoute(nameof(MantenimientoPage), typeof(MantenimientoPage));
-        Routing.RegisterRoute(nameof(MantenimientoPage), typeof(MantenimientoPage));
         Routing.RegisterRoute(nameof(DiarioGerentePage), typeof(DiarioGerentePage));
         Routing.RegisterRoute(nameof(ReporteMantenimientoPage), typeof(ReporteMantenimientoPage));
         Routing.RegisterRoute(nameof(DiarioLimpiezaPage), typeof(DiarioLimpiezaPage));
@@ -151,9 +174,29 @@ public partial class AppShell : Shell {
         #endregion SUPERVICION_ALDOCONTI
 
         Routing.RegisterRoute(nameof(TiposListadoPage), typeof(TiposListadoPage));
+        Routing.RegisterRoute(nameof(CentroNotificacionesSupervisor), typeof(CentroNotificacionesSupervisor));
+
+        #endregion Rutas
 
         _syncService = new SyncService();
         Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
+
+        WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
+            MainThread.BeginInvokeOnMainThread(() => {
+                ConteoNotificaciones = m.Value;
+            });
+        });
+
+        if(EsSupervisor) {
+            string idSupervisorLogueado = UserSession.IdPersonal.ToString();
+
+            _signalRService = new Utils.NotificacionesSupervisor.SignalRService(idSupervisorLogueado);
+            Task.Run(async () => await _signalRService.ConectarAsync());
+        }
+    }
+
+    private async void OnNotificationBellTapped(object sender, EventArgs e) {
+        await Shell.Current.GoToAsync("CentroNotificacionesSupervisor");
     }
 
     private async void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e) {
@@ -163,10 +206,30 @@ public partial class AppShell : Shell {
                     _isSyncing = true;
                     System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión detectada. Procesando cola de entregas...");
 
-                    // Despacha de forma asíncrona la cola específica de entregas de materiales
-                    await _syncService.ProcesarPendientesAsync<RutaInmueblePendiente>();
+                    int registrosSincronizados = await _syncService.ProcesarPendientesAsync<RutaInmueblePendiente>();
 
                     System.Diagnostics.Debug.WriteLine("[Automated_Sync] Sincronización automática de entregas completada.");
+
+                    if(registrosSincronizados > 0) {
+                        string descripcionNotif = registrosSincronizados == 1
+                            ? "Tu entrega pendiente se ha enviado al sistema correctamente. 👍"
+                            : $"Tus {registrosSincronizados} entregas pendientes se han enviado al sistema correctamente. 👍";
+
+                        var notificacion = new NotificationRequest {
+                            NotificationId = 1001,
+                            Title = "BatiaSuite - Sincronización Exitosa",
+                            Description = descripcionNotif,
+                            BadgeNumber = 0,
+                            Schedule = {
+                                NotifyTime = DateTime.Now
+                            },
+                            Android = new Plugin.LocalNotification.AndroidOption.AndroidOptions { }
+                        };
+
+                        await LocalNotificationCenter.Current.Show(notificacion);
+                    } else {
+                        System.Diagnostics.Debug.WriteLine("[Automated_Sync] No se encontraron registros pendientes de envío. Notificación omitida.");
+                    }
                 } catch(Exception ex) {
                     System.Diagnostics.Debug.WriteLine($"[Automated_Sync_Error] Error de sincronización: {ex.Message}");
                 } finally {
@@ -174,6 +237,12 @@ public partial class AppShell : Shell {
                 }
             });
         }
+    }
+
+    public new event PropertyChangedEventHandler? PropertyChanged;
+
+    protected new void OnPropertyChanged([CallerMemberName] string? propertyName = null) {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     public void Dispose() {

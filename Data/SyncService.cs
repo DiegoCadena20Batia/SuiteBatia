@@ -64,14 +64,15 @@ namespace BatiaSuite.Data {
             }
         }
 
-        public async Task ProcesarPendientesAsync<T>() where T : class, ISincronizable, new() {
-            if(!InternetUtil.IsConnectedInternet()) return;
+        public async Task<int> ProcesarPendientesAsync<T>() where T : class, ISincronizable, new() {
+            if(!InternetUtil.IsConnectedInternet()) return 0;
 
-            var localDb = new LocalDbContext();
+            List<T> pendientes = await _dbContext.ObtenerTodosLocalAsync<T>();
 
-            List<T> pendientes = await localDb.ObtenerTodosLocalAsync<T>();
+            // Si está vacío, regresamos 0 registros procesados
+            if(pendientes == null || pendientes.Count == 0) return 0;
 
-            if(pendientes == null || pendientes.Count == 0) return;
+            int totalSincronizados = 0;
 
             foreach(var pendiente in pendientes) {
                 try {
@@ -79,20 +80,25 @@ namespace BatiaSuite.Data {
                     if(payloadFinal == null) continue;
 
                     string url = pendiente.ObtenerUrlApi(_baseApiUrl);
-
                     var response = await _httpClient.PostAsJsonAsync(url, payloadFinal);
 
                     if(response.IsSuccessStatusCode) {
-                        await localDb.BorrarLocalAsync<T>(pendiente);
-
+                        await _dbContext.BorrarLocalAsync<T>(pendiente);
                         await pendiente.LimpiarArchivosLocalesAsync();
 
-                        System.Diagnostics.Debug.WriteLine($"[Sync] Registro genérico sincronizado y eliminado.");
+                        totalSincronizados++; // Incrementar solo cuando el servidor responda 200 OK
+
+                        System.Diagnostics.Debug.WriteLine($"[Sync] Registro genérico ({typeof(T).Name}) sincronizado y eliminado.");
+                    } else {
+                        System.Diagnostics.Debug.WriteLine($"[Sync] El servidor rechazó el registro. Status: {response.StatusCode}");
                     }
                 } catch(Exception ex) {
-                    System.Diagnostics.Debug.WriteLine($"[Sync] Error al sincronizar registro pendiente: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[Sync] Error al sincronizar registro pendiente de {typeof(T).Name}: {ex.Message}");
                 }
             }
+
+            // Devolvemos el total de éxitos de la tanda
+            return totalSincronizados;
         }
 
         public async Task SincronizarTodoElEcosistemaAsync(int clienteId) {

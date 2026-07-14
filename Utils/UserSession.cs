@@ -31,6 +31,7 @@ public class UserSession {
     static readonly string SHOW_ACCEPT_TRACKING = "ShowAcceptTraking key";
     static readonly string ID_CLIENTE_CHECKLIST = "IdClienteChecklist key";
     static readonly string ID_INMUEBLE_CHECKLIST = "IdInmuebleChecklist key";
+    static readonly string ID_PUESTO = "IdPuesto key";
 
     public static string NOMBRE {
         get => Preferences.Default.ContainsKey(PER_NOMBRE_KEY)
@@ -42,6 +43,11 @@ public class UserSession {
         get => Preferences.Default.ContainsKey(ID_EMPLEADO_KEY)
             ? Preferences.Default.Get(ID_EMPLEADO_KEY, 0) : 0;
         set => Preferences.Default.Set(ID_EMPLEADO_KEY, value);
+    }
+    public static int IdPuesto {
+        get => Preferences.Default.ContainsKey(ID_PUESTO)
+            ? Preferences.Default.Get(ID_PUESTO, 0) : 0;
+        set => Preferences.Default.Set(ID_PUESTO, value);
     }
 
     public static int IdPersonal {
@@ -182,6 +188,7 @@ public class UserSession {
         IdInmuebleCheckList = 0;
         IdRutaTracking = 0;
         RutaNameTracking = "";
+        IdPuesto = data.idPuesto;
     }
 
     public static void ClearSession() {

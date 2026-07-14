@@ -7,18 +7,21 @@ using BatiaSuite.ViewModel;
 //using Plugin.Maui.SegmentedControl;
 using BatiaSuite.ViewModel.CheckListAparadores;
 using BatiaSuite.ViewModel.EntregasInteligentes;
+using BatiaSuite.ViewModel.NotificacionesSupervisores;
 using BatiaSuite.ViewModel.RutasEntregas;
 using BatiaSuite.ViewModel.Supervisionmantenimiento;
 using BatiaSuite.ViewModel.SupervisionMantenimiento;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.EntregasInteligentes;
+using BatiaSuite.Views.NotificacionesSupervisores;
 using BatiaSuite.Views.RutasEntregas;
 using BatiaSuite.Views.SupervisionMantenimiento;
 using BatiaSuite.Views.SupplierDeliveries;
 using Camera.MAUI;
 using CommunityToolkit.Maui;
 using Mopups.Hosting;
+using Plugin.LocalNotification;
 using Shiny;
 
 namespace BatiaSuite;
@@ -30,11 +33,13 @@ public static class MauiProgram {
 
         builder
             .UseMauiApp<App>()
+            .UseLocalNotification()
 
             //.UseSegmentedControl()
             .UseMauiMaps()
             .UseShiny()
             .UseMauiCommunityToolkitMediaElement()
+
             .UseMauiCommunityToolkit()
             .ConfigureMopups()
             .UseMauiCameraView()
@@ -143,6 +148,9 @@ public static class MauiProgram {
         //EntregasRutas
         builder.Services.AddTransient<TiposListadoPage>();
         builder.Services.AddTransient<TiposListadoViewModel>();
+
+        builder.Services.AddTransient<CentroNotificacionesSupervisorViewModel>();
+        builder.Services.AddTransient<CentroNotificacionesSupervisor>();
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();

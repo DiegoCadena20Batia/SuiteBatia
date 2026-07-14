@@ -2,6 +2,7 @@
 using BatiaSuite.Models.Apps;
 using BatiaSuite.Popups.VersionApp;
 using BatiaSuite.Utils;
+using BatiaSuite.Utils.NotificacionesSupervisor;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.CheckListAparadoristasAldoConti;
@@ -23,9 +24,11 @@ using BatiaSuite.Views.SupplierDeliveries;
 using BatiaSuite.Views.Vacantes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Mopups.Services;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Numerics;
 using System.Reflection;
@@ -59,13 +62,28 @@ public partial class MenuSuiteViewModel : ViewModelBase {
     [ObservableProperty]
     private bool _isRefreshing;
 
+    [ObservableProperty]
+    private int _conteoNotificaciones;
+
+    [ObservableProperty]
+    private bool _tieneNotificaciones;
+
     private OrdenesSupervisionTotal _ordenesSupervisionTotal;
 
     public MenuSuiteViewModel() {
         AppName = AppInfo.Name;
         AppVersionString = AppInfo.VersionString;
         InitValuesAsync();
+
+        WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
+            MainThread.BeginInvokeOnMainThread(() => {
+                ConteoNotificaciones = m.Value;
+                TieneNotificaciones = m.Value > 0;
+            });
+        });
     }
+
+
 
     public async Task InitAsync() {
         if(await ValidarVersion()) {
@@ -494,5 +512,14 @@ plataforma = "2";
             throw new Exception("Error al consultar la API de Google Maps");
 
         return await response.Content.ReadAsStringAsync();
+    }
+
+    [RelayCommand]
+    private async Task IrAlCentroNotificaciones() {
+        try {
+            await Shell.Current.GoToAsync("CentroNotificacionesSupervisor");
+        } catch(Exception ex) {
+            Debug.WriteLine($"Error al navegar desde la campanita: {ex.Message}");
+        }
     }
 }
