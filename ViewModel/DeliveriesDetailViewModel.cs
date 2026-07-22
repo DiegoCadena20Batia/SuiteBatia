@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Devices.Sensors;
 using Newtonsoft.Json;
+using Shiny.Locations;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Text;
@@ -49,8 +50,11 @@ namespace BatiaSuite.ViewModel {
         public BackButtonBehavior BackButtonBehavior { get; set; }
         private readonly HttpHelper _httpHelper;
 
-        public DeliveriesDetailViewModel(HttpHelper httpHelper) {
+        private readonly IGpsManager _gpsManager;
+
+        public DeliveriesDetailViewModel(HttpHelper httpHelper, IGpsManager gpsManager) {
             _httpHelper = httpHelper;
+            _gpsManager = gpsManager;
             BackButtonBehavior = new BackButtonBehavior {
                 Command = new Command(async () => {
                     await Shell.Current.GoToAsync("..");
@@ -220,22 +224,66 @@ namespace BatiaSuite.ViewModel {
 
         [RelayCommand]
         public async Task FinalizarEntrega() {
-            IniciaCarga("Finalizando ruta...");
-            await Task.Delay(500);
-            IsDelivering = false;
-            UserSession.IsDelivering = false;
-            await ReportarUbicacion(5); // Código 5: Fin de ruta
-            DetenerCarga();
+            try {
+                if(_gpsManager.IsListening()) {
+                    IniciaCarga("Apagando GPS...");
+                    await Task.Delay(1000);
+                    await _gpsManager.StopListener();
 
-            await App.Current.MainPage.DisplayAlert("Éxito", "Se ha concluido la ruta de entregas", "Ok");
+                    UserSession.SeguimientoGps = false;
+                    UserSession.IdInmuebleTracking = 0;
+                    UserSession.IdMesTracking = 0;
+                    UserSession.IdAnioTracking = 0;
+                    await ReportarUbicacionFinal();
+                    DetenerCarga();
+                    await Shell.Current.DisplayAlert("Alerta", "Ruta finalizada correctamente", "OK");
 
-            var pages = Shell.Current.Navigation.NavigationStack.ToList();
-            if(pages.Count > 2) {
-                Shell.Current.Navigation.RemovePage(pages[1]);
-                Shell.Current.Navigation.RemovePage(pages[2]);
+                    await Shell.Current.Navigation.PopToRootAsync(false);
+                    await Shell.Current.GoToAsync(nameof(Deliveries), true);
+                }
+            } catch(Exception ex) {
+                DetenerCarga();
+                Console.WriteLine($"Error al detener GPS: {ex.Message}");
             }
+            
+            
+        }
 
-            await Constants.GoToAsync(nameof(Deliveries));
+        public async Task<bool> ReportarUbicacionFinal() {
+            Location location = null;
+            try {
+                location = await Utils.LocationUtil.GetCurrentLocationAsync();
+                string url = Constants.API_BASE_URL + "SeguimientoRuta";
+                var data = new {
+                    IdPersonal = UserSession.IdPersonal,
+                    IdInmueble = UserSession.IdInmuebleTracking,
+                    Latitud = location.Latitude,
+                    Longitud = location.Longitude,
+                    IdListado = 0,
+                    IdTipo = 7,
+                    Fecha = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
+                };
+
+                var json = JsonConvert.SerializeObject(data);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var _httpClient = new HttpClient();
+                var response = await _httpClient.PostAsync(url, content);
+                return response.IsSuccessStatusCode;
+            } catch(Exception ex) when(ex is HttpRequestException || ex is TaskCanceledException) {
+                if(location != null) {
+                    var entrega = new EntregaReporteUbicacionLocal {
+                        IdPersonal = UserSession.IdPersonal,
+                        IdInmueble = UserSession.IdInmuebleTracking,
+                        Latitud = location.Latitude.ToString(),
+                        Longitud = location.Longitude.ToString(),
+                        IdListado = 0,
+                        IdTipo = 7,
+                        Fecha = DateTime.Now
+                    };
+                    await _dbContext.GuardarLocalAsync(entrega);
+                }
+                return false;
+            }
         }
 
         public async Task<bool> ReportarUbicacion(int idTipo) {

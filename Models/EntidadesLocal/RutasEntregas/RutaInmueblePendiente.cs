@@ -1,4 +1,5 @@
-﻿using BatiaSuite.Interfaz;
+﻿using BatiaSuite.Data;
+using BatiaSuite.Interfaz;
 using BatiaSuite.Models.Entregas;
 using BatiaSuite.Utils;
 using Newtonsoft.Json;
@@ -86,15 +87,26 @@ namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
             if(payload == null) return;
 
             try {
+                // 1. Borramos las fotos temporales del disco
                 if(payload.RutasFotosLocales != null) {
                     foreach(var foto in payload.RutasFotosLocales) {
                         if(File.Exists(foto)) File.Delete(foto);
                     }
                 }
 
+                // 2. Borramos la firma local del disco
                 if(!string.IsNullOrEmpty(payload.RutaFirmaLocal) && File.Exists(payload.RutaFirmaLocal)) {
                     File.Delete(payload.RutaFirmaLocal);
                 }
+
+                // 3. ¡NUEVO! Eliminamos la asignación original descargada de SQLite
+                var localDb = new LocalDbContext();
+
+                // Usa la propiedad de tu payload/clase que identifique al listado (ej. IdListado o IdRuta)
+                await localDb.BorrarPorPredicadoAsync<RutasInmuebles>(x => x.IdListado == payload.IdListado);
+
+                System.Diagnostics.Debug.WriteLine($"[Sync_Disk] Archivos temporales y listado local {payload.IdListado} eliminados de SQLite.");
+
             } catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine($"[Sync_Disk] Error limpiando temporales: {ex.Message}");
             }

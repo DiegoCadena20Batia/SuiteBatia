@@ -39,6 +39,8 @@ namespace BatiaSuite.ViewModel {
         // Contexto Genérico Universal
         private LocalDbContext _localDbContext;
 
+        private string httpBaseUrl = Constants.API_BASE_URL;
+
         #region Picker: Ruta
 
         private ObservableCollection<RutasInmuebles> _rutas;
@@ -162,82 +164,49 @@ namespace BatiaSuite.ViewModel {
                 if(todasLasRutasGuardadas.Count > 0) {
                     return todasLasRutasGuardadas;
                 } else {
-                    return null;
+                    return new List<RutasInmuebles>();
                 }
             } catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine($"Error al obtener: {ex.Message}");
-                return null;
+                return new List<RutasInmuebles>();
             }
         }
 
         private async Task GetRutas(string mes, string anio) {
-            /* if(!internetutil.isconnectedinternet()) {
-                 var tablarutasinmuebleslocal = await _localdbcontext.obtenertodoslocalasync<models.entidadeslocal.rutasentregas.rutasinmuebles>();
-                 if(tablarutasinmuebleslocal != null && tablarutasinmuebleslocal.any()) {
-                     var rutasunicaslocal = tablarutasinmuebleslocal.distinctby(x => x.idruta);
-                     rutas = new observablecollection<rutasinmuebles>(rutasunicaslocal);
-                 }
-                 return; // terminamos ejecución local
-             }*/
+            string mesFormateado = mes.PadLeft(2, '0');
 
-            var listaRutas = await ConfirmarRutasLocal();
+            if(InternetUtil.IsConnectedInternet()) {
+                try {
+                    IniciaCarga("Cargando rutas...");
 
-            if(listaRutas.Any()) {
-                var datosFiltrados = listaRutas.DistinctBy(x => x.IdRuta);
-                Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
-            } else {
-                if(InternetUtil.IsConnectedInternet()) {
-                    try {
-                        IniciaCarga("Cargando rutas...");
+                    string urlEndpoint = $"{httpBaseUrl}RutasOperador?idoperador={UserSession.IdPersonal}&mes={mesFormateado}&anio={anio}";
+                    var listaCompleta = await _httpHelper.GetAsync<List<RutasInmuebles>>(urlEndpoint);
 
-                        string urlEndpoint = $"RutasOperador?idoperador={UserSession.IdPersonal}&mes={mes}&anio={anio}";
-
-                        var listaCompleta = await _httpHelper.GetAsync<List<RutasInmuebles>>(urlEndpoint);
-
-                        if(listaCompleta != null) {
-                            if(listaCompleta.Any()) {
-                                await _localDbContext.BorrarTablaCompletaAsync<RutasInmuebles>();
-
-                                /* try {
-                                     var todasLasRutasGuardadas = await _localDbContext.ObtenerListaLocalAsync<RutasInmuebles>(x => true);
-
-                                     System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasInmuebles ({todasLasRutasGuardadas.Count} registros) ---");
-
-                                     foreach(var r in todasLasRutasGuardadas) {
-                                         System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble} | Operador: {UserSession.IdPersonal}");
-                                     }
-
-                                     System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
-                                 } catch(Exception ex) {
-                                     System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
-                                 }*/
-
-                                foreach(var ruta in listaCompleta) {
-                                    await _localDbContext.GuardarLocalAsync<RutasInmuebles>(ruta);
-                                }
-
-                                var datosFiltrados = listaCompleta.DistinctBy(x => x.IdRuta);
-                                Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
-                            } else {
-                                LimpiarRutas();
-                                await App.Current.MainPage.DisplayAlert("Aviso", "No se encontraron rutas asignadas para el mes y año seleccionados.", "OK");
-                            }
-
-                            DetenerCarga();
-                        } else {
-                            LimpiarRutas();
-                            DetenerCarga();
-
-                            await App.Current.MainPage.DisplayAlert("Aviso", "No se pudo obtener la información del servidor. Verifique su conexión o intente más tarde.", "OK");
+                    if(listaCompleta != null && listaCompleta.Any()) {
+                        //TODO: preguntar si es factible borrar datos de la tabla completa y guardar los nuevos datos, para evitar duplicados y mantener la información actualizada
+                        //Borramos datos si los hay para evitar duplicados y mantener la información actualizada
+                        await _localDbContext.BorrarTablaCompletaAsync<RutasInmuebles>();
+                        // Guardamos las nuevas rutas traídas del servidor en SQLite
+                        foreach(var ruta in listaCompleta) {
+                            await _localDbContext.GuardarLocalAsync<RutasInmuebles>(ruta);
                         }
-                    } catch(Exception ex) {
+
+                        var datosFiltrados = listaCompleta.DistinctBy(x => x.IdRuta);
+                        Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
+                    } else {
                         LimpiarRutas();
-                        await App.Current.MainPage.DisplayAlert("Error de Conexión", "No se pudo comunicar con el servidor. Verifique su señal de internet.", "OK");
+                        await App.Current.MainPage.DisplayAlert("Aviso", "No se encontraron rutas asignadas para el mes y año seleccionados.", "OK");
                     }
-                } else {
+                } catch(Exception ex) {
                     LimpiarRutas();
-                    await App.Current.MainPage.DisplayAlert("Error", "No hay datos locales ni conexión a internet. Por favor, verifique su señal.", "OK");
+                    System.Diagnostics.Debug.WriteLine($"[GetRutas_Error] {ex.Message}");
+                    await App.Current.MainPage.DisplayAlert("Error de Conexión", "No se pudo obtener la información. Intente de nuevo en un momento.", "OK");
+                } finally {
+                    DetenerCarga();
                 }
+            } else {
+                LimpiarRutas();
+                await App.Current.MainPage.DisplayAlert("Error", "No hay datos conexión, necesitas conexión a internet para ver las rutas.", "OK");
             }
         }
 

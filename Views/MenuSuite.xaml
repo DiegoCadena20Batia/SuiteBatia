@@ -250,6 +250,7 @@
 
         <!-- 🔔 CAMPANITA FLOTANTE (Fuera de la barra, encima de ella) -->
         <Grid 
+            IsVisible="{Binding EsSupervisor}"
             HorizontalOptions="Start" 
             VerticalOptions="End"
             WidthRequest="35" 

@@ -190,11 +190,9 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             await DisplayAlert("Modo Offline", "Sin conexión a internet. La entrega se guardó en el dispositivo para un envío posterior automático.", "Ok");
             IsBusy = false;
 
-            // Limpieza e historial de la pila de navegación
-            var pages = Shell.Current.Navigation.NavigationStack.ToList();
-            Shell.Current.Navigation.RemovePage(pages[2]);
-            Shell.Current.Navigation.RemovePage(pages[3]);
-            Shell.Current.Navigation.RemovePage(pages[4]);
+            // 3. Regreso seguro al menú de sucursales
+            await Shell.Current.Navigation.PopToRootAsync(false);
+            await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
 
             await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
         } catch(Exception ex) {
@@ -254,10 +252,10 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                 var response = await client.PostAsync(RequestUri, contentJson);
 
                 if(response.StatusCode == HttpStatusCode.OK) {
+
+                    await _dbContext.BorrarPorPredicadoAsync<RutasInmuebles>(x => x.IdListado == _IdListado);
                     // 1. Reportamos la coordenada en tiempo real al servidor
                     await ReportarUbicacionDeEntrega();
-
-                    // [ELIMINADO]: El SP del servidor ya actualiza los estatus, no tocamos la BD local aquí.
 
                     await DisplayAlert("Mensaje", "Registrado correctamente", "Ok");
                     IsBusy = false;
@@ -265,7 +263,8 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
 
 
                     // 3. Regreso seguro al menú de sucursales
-                    await Shell.Current.GoToAsync($"///{nameof(DeliveriesDetail)}", true);
+                    await Shell.Current.Navigation.PopToRootAsync(false);
+                    await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
                 } else {
                     await GuardarEnPendientesOffline();
                 }

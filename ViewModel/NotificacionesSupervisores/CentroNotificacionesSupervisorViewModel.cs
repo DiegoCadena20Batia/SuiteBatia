@@ -44,11 +44,14 @@ namespace BatiaSuite.ViewModel.NotificacionesSupervisores {
                             EmpleadosQueFaltaron.Add(emp);
                         }
                     }
+                    System.Diagnostics.Debug.WriteLine($"[RACE_CHECK] {DateTime.Now:HH:mm:ss.fff} - Pantalla cargó lista. Apagando badge y guardando UltimoConteoLeido={EmpleadosQueFaltaron.Count}");
 
-                    // 1. Actualizamos la campanita visual
-                    WeakReferenceMessenger.Default.Send(new NotificationCountMessage(EmpleadosQueFaltaron.Count));
+                     
+                    // 1. Limpiamos la campanita visual (ya fue vista)
+                    WeakReferenceMessenger.Default.Send(new NotificationCountMessage(0));
 
-                    
+                    // 2. Guardamos el conteo real para comparar futuras alertas de SignalR
+                    Microsoft.Maui.Storage.Preferences.Set("UltimoConteoLeido", EmpleadosQueFaltaron.Count);
                 });
             } catch(Exception ex) {
                 Console.WriteLine($"Error al cargar notificaciones en ViewModel: {ex.Message}");

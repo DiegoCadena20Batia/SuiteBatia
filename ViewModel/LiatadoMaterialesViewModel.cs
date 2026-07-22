@@ -53,6 +53,7 @@ namespace BatiaSuite.ViewModel {
 
         public ListadoMaterialesViewModel() {
             _dbContext = new LocalDbContext();
+           
             GuardarDatosCommand = new Command(async () => await GuardarDatos());
         }
 
@@ -65,50 +66,33 @@ namespace BatiaSuite.ViewModel {
             _ = CargarMaterialesDeSucursal();
         }
 
+        private async Task<List<RutasInmuebles>> ConfirmarRutasLocal() {
+            try {
+                var todasLasRutasGuardadas = await _dbContext.ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+
+                if(todasLasRutasGuardadas.Count > 0) {
+                    return todasLasRutasGuardadas;
+                } else {
+                    return new List<RutasInmuebles>();
+                }
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener: {ex.Message}");
+                return new List<RutasInmuebles>();
+            }
+        }
+
         /// <summary>
         /// Obtiene los productos filtrando la tabla desnormalizada por la Sucursal (IdInmueble) activa en sesión.
         /// </summary>
         public async Task CargarMaterialesDeSucursal() {
             IniciaCarga("Cargando materiales...");
             await Task.Delay(300);
+            ObtenerMaterialesLocal();
 
-            if(!InternetUtil.IsConnectedInternet()) {
-                await ObtenerMaterialesLocal();
+            if(!ListMateriales.Any()) {
+                await ObtenerMaterialesApi();
             } else {
-                try {
-                    var request = new HttpRequestMessage {
-                        RequestUri = new Uri(Constants.API_BASE_URL + $"RutasOperador?idoperador={UserSession.IdPersonal}"),
-                        Method = HttpMethod.Get
-                    };
-                    request.Headers.Add("Accept", "application/json");
-
-                    var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-                    HttpResponseMessage response = await client.SendAsync(request);
-
-                    if(response.StatusCode == HttpStatusCode.OK) {
-                        string content = await response.Content.ReadAsStringAsync();
-                        if(!string.IsNullOrEmpty(content)) {
-                            var todosLosMateriales = JsonConvert.DeserializeObject<List<RutasInmuebles>>(content);
-
-                            var primerRegistro = todosLosMateriales.FirstOrDefault();
-                            if(primerRegistro != null) {
-                                FolioEntry = primerRegistro.IdListado.ToString();
-                            }
-
-                            todosLosMateriales = todosLosMateriales
-                                .Where(r => r.IdRuta == UserSession.IdRutaTracking && r.IdInmueble == UserSession.IdInmuebleTracking)
-                                .ToList();
-                            ListMateriales = new ObservableCollection<RutasInmuebles>(todosLosMateriales);
-                        }
-                        DetenerCarga();
-                    } else {
-                        await ObtenerMaterialesLocal();
-                    }
-                } catch(Exception ex) {
-                    DetenerCarga();
-                    await ObtenerMaterialesLocal();
-                    Console.WriteLine($"Error de API: {ex.Message}. Cargando datos de contingencia local.");
-                }
+                await ObtenerMaterialesLocal();
             }
         }
 
@@ -128,12 +112,78 @@ namespace BatiaSuite.ViewModel {
                 }
                 FolioEntry = materialesLocal.First().IdListado.ToString();
                 ListMateriales = new ObservableCollection<RutasInmuebles>(materialesLocal);
-                
             } else {
                 ListMateriales = new ObservableCollection<RutasInmuebles>();
                 FolioEntry = "N/A";
             }
             DetenerCarga();
+        }
+
+        public async Task ObtenerMaterialesApi() {
+            try {
+                var request = new HttpRequestMessage {
+                    RequestUri = new Uri(Constants.API_BASE_URL + $"RutasOperador?idoperador={UserSession.IdPersonal}&mes={UserSession.IdMesTracking}&anio={UserSession.IdAnioTracking}"),
+                    Method = HttpMethod.Get
+                };
+                request.Headers.Add("Accept", "application/json");
+
+                var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                HttpResponseMessage response = await client.SendAsync(request);
+
+                if(response.StatusCode == HttpStatusCode.OK) {
+                    string content = await response.Content.ReadAsStringAsync();
+                    if(!string.IsNullOrEmpty(content)) {
+                        var todosLosMateriales = JsonConvert.DeserializeObject<List<RutasInmuebles>>(content);
+
+                        if(todosLosMateriales != null) {
+                            if(todosLosMateriales.Any()) {
+                                await _dbContext.BorrarTablaCompletaAsync<RutasInmuebles>();
+
+                                /* try {
+                                     var todasLasRutasGuardadas = await _localDbContext.ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+
+                                     System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasInmuebles ({todasLasRutasGuardadas.Count} registros) ---");
+
+                                     foreach(var r in todasLasRutasGuardadas) {
+                                         System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble} | Operador: {UserSession.IdPersonal}");
+                                     }
+
+                                     System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
+                                 } catch(Exception ex) {
+                                     System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
+                                 }*/
+
+                                foreach(var ruta in todosLosMateriales) {
+                                    await _dbContext.GuardarLocalAsync<RutasInmuebles>(ruta);
+                                }
+
+                                todosLosMateriales.Clear();
+                                todosLosMateriales = await _dbContext.ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+                            }
+                        }
+
+                                var primerRegistro = todosLosMateriales.FirstOrDefault();
+                        if(primerRegistro != null) {
+                            FolioEntry = primerRegistro.IdListado.ToString();
+                        }
+
+                        todosLosMateriales = todosLosMateriales
+                            .Where(r => r.IdRuta == UserSession.IdRutaTracking && r.IdInmueble == UserSession.IdInmuebleTracking)
+                            .ToList();
+                        ListMateriales = new ObservableCollection<RutasInmuebles>(todosLosMateriales);
+                        foreach(var item in todosLosMateriales) {
+                            item.Entregado = item.Cantidad;
+                        }
+                    }
+                    DetenerCarga();
+                } else {
+                    await ObtenerMaterialesLocal();
+                }
+            } catch(Exception ex) {
+                DetenerCarga();
+                await ObtenerMaterialesLocal();
+                Console.WriteLine($"Error de API: {ex.Message}. Cargando datos de contingencia local.");
+            }
         }
 
         /// <summary>

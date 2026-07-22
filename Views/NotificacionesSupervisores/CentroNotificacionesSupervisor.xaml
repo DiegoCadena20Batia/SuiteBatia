@@ -5,66 +5,129 @@
             Title="Centro de Notificaciones"
              BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#121212}">
 
-    <!-- El BindingContext ya lo asignas desde el Code-Behind C#, por lo que aquí no hace falta definirlo -->
 
-    <Grid RowDefinitions="*">
+    <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- Lista de Empleados que Faltaron -->
-        <CollectionView ItemsSource="{Binding EmpleadosQueFaltaron}"
-                        SelectionMode="None">
+        <!-- 1. BANNER CONTEXTUAL DE BIENVENIDA / EXPLICATIVO -->
+        <Border Grid.Row="0"
+            StrokeShape="RoundRectangle 12"
+            StrokeThickness="0"
+            BackgroundColor="{AppThemeBinding Light=#FFF3CD, Dark=#2C2515}" 
+            Margin="16,16,16,8"
+            Padding="16">
+            <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="4">
+
+                <!-- Icono de advertencia en color naranja de alerta -->
+                <Label Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                   Text="⚠️"
+                   FontSize="28"
+                   VerticalOptions="Center" />
+
+                <!-- Título del Banner -->
+                <Label Grid.Column="1" Grid.Row="0"
+                   Text="Atención Requerida"
+                   FontAttributes="Bold"
+                   FontSize="16"
+                   TextColor="{AppThemeBinding Light=#856404, Dark=#FFEBA5}" />
+
+                <!-- Explicación del Contexto -->
+                <Label Grid.Column="1" Grid.Row="1"
+                   Text="Los siguientes empleados bajo tu supervisión han acumulado 3 faltas consecutivas sin justificar."
+                   FontSize="13"
+                   TextColor="{AppThemeBinding Light=#664D03, Dark=#FDF3D4}"
+                   LineBreakMode="WordWrap" />
+            </Grid>
+        </Border>
+
+        <!-- 2. LISTADO DE EMPLEADOS (Con margen para respirar) -->
+        <CollectionView Grid.Row="1" 
+                    ItemsSource="{Binding EmpleadosQueFaltaron}"
+                    SelectionMode="None"
+                    Margin="16,8,16,16">
+
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <!-- Tarjeta moderna para cada falta de empleado -->
-                    <Border StrokeShape="RoundRectangle 10"
-                            StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#2C2C2C}"
-                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
-                            Margin="0,0,0,12"
-                            Padding="15">
+                    <!-- Tarjeta del empleado con bordes más finos -->
+                    <Border StrokeShape="RoundRectangle 20"
+                        StrokeThickness="2"
+                        Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#2D2D2D}"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1C1C1E}"
+                        Margin="0,0,0,12"
+                        Padding="15">
 
-                        <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *">
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
 
-                            <!-- Icono o indicador visual visual de Alerta -->
-                            <Label Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
-                                   Text="❌"
-                                   FontSize="24"
-                                   Margin="0,0,15,0"
-                                   VerticalOptions="Center" />
+                            <!-- 1. Indicador visual de estatus crítico en rojo lateral -->
+                            <BoxView Grid.Column="0"
+             WidthRequest="6"
+                                     
+                                     Color="Red"
+             CornerRadius="2"
+             BackgroundColor="#DC3545" 
+             VerticalOptions="FillAndExpand" />
 
-                            <!-- Nombre del Empleado -->
-                            <Label Grid.Row="0" Grid.Column="1"
-                                   Text="{Binding Nombre}"
-                                   FontAttributes="Bold"
-                                   FontSize="16"
-                                   TextColor="{AppThemeBinding Light=#212121, Dark=#FFFFFF}" />
+                            <!-- 2. Datos del Empleado (Columna central que toma todo el espacio disponible) -->
+                            <VerticalStackLayout Grid.Column="1" 
+                         VerticalOptions="Center" 
+                         Spacing="4">
 
-                            <!-- ID / Número de Empleado -->
-                            <Label Grid.Row="1" Grid.Column="1"
-                                   Text="{Binding IdEmpleado, StringFormat='ID Empleado: {0}'}"
-                                   FontSize="13"
-                                   TextColor="{AppThemeBinding Light=#757575, Dark=#9E9E9E}"
-                                   Margin="0,4,0,0" />
+                                <!-- Nombre con tamaño correcto (15) y soporte para nombres largos -->
+                                <Label Text="{Binding Nombre}"
+               FontAttributes="Bold"
+               FontSize="15"
+               LineBreakMode="WordWrap"
+               TextColor="{AppThemeBinding Light=#1C1C1E, Dark=#FFFFFF}" />
+
+                                <Label Text="{Binding IdEmpleado, StringFormat='Número Empleado: {0}'}"
+               FontSize="12"
+               TextColor="{AppThemeBinding Light=#8E8E93, Dark=#AEAEB2}" />
+                            </VerticalStackLayout>
+
+                            <!-- 3. Distintivo con el conteo de faltas -->
+                            <Border Grid.Column="2"
+            StrokeShape="RoundRectangle 20"
+            StrokeThickness="0"
+                                    Margin="15,0,0,0"
+            BackgroundColor="{AppThemeBinding Light=#FFE5E5, Dark=#3D1E1E}"
+            Padding="8,4"
+            HorizontalOptions="EndAndExpand"
+            VerticalOptions="Center">
+                                <Label Text="3 Faltas"
+               FontSize="11"
+               FontAttributes="Bold"
+               TextColor="#DC3545" />
+                            </Border>
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
-            <!-- Vista vacía por si la lista de faltas viene en cero -->
+            <!-- Vista vacía rediseñada -->
             <CollectionView.EmptyView>
-                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
-                    <Label Text="📭" FontSize="48" HorizontalOptions="Center" />
-                    <Label Text="No tienes notificaciones por el momento." TextColor="Gray" HorizontalOptions="Center" />
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12" Padding="20">
+                    <Label Text="✅" FontSize="56" HorizontalOptions="Center" />
+                    <Label Text="¡Todo en orden!" 
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       HorizontalOptions="Center" 
+                       TextColor="{AppThemeBinding Light=#1C1C1E, Dark=#FFFFFF}"/>
+                    <Label Text="No tienes empleados con 3 faltas consecutivas en este momento." 
+                       TextColor="Gray" 
+                       FontSize="14"
+                       HorizontalTextAlignment="Center"
+                       HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
         </CollectionView>
 
-        <!-- Indicador de carga flotante mientras consulta el API -->
-        <ActivityIndicator IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}"
-                           Color="#2196F3"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Center"
-                           WidthRequest="50"
-                           HeightRequest="50" />
+        <!-- 3. INDICADOR DE CARGA FLOTANTE -->
+        <ActivityIndicator Grid.Row="1"
+                       IsRunning="{Binding IsBusy}"
+                       IsVisible="{Binding IsBusy}"
+                       Color="#2196F3"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center"
+                       WidthRequest="50"
+                       HeightRequest="50" />
     </Grid>
 </ContentPage>

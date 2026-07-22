@@ -149,5 +149,25 @@ namespace BatiaSuite.Data {
                 System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Elimina directamente de SQLite los registros que cumplan con la condición especificada.
+        /// </summary>
+        public async Task<int> BorrarPorPredicadoAsync<T>(Expression<Func<T, bool>> predicado) where T : class, new() {
+            await InitAsync();
+            if(_database == null) throw new InvalidOperationException("Base de datos no inicializada.");
+
+            // Obtenemos los elementos que cumplen la condición
+            var elementosABorrar = await _database.Table<T>().Where(predicado).ToListAsync();
+            int totalBorrados = 0;
+
+            // Los eliminamos de SQLite
+            foreach(var item in elementosABorrar) {
+                totalBorrados += await _database.DeleteAsync(item);
+            }
+
+            System.Diagnostics.Debug.WriteLine($"[SQLite_Debug] Se eliminaron {totalBorrados} registros de {typeof(T).Name}.");
+            return totalBorrados;
+        }
     }
 }

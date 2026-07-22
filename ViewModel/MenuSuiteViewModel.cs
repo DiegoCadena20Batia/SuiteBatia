@@ -67,6 +67,8 @@ public partial class MenuSuiteViewModel : ViewModelBase {
 
     [ObservableProperty]
     private bool _tieneNotificaciones;
+    [ObservableProperty]
+    private bool _esSupervisor;
 
     private OrdenesSupervisionTotal _ordenesSupervisionTotal;
 
@@ -75,6 +77,8 @@ public partial class MenuSuiteViewModel : ViewModelBase {
         AppVersionString = AppInfo.VersionString;
         InitValuesAsync();
 
+
+        EsSupervisor = UserSession.IdPuesto == 118;
         WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
             MainThread.BeginInvokeOnMainThread(() => {
                 ConteoNotificaciones = m.Value;

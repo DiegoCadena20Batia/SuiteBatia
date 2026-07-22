@@ -30,14 +30,27 @@
 		<SkipStaticLibraryValidation>true</SkipStaticLibraryValidation>
 
 		<AndroidSigningKeyStore>SuiteBatiaFirma.keystore</AndroidSigningKeyStore>
+
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) or $(TargetFramework.Contains('-ios')) or $(TargetFramework.Contains('-windows'))">
 		<UseMauiMaps>true</UseMauiMaps>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
+		<RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
+		<RunAOTCompilation>True</RunAOTCompilation>
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidSigningKeyStore>SuiteBatiaFirma.keystore</AndroidSigningKeyStore>
+		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
+		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
+    </PropertyGroup>
+
+
 	<!--CONFIGURACIÓN CUANDO ESTÁS EN VISUAL STUDIO (DEBUG / DESARROLLO) -->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true' And '$(Configuration)' == 'Debug'">
+	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(BuildingInsideVisualStudio)' == 'true' And '$(Configuration)' == 'Debug'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<ServerAddress>192.168.11.33</ServerAddress>
 		<ServerUser>ricardoberistain</ServerUser>
@@ -47,10 +60,10 @@
 		
 		<ProvisioningType>manual</ProvisioningType>
 		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
-		<CodesignProvision>SuiteBatia_AdHoc</CodesignProvision>
+		<CodesignProvision>SuiteBatia_AdHoc</CodesignProvision>-->
 		
 		<!-- ENTORNO SEGURO PARA NO CRASHEAR EN EL IPHONE -->
-		<PublishTrimmed>true</PublishTrimmed>
+		<!--<PublishTrimmed>true</PublishTrimmed>
 		<TrimMode>copyused</TrimMode>
 		<MtouchLink>None</MtouchLink>
 		<UseInterpreter>true</UseInterpreter>
@@ -58,10 +71,10 @@
 		
 		<BuildIpa>true</BuildIpa>
 		<ArchiveOnBuild>true</ArchiveOnBuild>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<!--CONFIGURACIÓN COMPLETA PARA GENERAR EL ARCHIVE (RELEASE) -->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
+	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<ServerAddress>192.168.11.33</ServerAddress>
 		<ServerUser>ricardoberistain</ServerUser>
@@ -82,7 +95,22 @@
 		
 		<BuildIpa>true</BuildIpa>
 		<ArchiveOnBuild>true</ArchiveOnBuild>
+	</PropertyGroup>-->
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
+	  <AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
+	  <AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
 	</PropertyGroup>
+	
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
+	  <AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
+	  <AndroidSigningKeyAlias>SuiteBatia</AndroidSigningKeyAlias>
+	</PropertyGroup>-->
 
 	<ItemGroup>
 		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appiconandroid.svg" ForegroundFile="Resources\AppIcon\appiconfgandroid.svg" />

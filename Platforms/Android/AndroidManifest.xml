@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.GrupoBatia.SuiteBatia" android:versionCode="60" android:versionName="3.1.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.GrupoBatia.SuiteBatia" android:versionCode="64" android:versionName="3.2.1">
 	<application android:usesCleartextTraffic="true" android:allowBackup="true" android:icon="@mipmap/appiconandroid" android:supportsRtl="true" android:label="Suite Batia" android:enableOnBackInvokedCallback="true">
 		<meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBpoRJAkG1NFtHFuE3uTRbVnRcTG7ndz18" />
 	</application>

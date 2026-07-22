@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
     [ModulosRequeridos(1,7)]
-    public class RutasInmuebles : IDescargable {
+    public class RutasInmuebles {
 
         [SQLite.PrimaryKey, SQLite.AutoIncrement]
         public int? IdLocal { get; set; } 
@@ -37,16 +37,6 @@ namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
         public string Mes { get; set; }
         public string Anio { get; set; }
 
-        public string ClaveCatalogo => string.Empty;
-
-        public string ObtenerUrlDescarga(string baseUrl, int ParametroId) {
-            if(UserSession.IdPersonal != 0) {
-                ParametroId = UserSession.IdPersonal;
-
-                return $"{baseUrl}RutasOperador?idoperador={ParametroId}&mes={DateTime.Now.Month}&anio={DateTime.Now.Year}";
-            } else {
-                return "";
-            }
-        }
+       
     }
 }
