@@ -9,36 +9,32 @@
 
     <Grid RowDefinitions="*, Auto">
 
-        <CollectionView
-        Grid.Row="0"
-        x:Name="lisTipos"
-        ItemsSource="{Binding ListTipos}"
-        Margin="16,10,16,0">
+        <CollectionView Grid.Row="0" x:Name="lisTipos" ItemsSource="{Binding ListTipos}" Margin="16,10,16,0">
 
             <CollectionView.Header>
                 <VerticalStackLayout Spacing="8" Margin="0,10,0,20">
                     <Label
-                    Text="{Binding NombreSucursal}"
-                    FontFamily="MontBold"
-                    FontSize="22"
-                    TextColor="#1A3B60" />
+                Text="{Binding NombreSucursal}"
+                FontFamily="MontBold"
+                FontSize="22"
+                TextColor="#1A3B60" />
                     <HorizontalStackLayout>
                         <Label
-                        Text="Folio Listado: "
-                        FontFamily="MontBold"
-                        FontSize="15"
-                        TextColor="#1A3B60" />
+                    Text="Folio Listado: "
+                    FontFamily="MontBold"
+                    FontSize="15"
+                    TextColor="#1A3B60" />
                         <Label
-                        Text="{Binding FolioListado}"
-                        FontFamily="MontBold"
-                        FontSize="16"
-                        TextColor="#1A3B60" />
+                    Text="{Binding FolioListado}"
+                    FontFamily="MontBold"
+                    FontSize="16"
+                    TextColor="#1A3B60" />
                     </HorizontalStackLayout>
                     <Label
-                    Text="Selecciona la categoría del listado que deseas revisar y entregar en esta sucursal."
-                    FontFamily="MontRegular"
-                    FontSize="14"
-                    TextColor="#6C757D" />
+                Text="Selecciona la categoría del listado que deseas revisar y entregar en esta sucursal."
+                FontFamily="MontRegular"
+                FontSize="14"
+                TextColor="#6C757D" />
                 </VerticalStackLayout>
             </CollectionView.Header>
 
@@ -49,68 +45,108 @@
             <CollectionView.EmptyView>
                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="0,60" Spacing="10">
                     <Label 
-                    Text="No se encontraron categorías para esta sucursal." 
-                    FontFamily="MontSemibold" 
-                    FontSize="16" 
-                    TextColor="#6C757D" 
-                    HorizontalTextAlignment="Center"/>
+                Text="No se encontraron categorías para esta sucursal." 
+                FontFamily="MontSemibold" 
+                FontSize="16" 
+                TextColor="#6C757D" 
+                HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border 
-                    StrokeShape="RoundRectangle 14"
-                    StrokeThickness="1"
-                    Stroke="#E9ECEF"
-                    BackgroundColor="White"
-                    Padding="18,16">
+                StrokeShape="RoundRectangle 14"
+                StrokeThickness="1"
+                Stroke="#E9ECEF"
+                BackgroundColor="White"
+                Padding="18,16">
+
+                        <!-- DISPARADORES PARA REMARCAR EN VERDE LA TARJETA -->
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                <Setter Property="BackgroundColor" Value="#E8F5E9" />
+                                <Setter Property="Stroke" Value="#2E7D32" />
+                            </DataTrigger>
+                        </Border.Triggers>
+
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
-                            Command="{Binding Path=BindingContext.TipoSelecCommand, Source={x:Reference lisTipos}}"
-                            CommandParameter="{Binding .}"/>
+                        Command="{Binding Path=BindingContext.TipoSelecCommand, Source={x:Reference lisTipos}}"
+                        CommandParameter="{Binding Tipo}"/>
                         </Border.GestureRecognizers>
+
                         <Border.Shadow>
                             <Shadow Brush="Black" Offset="0,3" Radius="5" Opacity="0.04" />
                         </Border.Shadow>
 
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16" VerticalOptions="Center">
 
+                            <!-- Ícono de la categoría -->
                             <Border 
-                            Grid.Column="0"
-                            StrokeShape="RoundRectangle 10"
-                            BackgroundColor="#EEF4FA"
-                            HeightRequest="48"
-                            WidthRequest="48"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center">
+                        Grid.Column="0"
+                        StrokeShape="RoundRectangle 10"
+                        BackgroundColor="#EEF4FA"
+                        HeightRequest="48"
+                        WidthRequest="48"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="#C8E6C9" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
                                 <Label
-                                Text="📦" 
-                                FontSize="22"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center" />
+                            Text="📦" 
+                            FontSize="22"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
                             </Border>
 
+                            <!-- Textos descriptivos -->
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <!-- Muestra el nombre de la categoría -->
                                 <Label
-                                Text="{Binding .}"
-                                FontSize="18"
-                                TextColor="#1A3B60"
-                                FontFamily="MontBold" />
+                            Text="{Binding Tipo}"
+                            FontSize="18"
+                            TextColor="#1A3B60"
+                            FontFamily="MontBold" />
+
+                                <!-- Subtítulo dinámico según el estado -->
                                 <Label
-                                Text="Ver materiales y productos"
-                                FontSize="13"
-                                TextColor="#6C757D"
-                                FontFamily="MontRegular" />
+                            Text="Ver materiales y productos"
+                            FontSize="13"
+                            TextColor="#6C757D"
+                            FontFamily="MontRegular">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                            <Setter Property="Text" Value="✓ Entregado completamente" />
+                                            <Setter Property="TextColor" Value="#2E7D32" />
+                                            <Setter Property="FontFamily" Value="MontSemibold" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
                             </VerticalStackLayout>
 
+                            <!-- Indicador visual (Flecha o Check) -->
                             <Label
-                            Grid.Column="2"
-                            Text="➔"
-                            TextColor="#B0BCC7"
-                            FontSize="18"
-                            VerticalOptions="Center"
-                            HorizontalOptions="End" />
+                        Grid.Column="2"
+                        Text="➔"
+                        TextColor="#B0BCC7"
+                        FontSize="18"
+                        VerticalOptions="Center"
+                        HorizontalOptions="End">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                        <Setter Property="Text" Value="✓" />
+                                        <Setter Property="TextColor" Value="#2E7D32" />
+                                        <Setter Property="FontSize" Value="22" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
                         </Grid>
                     </Border>
                 </DataTemplate>

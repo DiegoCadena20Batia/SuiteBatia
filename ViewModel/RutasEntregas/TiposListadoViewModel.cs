@@ -14,8 +14,8 @@ using Microsoft.Maui.ApplicationModel; // Necesario para Launcher en .NET MAUI
 
 namespace BatiaSuite.ViewModel.RutasEntregas {
     public partial class TiposListadoViewModel : ViewModelBase, IQueryAttributable {
-        private ObservableCollection<string> _listTipos;
-        public ObservableCollection<string> ListTipos {
+        private ObservableCollection<RutasInmuebles> _listTipos;
+        public ObservableCollection<RutasInmuebles> ListTipos {
             get => _listTipos;
             set { _listTipos = value; OnPropertyChanged(); }
         }
@@ -39,7 +39,7 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
 
         public TiposListadoViewModel() {
             _dbContext = new LocalDbContext();
-            ListTipos = new ObservableCollection<string>();
+            ListTipos = new ObservableCollection<RutasInmuebles>();
         }
 
         /// <summary>
@@ -54,6 +54,9 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
         /// <summary>
         /// Extrae los tipos únicos (Iguala, Adicionales, etc.) de la base de datos local desnormalizada
         /// </summary>
+        // Recordar cambiar la declaración de la propiedad en tu VM:
+        // public ObservableCollection<RutasInmuebles> ListTipos { get; set; }
+
         public async Task ObtenerTiposDeListado() {
             try {
                 IsLoading = true;
@@ -65,13 +68,19 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
                 );
 
                 if(registrosSucursal != null && registrosSucursal.Count > 0) {
+
+                    // Agrupamos por Tipo, tomamos el objeto base y calculamos IsCompleted
                     var tiposUnicos = registrosSucursal
                         .Where(r => !string.IsNullOrWhiteSpace(r.Tipo))
                         .GroupBy(r => r.Tipo)
-                        .Select(g => g.Key)
+                        .Select(g => {
+                            var item = g.First();
+                            item.IsCompleted = g.All(r => r.Estatusl == "Entregado");
+                            return item;
+                        })
                         .ToList();
 
-                    ListTipos = new ObservableCollection<string>(tiposUnicos);
+                    ListTipos = new ObservableCollection<RutasInmuebles>(tiposUnicos);
 
                     var primerRegistro = registrosSucursal.FirstOrDefault();
                     FolioListado = primerRegistro?.IdListado.ToString() ?? "N/A";
@@ -80,11 +89,11 @@ namespace BatiaSuite.ViewModel.RutasEntregas {
                     _latitud = primerRegistro?.Latitud;
                     _longitud = primerRegistro?.Longitud;
                 } else {
-                    ListTipos = new ObservableCollection<string>();
+                    ListTipos = new ObservableCollection<RutasInmuebles>();
                 }
             } catch(Exception ex) {
                 Console.WriteLine($"Error al agrupar tipos de listado: {ex.Message}");
-                ListTipos = new ObservableCollection<string>();
+                ListTipos = new ObservableCollection<RutasInmuebles>();
             } finally {
                 IsLoading = false;
                 TextLoading = "";

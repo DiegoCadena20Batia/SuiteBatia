@@ -131,15 +131,15 @@ namespace BatiaSuite.ViewModel {
         private async void InicializarDatos() {
             GetMes();
 
-            int mesActual = DateTime.Now.Month;
+            //int mesActual = DateTime.Now.Month;
 
-            if(MesList != null && MesList.Any()) {
-                IdMesSelected = MesList.FirstOrDefault(x => x.idMes == mesActual);
-            }
+            //if(MesList != null && MesList.Any()) {
+            //    IdMesSelected = MesList.FirstOrDefault(x => x.idMes == mesActual);
+            //}
 
-            string mesFormateado = IdMesSelected != null ? IdMesSelected.idMes.ToString("D2") : mesActual.ToString("D2");
+            //string mesFormateado = IdMesSelected != null ? IdMesSelected.idMes.ToString("D2") : mesActual.ToString("D2");
 
-            await GetRutas(mesFormateado, Year);
+            //await GetRutas(mesFormateado, Year);
         }
 
         private async Task ValidarYBuscarRutasAsync() {
@@ -175,6 +175,7 @@ namespace BatiaSuite.ViewModel {
         private async Task GetRutas(string mes, string anio) {
             string mesFormateado = mes.PadLeft(2, '0');
 
+           
             if(InternetUtil.IsConnectedInternet()) {
                 try {
                     IniciaCarga("Cargando rutas...");
@@ -190,7 +191,7 @@ namespace BatiaSuite.ViewModel {
                         foreach(var ruta in listaCompleta) {
                             await _localDbContext.GuardarLocalAsync<RutasInmuebles>(ruta);
                         }
-
+                        await _localDbContext.VerificarRegistros();
                         var datosFiltrados = listaCompleta.DistinctBy(x => x.IdRuta);
                         Rutas = new ObservableCollection<RutasInmuebles>(datosFiltrados);
                     } else {

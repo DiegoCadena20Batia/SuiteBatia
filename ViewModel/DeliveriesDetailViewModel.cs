@@ -52,6 +52,8 @@ namespace BatiaSuite.ViewModel {
 
         private readonly IGpsManager _gpsManager;
 
+        private string baseUrl = Constants.API_BASE_URL;
+
         public DeliveriesDetailViewModel(HttpHelper httpHelper, IGpsManager gpsManager) {
             _httpHelper = httpHelper;
             _gpsManager = gpsManager;
@@ -84,9 +86,13 @@ namespace BatiaSuite.ViewModel {
         public async Task CargarSucursalesDeRuta() {
             try {
                 IniciaCarga("Cargando sucursales...");
+
                 await Task.Delay(500);
+
                 var listaInmuebeles = await ObtenerSucursalesLocal();
+
                 DetenerCarga();
+
                 if(listaInmuebeles.Any()) {
                     ListSucursales = new ObservableCollection<RutasInmuebles>(listaInmuebeles);
                 } else {
@@ -97,20 +103,19 @@ namespace BatiaSuite.ViewModel {
                             return;
                         }
 
-                        string urlEndpoint = $"RutasOperador?idoperador={UserSession.IdPersonal}&mes={UserSession.IdMesTracking}&anio={UserSession.IdAnioTracking}";
+                        string urlEndpoint = $"{baseUrl}RutasOperador?idoperador={UserSession.IdPersonal}&mes={UserSession.IdMesTracking}&anio={UserSession.IdAnioTracking}";
 
                         var todasLasFilas = await _httpHelper.GetAsync<List<RutasInmuebles>>(urlEndpoint);
 
                         if(todasLasFilas != null) {
                             var sucursalesUnicas = todasLasFilas
-     .Where(r => r.IdRuta == idRuta)
-     .GroupBy(r => r.IdInmueble)
-     .Select(g => {
-         var sucursal = g.First();
-         sucursal.IsCompleted = g.All(r => r.Estatusl == "Entregado");
-         return sucursal;
-     })
-     .ToList();
+                                  .Where(r => r.IdRuta == idRuta)
+                                  .GroupBy(r => r.IdInmueble)
+                                  .Select(g => {
+                                      var sucursal = g.First();
+                                      sucursal.IsCompleted = g.All(r => r.Estatusl == "Entregado");
+                                      return sucursal;
+                                  }).ToList();
 
                             ListSucursales = new ObservableCollection<RutasInmuebles>(sucursalesUnicas);
                             AvailableDeliveries = ListSucursales.Count > 0;
@@ -144,7 +149,7 @@ namespace BatiaSuite.ViewModel {
                     System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM Rutas ({todasLasFilasLocal.Count} registros) ---");
 
                     foreach(var r in todasLasFilasLocal) {
-                        System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble} | Estatus: {r.Estatusl}");
+                        System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble} | Estatus: {r.Estatusl} | Completado: {r.IsCompleted} | tipo: {r.Tipo}");
                     }
 
                     System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM Rutas ---");

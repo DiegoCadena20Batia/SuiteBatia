@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Text;
 using System.Windows.Input;
+using BatiaSuite.Views.RutasEntregas;
 
 namespace BatiaSuite.ViewModel;
 
@@ -192,9 +193,8 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
 
             // 3. Regreso seguro al menú de sucursales
             await Shell.Current.Navigation.PopToRootAsync(false);
-            await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
+            await Shell.Current.GoToAsync(nameof(TiposListadoPage), true);
 
-            await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
         } catch(Exception ex) {
             await DisplayAlert("Error", "Ocurrió un error al guardar localmente: " + ex.Message, "Cerrar");
             IsBusy = false;
@@ -264,7 +264,7 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
 
                     // 3. Regreso seguro al menú de sucursales
                     await Shell.Current.Navigation.PopToRootAsync(false);
-                    await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
+                    await Shell.Current.GoToAsync(nameof(TiposListadoPage), true);
                 } else {
                     await GuardarEnPendientesOffline();
                 }

@@ -4,6 +4,7 @@ using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -137,6 +138,7 @@ namespace BatiaSuite.Data {
 
         public async Task VerificarRegistros() {
             var todasLasRutasGuardadas = await ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+            if(!todasLasRutasGuardadas.Any()) Debug.WriteLine("Tabla Vacia");
             try {
                 System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasCompletas ({todasLasRutasGuardadas.Count} registros) ---");
 
