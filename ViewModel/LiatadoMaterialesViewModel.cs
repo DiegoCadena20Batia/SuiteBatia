@@ -100,16 +100,19 @@ namespace BatiaSuite.ViewModel {
         /// Consulta Offline usando la expresión Lambda genérica de tu LocalDbContext
         /// </summary>
         public async Task ObtenerMaterialesLocal() {
-            // Filtramos la tabla maestra desnormalizada usando los IDs que dejamos guardados en la sesión
+            // Agregamos el filtro por r.Tipo usando lo que guardamos en UserSession
             var materialesLocal = await _dbContext.ObtenerListaLocalAsync<RutasInmuebles>(r =>
                 r.IdRuta == UserSession.IdRutaTracking &&
-                r.IdInmueble == UserSession.IdInmuebleTracking
+                r.IdInmueble == UserSession.IdInmuebleTracking &&
+                r.Tipo == UserSession.TipoListadoTracking // <-- FILTRO CLAVE FALTANTE
             );
 
             if(materialesLocal != null && materialesLocal.Count > 0) {
                 foreach(var item in materialesLocal) {
                     item.Entregado = item.Cantidad;
                 }
+
+                // Ahora sí toma el IdListado correspondiente a ESTE tipo específico
                 FolioEntry = materialesLocal.First().IdListado.ToString();
                 ListMateriales = new ObservableCollection<RutasInmuebles>(materialesLocal);
             } else {
@@ -168,7 +171,8 @@ namespace BatiaSuite.ViewModel {
                         }
 
                         todosLosMateriales = todosLosMateriales
-                            .Where(r => r.IdRuta == UserSession.IdRutaTracking && r.IdInmueble == UserSession.IdInmuebleTracking)
+                            .Where(r => r.IdRuta == UserSession.IdRutaTracking && r.IdInmueble == UserSession.IdInmuebleTracking &&
+                r.Tipo == UserSession.TipoListadoTracking)
                             .ToList();
                         ListMateriales = new ObservableCollection<RutasInmuebles>(todosLosMateriales);
                         foreach(var item in todosLosMateriales) {

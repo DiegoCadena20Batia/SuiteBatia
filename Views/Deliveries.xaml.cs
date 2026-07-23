@@ -22,7 +22,5 @@ public partial class Deliveries : ContentPage
         base.OnDisappearing();
     }
 
-    private void pkrMes_SelectedIndexChanged(object sender, EventArgs e) {
-
-    }
+  
 }

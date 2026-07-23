@@ -7,6 +7,7 @@ using BatiaSuite.Views;
 using BatiaSuite.Views.RutasEntregas;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.Devices.Sensors;
 using Newtonsoft.Json;
 using Shiny.Locations;
@@ -66,6 +67,13 @@ namespace BatiaSuite.ViewModel {
             UserName = UserSession.NOMBRE;
             IsDelivering = UserSession.IsDelivering;
             _dbContext = new LocalDbContext();
+
+            CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Register<string>(this, async (recipient, message) => {
+                if(message == "SyncCompletado") {
+                    // Reejecutamos la consulta para recalcular los IsCompleted y pintar en verde
+                    await CargarSucursalesDeRuta();
+                }
+            });
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query) {
@@ -145,18 +153,7 @@ namespace BatiaSuite.ViewModel {
     })
     .ToList();
 
-                try {
-                    System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM Rutas ({todasLasFilasLocal.Count} registros) ---");
-
-                    foreach(var r in todasLasFilasLocal) {
-                        System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | IdInmueble: {r.IdInmueble} | Nombre: {r.Inmueble} | Estatus: {r.Estatusl} | Completado: {r.IsCompleted} | tipo: {r.Tipo}");
-                    }
-
-                    System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM Rutas ---");
-                } catch(Exception ex) {
-                    System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en Rutas: {ex.Message}");
-                }
-
+                
                 AvailableDeliveries = true;
                 return sucursalesUnicasLocal;
             } else {

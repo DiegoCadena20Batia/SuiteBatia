@@ -136,22 +136,6 @@ namespace BatiaSuite.Data {
             return filasEliminadas;
         }
 
-        public async Task VerificarRegistros() {
-            var todasLasRutasGuardadas = await ObtenerListaLocalAsync<RutasInmuebles>(x => true);
-            if(!todasLasRutasGuardadas.Any()) Debug.WriteLine("Tabla Vacia");
-            try {
-                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasCompletas ({todasLasRutasGuardadas.Count} registros) ---");
-
-                foreach(var r in todasLasRutasGuardadas) {
-                    System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | ClaveProducto: {r.Clave} | Nombre: {r.Inmueble} | IdLocal: {r.IdLocal}");
-                }
-
-                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
-            } catch(Exception ex) {
-                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
-            }
-        }
-
         /// <summary>
         /// Elimina directamente de SQLite los registros que cumplan con la condición especificada.
         /// </summary>
@@ -171,5 +155,39 @@ namespace BatiaSuite.Data {
             System.Diagnostics.Debug.WriteLine($"[SQLite_Debug] Se eliminaron {totalBorrados} registros de {typeof(T).Name}.");
             return totalBorrados;
         }
+
+
+        #region Metodos de Prueba SELECT
+        public async Task VerificarRegistros() {
+            var todasLasRutasGuardadas = await ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+            if(!todasLasRutasGuardadas.Any()) Debug.WriteLine("Tabla Vacia");
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasCompletas ({todasLasRutasGuardadas.Count} registros) ---");
+
+                foreach(var r in todasLasRutasGuardadas) {
+                    System.Diagnostics.Debug.WriteLine($"IdRuta: {r.IdRuta} | ClaveProducto: {r.Clave} | Nombre: {r.Inmueble} | IdLocal: {r.IdLocal}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmuebles ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmuebles: {ex.Message}");
+            }
+        }
+        public async Task VerificarRegistrosEntregasPendientes() {
+            var todasLasRutasGuardadas = await ObtenerListaLocalAsync<RutaInmueblePendiente>(x => true);
+            if(!todasLasRutasGuardadas.Any()) Debug.WriteLine("Tabla Vacia");
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM RutasInmueblesPendientes ({todasLasRutasGuardadas.Count} registros) ---");
+
+                foreach(var r in todasLasRutasGuardadas) {
+                    System.Diagnostics.Debug.WriteLine($"IdRuta: {r.Id} | ClaveProducto: {r.JsonData}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM RutasInmueblesPendientes ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmueblesPendientes: {ex.Message}");
+            }
+        }
+        #endregion
     }
 }

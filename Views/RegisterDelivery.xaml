@@ -66,7 +66,7 @@
                                 Loop="False"
                                 ItemsSource="{Binding photoPaths}"
                                 IndicatorView="MiIndicador"
-                                HeightRequest="180"
+                                HeightRequest="350"
                                 PeekAreaInsets="20">
                                 <CarouselView.EmptyView>
                                     <Border 
@@ -75,7 +75,9 @@
                                         StrokeDashArray="4,4" 
                                         Stroke="#CED4DA" 
                                         BackgroundColor="#FAFBCF" 
-                                        HeightRequest="150" 
+                                        HeightRequest="330" 
+                                        WidthRequest="250"
+                                        HorizontalOptions="Start"
                                         Margin="5">
                                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
                                             <Label Text="📸" FontSize="28" HorizontalOptions="Center"/>

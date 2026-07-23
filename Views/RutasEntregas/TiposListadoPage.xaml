@@ -60,13 +60,15 @@
                 StrokeThickness="1"
                 Stroke="#E9ECEF"
                 BackgroundColor="White"
-                Padding="18,16">
+                Padding="18,16"
+               >
 
                         <!-- DISPARADORES PARA REMARCAR EN VERDE LA TARJETA -->
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
                                 <Setter Property="BackgroundColor" Value="#E8F5E9" />
                                 <Setter Property="Stroke" Value="#2E7D32" />
+                                <Setter Property="IsEnabled" Value="False" />
                             </DataTrigger>
                         </Border.Triggers>
 

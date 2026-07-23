@@ -201,7 +201,7 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
 
     private async void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e) {
         if(e.NetworkAccess == NetworkAccess.Internet && !_isSyncing) {
-            Task.Run(async () => {
+            await Task.Run(async () => {
                 try {
                     _isSyncing = true;
                     System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión detectada. Procesando cola de entregas...");
@@ -227,6 +227,9 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
                         };
 
                         await LocalNotificationCenter.Current.Show(notificacion);
+                        MainThread.BeginInvokeOnMainThread(() => {
+                            CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Send("SyncCompletado");
+                        });
                     } else {
                         System.Diagnostics.Debug.WriteLine("[Automated_Sync] No se encontraron registros pendientes de envío. Notificación omitida.");
                     }

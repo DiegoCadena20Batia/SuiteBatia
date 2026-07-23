@@ -17,7 +17,6 @@ using BatiaSuite.Views.RutasEntregas;
 namespace BatiaSuite.ViewModel;
 
 public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributable {
-
     private readonly DrawingView _drawingView;
     private readonly LocalDbContext _dbContext; // Uso de tu contexto genérico universal
 
@@ -25,6 +24,7 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
     private ObservableCollection<RutasInmuebles> materiales;
 
     private ObservableCollection<PhotosModel> _photoPaths = new ObservableCollection<PhotosModel>();
+
     public ObservableCollection<PhotosModel> photoPaths {
         get { return _photoPaths; }
         set {
@@ -47,18 +47,21 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
     public ICommand ClearDrawingCommand { get; }
 
     private bool _isSignature;
+
     public bool IsSignature {
         get { return _isSignature; }
         set { _isSignature = value; OnPropertyChanged(); }
     }
 
     private string _pathPhotoLocal;
+
     public string PathPhotoLocal {
         get { return _pathPhotoLocal; }
         set { _pathPhotoLocal = value; OnPropertyChanged(); }
     }
 
     private string _pathFirmaLocal;
+
     public string PathFirmaLocal {
         get { return _pathFirmaLocal; }
         set { _pathFirmaLocal = value; }
@@ -169,6 +172,7 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
             // 6. Guardar usando tu método genérico universal
             await _dbContext.GuardarLocalAsync(pendiente);
 
+
             // 7. Intentar reportar ubicación en local si falla red
             await ReportarUbicacionDeEntrega();
 
@@ -193,8 +197,7 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
 
             // 3. Regreso seguro al menú de sucursales
             await Shell.Current.Navigation.PopToRootAsync(false);
-            await Shell.Current.GoToAsync(nameof(TiposListadoPage), true);
-
+            await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
         } catch(Exception ex) {
             await DisplayAlert("Error", "Ocurrió un error al guardar localmente: " + ex.Message, "Cerrar");
             IsBusy = false;
@@ -252,7 +255,6 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                 var response = await client.PostAsync(RequestUri, contentJson);
 
                 if(response.StatusCode == HttpStatusCode.OK) {
-
                     await _dbContext.BorrarPorPredicadoAsync<RutasInmuebles>(x => x.IdListado == _IdListado);
                     // 1. Reportamos la coordenada en tiempo real al servidor
                     await ReportarUbicacionDeEntrega();
@@ -260,11 +262,9 @@ public partial class RegisterDeliveryViewModel : BaseViewModel, IQueryAttributab
                     await DisplayAlert("Mensaje", "Registrado correctamente", "Ok");
                     IsBusy = false;
 
-
-
                     // 3. Regreso seguro al menú de sucursales
                     await Shell.Current.Navigation.PopToRootAsync(false);
-                    await Shell.Current.GoToAsync(nameof(TiposListadoPage), true);
+                    await Shell.Current.GoToAsync(nameof(DeliveriesDetail), true);
                 } else {
                     await GuardarEnPendientesOffline();
                 }

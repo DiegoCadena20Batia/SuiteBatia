@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace BatiaSuite.Models.EntidadesLocal.RutasEntregas {
     public class RutaInmueblePendiente : ISincronizable {
         [SQLite.PrimaryKey, SQLite.AutoIncrement]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string JsonData { get; set; }
         public DateTime FechaCaptura { get; set; }
 
