@@ -29,7 +29,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Suite Batia</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.7.1</string>
+	<string>1.7.2</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Suite Batia necesita acceder a la cámara para capturar fotos como evidencia. Estas se agregarán a cada registro realizado.</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -78,6 +78,6 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>26</string>
+	<string>27</string>
 </dict>
 </plist>

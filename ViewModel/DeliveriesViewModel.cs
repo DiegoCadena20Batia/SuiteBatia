@@ -67,14 +67,17 @@ namespace BatiaSuite.ViewModel {
 
         private MesModel _idMesSelected;
 
-        public MesModel IdMesSelected {
-            get { return _idMesSelected; }
+        public MesModel? IdMesSelected {
+            get => _idMesSelected;
             set {
-                if(_idMesSelected != value && value != null) {
+                if(_idMesSelected != value) {
                     _idMesSelected = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(); 
 
-                    _ = ValidarYBuscarRutasAsync();
+                    
+                    if(value != null) {
+                        _ = ValidarYBuscarRutasAsync();
+                    }
                 }
             }
         }
@@ -120,7 +123,7 @@ namespace BatiaSuite.ViewModel {
 
             _gpsManager = gpsManager;
             IsTracking = UserSession.SeguimientoGps;
-            UserSession.IsDelivering = false;
+            //UserSession.IsDelivering = false;
 
             DetenerCarga();
             ShowLocationUse();
@@ -184,7 +187,7 @@ namespace BatiaSuite.ViewModel {
                     } else {
                         LimpiarRutas();
                         await App.Current.MainPage.DisplayAlert("Aviso", "No se encontraron rutas asignadas para el mes y año seleccionados.", "OK");
-                        IdMesSelected = null;
+                        await LimpiarMeses();
                     }
                 } catch(Exception ex) {
                     LimpiarRutas();
@@ -195,6 +198,14 @@ namespace BatiaSuite.ViewModel {
                 }
             } else {
                 var listaCompleta = await _localDbContext.ObtenerListaLocalAsync<RutasInmuebles>(x => true);
+                int? primerregistro = listaCompleta.FirstOrDefault()?.Mes;
+
+                if(primerregistro!=IdMesSelected.idMes) {
+                    LimpiarRutas();
+                    await App.Current.MainPage.DisplayAlert("Error", "No hay datos conexión, necesitas conexión a internet para ver las rutas.", "OK");
+                    await LimpiarMeses();
+                    return;
+                }
 
                 if(listaCompleta.Any()) {
                     var datosFiltrados = listaCompleta.DistinctBy(x => x.IdRuta);
@@ -229,6 +240,11 @@ namespace BatiaSuite.ViewModel {
             };
             MesList = meses;
             IsBusy = false;
+        }
+
+        private async Task LimpiarMeses() {
+         
+            IdMesSelected = null;
         }
 
         private async Task Register() {
@@ -491,7 +507,7 @@ namespace BatiaSuite.ViewModel {
 
         private async Task ShowLocationUse() {
             if(UserSession.ShowAcceptTracking == false) {
-                await Task.Delay(1000);
+                await Task.Delay(350);
                 var popup = new LocationUse();
                 await MopupService.Instance.PushAsync(popup);
             }
