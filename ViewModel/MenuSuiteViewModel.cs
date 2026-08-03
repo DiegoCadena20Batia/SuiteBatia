@@ -20,6 +20,7 @@ using BatiaSuite.Views.Sanitizacion;
 using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.Supervision;
 using BatiaSuite.Views.SupervisionMantenimiento;
+using BatiaSuite.Views.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Views.SupplierDeliveries;
 using BatiaSuite.Views.Vacantes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -370,6 +371,12 @@ plataforma = "2";
             Details = Constants.DETALLES_DIARIO_LIMPIEZA_ALDO_CONTI,
             ImageUrl = "limpieza.png",
             IdModulo = 18
+        },
+        new Monkey {
+            Name = Constants.SUPERVISION_MANTENIMIENTO_PROGRAMADA,
+            Details = Constants.DETALLES_SUPERVISION_MANTENIMIENTO_PROGRAMADA,
+            ImageUrl = "supervision.png",
+            IdModulo = 19
         }
         //,
         //new Monkey {
@@ -472,6 +479,9 @@ plataforma = "2";
                 break;
             case Constants.DIARIO_LIMPIEZA_ALDO_CONTI:
                 route = $"{nameof(DiarioLimpiezaPage)}";
+                break;
+            case Constants.SUPERVISION_MANTENIMIENTO_PROGRAMADA:
+                route = $"{nameof(SupervisionesMantenimientoProgramadasPage)}";
                 break;
 
             default:

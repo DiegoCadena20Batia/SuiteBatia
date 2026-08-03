@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.SupervisionMantenimientoOperarioPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="Check List de Supervisión"
+             x:Name="SeccionesPage"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. CABECERA CON DATOS DE LA ORDEN (FIJA) -->
+        <Border Grid.Row="0" 
+                Margin="12,10" 
+                Padding="16" 
+                BackgroundColor="White" 
+                Stroke="#E1E4E8" 
+                StrokeThickness="1">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="14"/>
+            </Border.StrokeShape>
+
+            <VerticalStackLayout Spacing="8">
+                <!-- Cliente e ID -->
+                <Grid ColumnDefinitions="*, Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="1">
+                        <Label Text="{Binding Orden.idCliente, StringFormat='CLIENTE: {0}'}" 
+                               FontSize="11" FontAttributes="Bold" TextColor="#586069"/>
+                        <Label Text="{Binding Orden.cliente}" 
+                               FontSize="16" FontAttributes="Bold" TextColor="#1A202C" 
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+
+                    <Border Grid.Column="1" 
+                            BackgroundColor="#F1F8FF" 
+                            Stroke="#C8E1FF" 
+                            StrokeThickness="1" 
+                            Padding="8,4" 
+                            VerticalOptions="Start">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Label Text="{Binding Orden.idOrden, StringFormat='#{0}'}" 
+                               FontAttributes="Bold" FontSize="13" TextColor="#0366D6"/>
+                    </Border>
+                </Grid>
+
+                <!-- Sucursal y Coordenadas -->
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
+                    <Label Grid.Column="0" Text="📍" FontSize="13" VerticalOptions="Start"/>
+                    <Label Grid.Column="1" Text="{Binding Orden.sucursal}" 
+                           FontSize="13"  TextColor="#4A5568" 
+                           LineBreakMode="WordWrap"/>
+                </Grid>
+
+                <!-- Pie de Cabecera: Tipo de Orden y Fecha -->
+                <Grid ColumnDefinitions="Auto, *, Auto" Margin="0,4,0,0">
+                    <Border Grid.Column="0" BackgroundColor="#EBF8FF" Stroke="#BEE3F8" Padding="8,3">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="6"/>
+                        </Border.StrokeShape>
+                        <Label Text="{Binding Orden.tipomanto}" FontSize="11" FontAttributes="Bold" TextColor="#2B6CB0"/>
+                    </Border>
+
+                    <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                        <Label Text="📅" FontSize="11" VerticalOptions="Center"/>
+                        <Label Text="{Binding Orden.falta}" FontSize="12" TextColor="#718096" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- 2. LISTA DE SECCIONES DEL CHECKLIST (DESPLAZABLE / RECICLADA) -->
+        <CollectionView Grid.Row="1" 
+                        ItemsSource="{Binding Secciones}" 
+                        Margin="12,0,12,10">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                    <ActivityIndicator IsRunning="{Binding IsLoadingSecciones}" Color="#007ACC" IsVisible="{Binding IsLoadingSecciones}"/>
+                    <Label Text="Cargando información..." TextColor="Gray" FontSize="14"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <!-- Tarjeta Táctil para cada Sección -->
+                    <Border Margin="0,5" Padding="14" BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+
+                        <Border.Behaviors>
+                            <toolkit:TouchBehavior 
+Command="{Binding BindingContext.AbrirPreguntasSeccionCommand, Source={x:Reference SeccionesPage}}"
+CommandParameter="{Binding .}"
+PressedBackgroundColor="#EBF8FF"                                      
+PressedOpacity="1" />
+                        </Border.Behaviors>
+                        
+                        
+                        <!--<Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirPreguntasSeccionCommand}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>-->
+
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+
+                            <!-- Ícono dinámico según la sección (🏢, ⚡, 🚰, etc.) -->
+                            <Border Grid.Column="0" BackgroundColor="#F7FAFC" Stroke="#EDF2F7" Padding="10" VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10"/>
+                                </Border.StrokeShape>
+                                <Label Text="{Binding Icono}" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+
+                            <!-- Información de la Sección y Barra de Progreso -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                <Label Text="{Binding CategoriaSuperior}" FontSize="10" FontAttributes="Bold" TextColor="#A0AEC0"/>
+                                <Label Text="{Binding Seccion}" FontSize="14" FontAttributes="Bold" TextColor="#2D3748" LineBreakMode="WordWrap"/>
+
+                                <!-- Avance: Preguntas Respondidas vs Total -->
+                                <ProgressBar Progress="{Binding ProgresoPorcentaje}" 
+             ProgressColor="#3182CE" 
+             HeightRequest="4" 
+             Margin="0,4,0,0"/>
+                            </VerticalStackLayout>
+
+                            <!-- Indicador de estado / Flecha -->
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="2">
+                                <Label Text="{Binding TotalPreguntas, StringFormat='{0} preg.'}" FontSize="11" TextColor="#718096" HorizontalOptions="End"/>
+                                <Label Text="➔" FontSize="14" TextColor="#CBD5E0" HorizontalOptions="End" Margin="0,2,0,0"/>
+                            </VerticalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

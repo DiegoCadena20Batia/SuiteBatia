@@ -11,12 +11,14 @@ using BatiaSuite.ViewModel.NotificacionesSupervisores;
 using BatiaSuite.ViewModel.RutasEntregas;
 using BatiaSuite.ViewModel.Supervisionmantenimiento;
 using BatiaSuite.ViewModel.SupervisionMantenimiento;
+using BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.EntregasInteligentes;
 using BatiaSuite.Views.NotificacionesSupervisores;
 using BatiaSuite.Views.RutasEntregas;
 using BatiaSuite.Views.SupervisionMantenimiento;
+using BatiaSuite.Views.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Views.SupplierDeliveries;
 using Camera.MAUI;
 using CommunityToolkit.Maui;
@@ -138,6 +140,17 @@ public static class MauiProgram {
         builder.Services.AddTransient<SupervisionMantenimientoFirmasViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoFirmasPage>();
 
+        builder.Services.AddTransient<SupervisionesMantenimientoProgramadasViewModel>();
+        builder.Services.AddTransient<SupervisionesMantenimientoProgramadasPage>();
+
+        builder.Services.AddTransient<SupervisionMantenimientoOperarioPage>();
+        builder.Services.AddTransient<SupervisionMantenimientoOperarioViewModel>();
+
+        builder.Services.AddTransient<PreguntasSeccionPage>();
+        builder.Services.AddTransient<PreguntasSeccionViewModel>();
+
+       
+
         builder.Services.AddSingleton<DbContext>();
 
         //Correctivos Mayores
@@ -151,6 +164,8 @@ public static class MauiProgram {
 
         builder.Services.AddTransient<CentroNotificacionesSupervisorViewModel>();
         builder.Services.AddTransient<CentroNotificacionesSupervisor>();
+
+        
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();

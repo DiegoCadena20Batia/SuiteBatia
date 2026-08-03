@@ -30,9 +30,9 @@ public static class Constants {
 
     #region API URI´s 
     //URL BASE PARA PRODUCCIÓN
-    public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
+    //public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
     //URL BASE PARA PRUEBAS
-    //public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
+    public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
     public const string ENT_GET_PRECARGA_API = "entregaprecarga";
     public const string GET_MODULOS_MENU = "ObtenerModulos";
     public const string GET_TECNICOS_ORDENES_TRABAJO_API = "OTTecnico";
@@ -113,6 +113,7 @@ public static class Constants {
     public const string DIARIO_GERENTE_ALDO_CONTI = "Diario Gerente de Aldo Conti";
     public const string REPORTE_MANTENIMIENTO_ALDO_CONTI = "Reporte de Mantenimiento de Aldo Conti";
     public const string DIARIO_LIMPIEZA_ALDO_CONTI = "Checklist diario de limpieza de Aldo Conti";
+    public const string SUPERVISION_MANTENIMIENTO_PROGRAMADA= "Supervisiones de mantenimiento programadas";
 
     public const string VACANTES = "Vacantes";
     public const string DATOS_GENERALES = "Datos generales";
@@ -341,6 +342,7 @@ public static class Constants {
     public const string DETALLES_DIARIO_GERENTE_ALDO_CONTI = "Se realiza el diario de gerente mediante un checklist detallado.";
     public const string DETALLES_REPORTE_MANTENIMIENTO_ALDO_CONTI = "Se realiza el reporte de mantenimiento mediante un checklist detallado.";
     public const string DETALLES_DIARIO_LIMPIEZA_ALDO_CONTI = "Se realiza el reporte de limpieza diario mediante un checklist detallado.";
+    public const string DETALLES_SUPERVISION_MANTENIMIENTO_PROGRAMADA = "Se consultan las supervisiones de mantenimiento programadas.";
 
     #region MONTHS
     public static List<object> MonthList = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];

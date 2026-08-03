@@ -21,6 +21,7 @@ using BatiaSuite.Views.Sanitizacion;
 using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.Supervision;
 using BatiaSuite.Views.SupervisionMantenimiento;
+using BatiaSuite.Views.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Views.SupplierDeliveries;
 using BatiaSuite.Views.Vacantes;
 using CommunityToolkit.Mvvm.Messaging;
@@ -135,6 +136,10 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(SupervisionMantenimientoExtintoresObjectPage), typeof(SupervisionMantenimientoExtintoresObjectPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoFirmasPage), typeof(SupervisionMantenimientoFirmasPage));
 
+        Routing.RegisterRoute(nameof(SupervisionesMantenimientoProgramadasPage), typeof(SupervisionesMantenimientoProgramadasPage));
+        Routing.RegisterRoute(nameof(SupervisionMantenimientoOperarioPage), typeof(SupervisionMantenimientoOperarioPage));
+        Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
+
         #endregion SUPERVISION MANTENIMIENTO
 
         #region SOLICITUD COTIZACION
@@ -176,6 +181,7 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(TiposListadoPage), typeof(TiposListadoPage));
         Routing.RegisterRoute(nameof(CentroNotificacionesSupervisor), typeof(CentroNotificacionesSupervisor));
 
+        
         #endregion Rutas
 
         _syncService = new SyncService();

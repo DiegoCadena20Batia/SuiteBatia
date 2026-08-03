@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.PreguntasSeccionPage"
+             xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento.Operarios"
+            Title="{Binding Seccion.Seccion, StringFormat='Sección: {0}'}"
+             BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- 1. ENCABEZADO DE LA SECCIÓN (FIJO ARRIBA) -->
+        <Border Grid.Row="0" 
+            Margin="12,10" 
+            Padding="14" 
+            BackgroundColor="White" 
+            Stroke="#E1E4E8" 
+            StrokeThickness="1">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12"/>
+            </Border.StrokeShape>
+
+            <Grid ColumnDefinitions="Auto, *">
+                <Label Grid.Column="0" Text="{Binding Seccion.Icono}" FontSize="28" VerticalOptions="Center" Margin="0,0,12,0"/>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                    <Label Text="{Binding Seccion.CategoriaSuperior}" FontSize="11" FontAttributes="Bold" TextColor="#718096"/>
+                    <Label Text="{Binding Seccion.Seccion}" FontSize="16" FontAttributes="Bold" TextColor="#1A202C" LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- 2. CONTENIDO SCROLLEABLE (PREGUNTAS + FOTOS) -->
+        <ScrollView Grid.Row="1" Padding="12,0">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- LISTA DE PREGUNTAS (Usando BindableLayout para evitar conflictos de scroll) -->
+                <StackLayout BindableLayout.ItemsSource="{Binding Seccion.Preguntas}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:PreguntaModel">
+                            <Border Margin="0,6" Padding="14" BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1.5">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12"/>
+                                </Border.StrokeShape>
+
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding EstaRespondida}" Value="True">
+                                        <Setter Property="Stroke" Value="#38A169" />
+                                        <Setter Property="BackgroundColor" Value="#F6FFF8" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <VerticalStackLayout Spacing="10">
+                                    <!-- Encabezado de la Pregunta -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Label Grid.Column="0" Text="{Binding IdPregunta, StringFormat='{0}.'}" 
+                                           FontAttributes="Bold" FontSize="14" TextColor="#2B6CB0" Margin="0,0,6,0"/>
+                                        <Label Grid.Column="1" Text="{Binding Pregunta}" 
+                                           FontSize="13" TextColor="#2D3748" LineBreakMode="WordWrap"/>
+                                        <Label Grid.Column="2" Text="✓" TextColor="#38A169" FontAttributes="Bold" FontSize="16"
+                                           IsVisible="{Binding EstaRespondida}" VerticalOptions="Start" Margin="6,0,0,0"/>
+                                    </Grid>
+
+                                    <!-- BOTONES DE RESPUESTA RÁPIDA -->
+                                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8" Margin="0,4,0,0">
+                                        <!-- Botón BUENO -->
+                                        <Button Grid.Column="0" Text="✓ Bueno" FontSize="12" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" BackgroundColor="#EDF2F7" TextColor="#4A5568"
+                                            Command="{Binding BindingContext.MarcarBuenoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            CommandParameter="{Binding .}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding EsBueno}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="#38A169" />
+                                                    <Setter Property="TextColor" Value="White" />
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+
+                                        <!-- Botón MALO -->
+                                        <Button Grid.Column="1" Text="✕ Malo" FontSize="12" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" BackgroundColor="#EDF2F7" TextColor="#4A5568"
+                                            Command="{Binding BindingContext.MarcarMaloCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            CommandParameter="{Binding .}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding EsMalo}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="#E53E3E" />
+                                                    <Setter Property="TextColor" Value="White" />
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+
+                                        <!-- Botón N/A -->
+                                        <Button Grid.Column="2" Text="— N/A" FontSize="12" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" BackgroundColor="#EDF2F7" TextColor="#4A5568"
+                                            Command="{Binding BindingContext.MarcarNACommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            CommandParameter="{Binding .}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding EsNA}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="#718096" />
+                                                    <Setter Property="TextColor" Value="White" />
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+                                    </Grid>
+
+                                    <!-- Observaciones -->
+                                    <Entry Placeholder="Observaciones / Comentarios (Opcional)" 
+                                       Text="{Binding Observaciones}" FontSize="12" BackgroundColor="White" Margin="0,2,0,0"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+
+                <!-- SECCIÓN DE FOTOGRAFÍAS DE EVIDENCIA -->
+                <Border StrokeShape="RoundRectangle 14" StrokeThickness="1" Stroke="#E9ECEF" BackgroundColor="White" Padding="16" Margin="0,0,0,15">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,2" Radius="4" Opacity="0.03" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Fotografías de Evidencia" FontFamily="MontBold" FontSize="16" TextColor="#1A3B60" />
+                                <Label Text="Máximo 5 imágenes de soporte" FontFamily="MontRegular" FontSize="12" TextColor="#6C757D" />
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="1" BackgroundColor="#EEF4FA" TextColor="#4A92FE" ImageSource="camera.png" ContentLayout="Left,8" Text="AÑADIR" FontFamily="MontBold" FontSize="13" HeightRequest="40" Padding="14,0" CornerRadius="8"
+                                Command="{Binding PhotoCommand}" />
+                        </Grid>
+
+                        <Grid RowDefinitions="Auto, Auto" Margin="0,5,0,0">
+                            <CarouselView Grid.Row="0" x:Name="MiCarrusel" Loop="False" ItemsSource="{Binding PhotoPaths}" IndicatorView="MiIndicador" HeightRequest="350" PeekAreaInsets="20">
+                                <CarouselView.EmptyView>
+                                    <Border StrokeShape="RoundRectangle 10" StrokeThickness="1" StrokeDashArray="4,4" Stroke="#CED4DA" BackgroundColor="#FAFBCF" HeightRequest="330" WidthRequest="250" HorizontalOptions="Start" Margin="5">
+                                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                                            <Label Text="📸" FontSize="28" HorizontalOptions="Center"/>
+                                            <Label Text="Ninguna foto capturada aún" FontFamily="MontSemibold" FontSize="13" TextColor="#6C757D" HorizontalTextAlignment="Center"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </CarouselView.EmptyView>
+                                <CarouselView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border StrokeShape="RoundRectangle 10" StrokeThickness="1" Stroke="#E9ECEF" Margin="6,5" BackgroundColor="#F8F9FA">
+                                            <Grid>
+                                                <Image Source="{Binding UrlPhoto}" Aspect="AspectFill" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
+                                                <Button Text="✕" TextColor="White" BackgroundColor="#CC0000" FontSize="14" FontAttributes="Bold" WidthRequest="45" HeightRequest="45" CornerRadius="30" Padding="0" HorizontalOptions="End" VerticalOptions="Start" Margin="6" 
+                                                    Command="{Binding Source={x:Reference MiIndicador}, Path=BindingContext.DeletePhotoCommand}" 
+                                                    CommandParameter="{Binding .}" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </CarouselView.ItemTemplate>
+                            </CarouselView>
+
+                            <IndicatorView Grid.Row="1" x:Name="MiIndicador" IndicatorColor="#DDE2E5" SelectedIndicatorColor="#4A92FE" HorizontalOptions="Center" Margin="0,10,0,0" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- 3. BOTÓN INFERIOR DE GUARDAR (FIJO ABAJO) -->
+        <Border Grid.Row="2" BackgroundColor="White" Padding="12" Stroke="#E2E8F0">
+            <Button Text="Guardar Sección" 
+                Command="{Binding GuardarSeccionCommand}" 
+                BackgroundColor="#007ACC" 
+                TextColor="White" 
+                FontAttributes="Bold" 
+                CornerRadius="10" 
+                HeightRequest="46"/>
+        </Border>
+
+    </Grid>
+</ContentPage>

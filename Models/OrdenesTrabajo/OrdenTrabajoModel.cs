@@ -4,6 +4,9 @@ namespace BatiaSuite.Models.OrdenesTrabajo;
 public class OrdenTrabajoModel {
     public int idOrden { get; set; }
     public int idCliente { get; set; }
+    public int idInmueble { get; set; }
+    public string latitud { get; set; }
+    public string longitud { get; set; }
     public string sucursal { get; set; }
     public string cliente { get; set; }
     public string falta { get; set; }

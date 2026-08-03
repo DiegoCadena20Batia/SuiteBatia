@@ -86,25 +86,25 @@
 	</PropertyGroup>-->
 
 <!--CONFIGURACIÓN COMPLETA PARA GENERAR EL ARCHIVE (RELEASE) -->
-<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
-    <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-    <ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
-    <ApplicationTitle>Suite Batia</ApplicationTitle>
-    
-    <ProvisioningType>manual</ProvisioningType>
-    <CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
-    <CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
-    
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>copyused</TrimMode>
-    <MtouchLink>None</MtouchLink>
-    <UseInterpreter>true</UseInterpreter>
-    <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
-    <MtouchFastDev>false</MtouchFastDev>
-    
-    <BuildIpa>true</BuildIpa>
-    <ArchiveOnBuild>true</ArchiveOnBuild>
-</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<ServerAddress>192.168.11.146</ServerAddress>
+		<ServerUser>ricardoberistain</ServerUser>
+		<ServerTcpPort>52852</ServerTcpPort>
+		<ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
+		<ApplicationTitle>Suite Batia</ApplicationTitle>
+		<ProvisioningType>manual</ProvisioningType>
+		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
+		<CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>copyused</TrimMode>
+		<MtouchLink>None</MtouchLink>
+		<UseInterpreter>true</UseInterpreter>
+		<EnableAssemblyILStripping>false</EnableAssemblyILStripping>
+		<MtouchFastDev>false</MtouchFastDev>
+		<BuildIpa>true</BuildIpa>
+		<ArchiveOnBuild>true</ArchiveOnBuild>
+	</PropertyGroup>
 
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
@@ -256,6 +256,9 @@
 		</Compile>
 		<Compile Update="Views\SolicitudCotizacion\SolicitudCotizacionPage.xaml.cs">
 			<DependentUpon>SolicitudCotizacionPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\SupervisionMantenimiento\Operarios\SupervisionMantenimientoOperarioPage.xaml.cs">
+		  <DependentUpon>SupervisionMantenimientoOperarioPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoFirmasPage.xaml</DependentUpon>
@@ -475,6 +478,15 @@
 		</MauiXaml>
 		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresInmueblePage.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\PreguntasSeccionPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\SupervisionesMantenimientoProgramadasPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\SupervisionMantenimientoOperarioPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml">
 			<Generator>MSBuild:Compile</Generator>

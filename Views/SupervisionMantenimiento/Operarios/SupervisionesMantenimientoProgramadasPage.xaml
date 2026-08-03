@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.SupervisionesMantenimientoProgramadasPage"
+             xmlns:converters="clr-namespace:BatiaSuite.Converters"
+             xmlns:controls="clr-namespace:BatiaSuite.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:const="clr-namespace:BatiaSuite.Utils"
+             x:Name="PageRoot"
+             Title="Supervisiones"
+             BackgroundColor="WhiteSmoke">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Instancia única del conversor para optimizar memoria -->
+            <converters:NullOrEmptyToDefaultConverter x:Key="NullOrEmptyConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+     Text="{Binding SelectedMonth}"
+     Command="{Binding GetMonthCommand}" />
+
+        <ToolbarItem
+     Text="{Binding FilterYear}"
+     Command="{Binding GetYearCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="auto,*">
+
+        <Border Stroke="#B0D4FF"
+        StrokeThickness="1.5"
+        BackgroundColor="#F4F8FC"
+        StrokeShape="RoundRectangle 12"
+        Padding="16, 10"
+        HorizontalOptions="Fill">
+
+            <VerticalStackLayout Spacing="2">
+
+                <Label FontSize="11"
+               FontAttributes="Bold"
+               TextColor="#4A7BB0"
+               Text="SUCURSAL"
+               CharacterSpacing="0.5" />
+
+                <Entry Placeholder="Ingresa la sucursal"
+               PlaceholderColor="#A0B4CC"
+               TextColor="#1E293B"
+               FontSize="15"
+               BackgroundColor="Transparent"
+               HeightRequest="40"
+               ClearButtonVisibility="WhileEditing"
+               Text="{Binding FiltroTexto}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding CargarOrdenesCommand}" Grid.Row="1">
+            <Grid RowDefinitions="*">
+
+                <!-- Indicador de Carga -->
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                           IsVisible="{Binding IsLoading}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Color="#007ACC"
+                           ZIndex="2" />
+
+                <!-- Lista de Órdenes -->
+                <CollectionView ItemsSource="{Binding Ordenes}"
+                        Margin="12,8"
+                        VerticalOptions="Fill"
+                        HorizontalOptions="Fill">
+
+                    <!-- Vista cuando no hay órdenes -->
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="20">
+                            <Label Text="📋" FontSize="40" HorizontalOptions="Center" />
+                            <Label Text="No hay órdenes de trabajo asignadas"
+                           TextColor="Gray" FontSize="16" FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="0,5"
+                                Padding="14"
+                                BackgroundColor="White"
+                                Stroke="#E2E8F0"
+                                StrokeThickness="1">
+
+                                <Border.Behaviors>
+                                    <toolkit:TouchBehavior 
+            Command="{Binding BindingContext.VerFormularioSupervisionCommand, Source={x:Reference PageRoot}}"
+            CommandParameter="{Binding .}"
+            PressedBackgroundColor="#EBF8FF"                                      
+            PressedOpacity="1" />
+                                </Border.Behaviors>
+
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14" />
+                                </Border.StrokeShape>
+
+                                <VerticalStackLayout Spacing="8">
+
+                                    <!-- CABECERA: Usamos Grid con proporción * y Auto para evitar desbordes -->
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="1">
+                                            <Label Text="{Binding cliente, StringFormat='CLIENTE: {0}'}"
+                                           FontSize="11" FontAttributes="Bold" TextColor="#586069" />
+                                            <!-- Nombre del cliente responsivo con ajuste de línea -->
+                                            <Label Text="{Binding cliente}"
+                                           FontSize="15" FontAttributes="Bold" TextColor="#24292E"
+                                           LineBreakMode="WordWrap"
+                                           MaxLines="2" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Píldora ID de Orden (Siempre visible a la derecha) -->
+                                        <Border Grid.Column="1"
+                                        BackgroundColor="#F1F8FF"
+                                        Stroke="#C8E1FF"
+                                        StrokeThickness="1"
+                                        Padding="8,4"
+                                        VerticalOptions="Start"
+                                        HorizontalOptions="End">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="8" />
+                                            </Border.StrokeShape>
+                                            <Label Text="{Binding idOrden, StringFormat='#{0}'}"
+                                           FontAttributes="Bold" FontSize="13" TextColor="#0366D6" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- SUCURSAL: Preparada para nombres largos -->
+                                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
+                                        <Label Grid.Column="0" Text="📍" FontSize="13" VerticalOptions="Start" />
+                                        <Label Grid.Column="1" Text="{Binding sucursal}" FontSize="13" TextColor="#4A5568"
+                                       LineBreakMode="WordWrap" />
+                                    </Grid>
+
+                                    <!-- Línea Divisoria Sutil -->
+                                    <BoxView HeightRequest="1" BackgroundColor="#EDF2F7" Margin="0,2" />
+
+                                    <!-- DESCRIPCIÓN: Ajuste de línea completo -->
+                                    <Label Text="{Binding descripcion}"
+                                   FontSize="13"
+                                   TextColor="#718096"
+                                   LineBreakMode="WordWrap"
+                                   MaxLines="3" />
+
+                                    <!-- PIE DE TARJETA: Se adapta a cualquier tamaño de pantalla -->
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" Margin="0,4,0,0">
+
+                                        <!-- Badge de Tipo de Mantenimiento -->
+                                        <Border Grid.Column="0"
+                                        BackgroundColor="#EBF8FF"
+                                        Stroke="#BEE3F8"
+                                        StrokeThickness="1"
+                                        Padding="8,3"
+                                        VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="6" />
+                                            </Border.StrokeShape>
+                                            <Label Text="{Binding tipomanto}"
+                                           FontSize="11" FontAttributes="Bold" TextColor="#2B6CB0" />
+                                        </Border>
+
+                                        <!-- Fecha de alta alineada a la derecha -->
+                                        <Grid Grid.Column="2" ColumnDefinitions="Auto, Auto" ColumnSpacing="4" VerticalOptions="Center">
+                                            <Label Grid.Column="0" Text="📅" FontSize="11" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding falta}" FontSize="12" TextColor="#718096" VerticalOptions="Center" />
+                                        </Grid>
+                                    </Grid>
+                                </VerticalStackLayout>
+
+                                <Border.GestureRecognizers>
+
+                                    <!--<TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerFormularioSupervisionCommand}"
+                                                      CommandParameter="{Binding .}" />-->
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </RefreshView>
+    </Grid>
+</ContentPage>
