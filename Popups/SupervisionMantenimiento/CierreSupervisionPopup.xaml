@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Popups.SupervisionMantenimiento.CierreSupervisionPopup"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             
+             CanBeDismissedByTappingOutsideOfPopup="False">
+    <Border StrokeShape="RoundRectangle 16"
+            BackgroundColor="{AppThemeBinding Light=White, Dark=White}"
+            Padding="20"
+            WidthRequest="350"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
+
+        <ScrollView>
+            <VerticalStackLayout Spacing="15">
+
+                <Label Text="Finalizar Supervisión"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       HorizontalOptions="Center" />
+
+                <!-- Campo Observaciones -->
+                <Label Text="Observaciones Generales:" FontSize="14" FontAttributes="Bold" />
+                <Editor x:Name="txtObservaciones"
+                        Placeholder="Ingrese comentarios u observaciones generales..."
+                        HeightRequest="80"
+                        AutoSize="Disabled" />
+
+                <!-- Campo Nombre Firmante -->
+                <Label Text="Nombre de quien firma:" FontSize="14" FontAttributes="Bold" />
+                <Entry x:Name="txtNombreFirmante"
+                       Placeholder="Ej. Juan Pérez" />
+
+                <!-- Canvas de Firma -->
+                <Label Text="Firma de Conformidad:" FontSize="14" FontAttributes="Bold" />
+                <Border StrokeThickness="1" Stroke="Gray" HeightRequest="150">
+                    <Grid>
+                        <toolkit:DrawingView x:Name="drawingViewFirma"
+                                            LineColor="Black"
+                                            LineWidth="4"
+                                            IsMultiLineModeEnabled="True" />
+                    </Grid>
+                </Border>
+
+                <!-- Botón para limpiar firma -->
+                <Button Text="Limpiar Firma"
+                        Clicked="OnLimpiarFirmaClicked"
+                        BackgroundColor="Red"
+                        TextColor="White"
+                        HeightRequest="40"
+                        HorizontalOptions="End" />
+
+                <!-- Botones de Acción -->
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,10,0,0">
+                    <Button Grid.Column="0"
+                            Text="Cancelar"
+                            BackgroundColor="#9E9E9E"
+                            TextColor="White"
+                            Clicked="OnCancelarClicked" />
+
+                    <Button Grid.Column="1"
+                            Text="Confirmar"
+                            BackgroundColor="#2196F3"
+                            TextColor="White"
+                            Clicked="OnConfirmarClicked" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Border>
+</toolkit:Popup>

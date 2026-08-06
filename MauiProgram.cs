@@ -1,6 +1,7 @@
 ﻿using BatiaSuite.Data;
 using BatiaSuite.Resources.IconFonts;
 using BatiaSuite.Services;
+using BatiaSuite.Services.SupervisionesMantenimiento;
 using BatiaSuite.Utils;
 using BatiaSuite.ViewModel;
 
@@ -149,7 +150,9 @@ public static class MauiProgram {
         builder.Services.AddTransient<PreguntasSeccionPage>();
         builder.Services.AddTransient<PreguntasSeccionViewModel>();
 
-       
+        builder.Services.AddSingleton<SupervisionMantenimientoStateService>();
+
+
 
         builder.Services.AddSingleton<DbContext>();
 

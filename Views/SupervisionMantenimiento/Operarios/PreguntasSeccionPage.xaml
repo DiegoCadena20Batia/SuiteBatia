@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.PreguntasSeccionPage"
              xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento.Operarios"
+            
             Title="{Binding Seccion.Seccion, StringFormat='Sección: {0}'}"
              BackgroundColor="#F8F9FA">
 
@@ -62,7 +63,7 @@
                                     <!-- BOTONES DE RESPUESTA RÁPIDA -->
                                     <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8" Margin="0,4,0,0">
                                         <!-- Botón BUENO -->
-                                        <Button Grid.Column="0" Text="✓ Bueno" FontSize="12" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" BackgroundColor="#EDF2F7" TextColor="#4A5568"
+                                        <Button Grid.Column="0" Text="✓ SI" FontSize="12" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" BackgroundColor="#EDF2F7" TextColor="#4A5568"
                                             Command="{Binding BindingContext.MarcarBuenoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                             CommandParameter="{Binding .}">
                                             <Button.Triggers>
@@ -74,7 +75,7 @@
                                         </Button>
 
                                         <!-- Botón MALO -->
-                                        <Button Grid.Column="1" Text="✕ Malo" FontSize="12" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" BackgroundColor="#EDF2F7" TextColor="#4A5568"
+                                        <Button Grid.Column="1" Text="✕ NO" FontSize="12" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" BackgroundColor="#EDF2F7" TextColor="#4A5568"
                                             Command="{Binding BindingContext.MarcarMaloCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
                                             CommandParameter="{Binding .}">
                                             <Button.Triggers>

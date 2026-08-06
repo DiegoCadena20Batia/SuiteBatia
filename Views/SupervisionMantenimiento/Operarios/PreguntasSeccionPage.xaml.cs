@@ -8,4 +8,9 @@ public partial class PreguntasSeccionPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override async void OnAppearing() {
+        base.OnAppearing();
+        await Task.Yield();
+    }
 }

@@ -356,6 +356,9 @@
 		<MauiXaml Update="Popups\RutasEntregas\ConfirmarInicioRutaPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Popups\SupervisionMantenimiento\CierreSupervisionPopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Popups\VersionApp\VersionAppPopup.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

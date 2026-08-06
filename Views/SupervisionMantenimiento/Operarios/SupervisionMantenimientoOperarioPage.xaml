@@ -3,11 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.SupervisionMantenimientoOperarioPage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:BatiaSuite.Utils"
              Title="Check List de Supervisión"
              x:Name="SeccionesPage"
              BackgroundColor="#F8F9FA">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *,auto">
 
         <!-- 1. CABECERA CON DATOS DE LA ORDEN (FIJA) -->
         <Border Grid.Row="0" 
@@ -92,17 +93,15 @@
 
                         <Border.Behaviors>
                             <toolkit:TouchBehavior 
-Command="{Binding BindingContext.AbrirPreguntasSeccionCommand, Source={x:Reference SeccionesPage}}"
-CommandParameter="{Binding .}"
-PressedBackgroundColor="#EBF8FF"                                      
-PressedOpacity="1" />
+                                PressedBackgroundColor="#EBF8FF"
+                                PressedOpacity="1" />
                         </Border.Behaviors>
-                        
-                        
-                        <!--<Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AbrirPreguntasSeccionCommand}"
-                                                  CommandParameter="{Binding .}" />
-                        </Border.GestureRecognizers>-->
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={x:Reference SeccionesPage}, Path=BindingContext.AbrirPreguntasSeccionCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
 
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
 
@@ -122,6 +121,7 @@ PressedOpacity="1" />
                                 <!-- Avance: Preguntas Respondidas vs Total -->
                                 <ProgressBar Progress="{Binding ProgresoPorcentaje}" 
              ProgressColor="#3182CE" 
+             BackgroundColor="{AppThemeBinding Light=lightgray , Dark=lightgray}"                                
              HeightRequest="4" 
              Margin="0,4,0,0"/>
                             </VerticalStackLayout>
@@ -137,5 +137,32 @@ PressedOpacity="1" />
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <Grid Grid.Row="2">
+
+            <VerticalStackLayout>
+                
+
+        <Button Text="🧪 Llenar datos de prueba"
+        Command="{Binding LlenarDatosPruebaDebugCommand}"
+        BackgroundColor="Orange"
+        TextColor="White"
+        IsVisible="{x:Static local:DebugFlags.EsDebug}" />
+
+        <Border 
+                Padding="15,10"         
+                StrokeShape="Rectangle">
+
+            <Button Text="Finalizar y Enviar Supervisión"
+                    Command="{Binding EnviarSupervisionCommand}"
+  
+                    BackgroundColor="#2196F3"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HeightRequest="50"
+                    CornerRadius="25" />
+        </Border>
+            </VerticalStackLayout>
+        </Grid>
     </Grid>
 </ContentPage>

@@ -123,4 +123,9 @@ public class HttpHelper {
             throw;
         }
     }
+
+    public async Task<bool> PostMultipartAsync(string url, MultipartFormDataContent content) {
+        var response = await _httpClient.PostAsync(url, content);
+        return response.IsSuccessStatusCode;
+    }
 }

@@ -12,24 +12,22 @@ namespace BatiaSuite.Models.SupervisionMantenimiento.Operarios
         public string Pregunta { get; set; } = string.Empty;
 
         [ObservableProperty]
-        private string _respuesta = string.Empty;
+        private int? _respuesta;
 
         [ObservableProperty]
         private string _observaciones = string.Empty;
 
-        // Se notifica automáticamente cuando cambia 'Respuesta'
-        partial void OnRespuestaChanged(string value) {
+        partial void OnRespuestaChanged(int? value) {
             OnPropertyChanged(nameof(EstaRespondida));
             OnPropertyChanged(nameof(EsBueno));
             OnPropertyChanged(nameof(EsMalo));
             OnPropertyChanged(nameof(EsNA));
         }
 
-        public bool EstaRespondida => !string.IsNullOrEmpty(Respuesta);
+        public bool EstaRespondida => Respuesta.HasValue;
 
-        // Banderas para activar los estilos de los botones
-        public bool EsBueno => Respuesta == "Bueno";
-        public bool EsMalo => Respuesta == "Malo";
-        public bool EsNA => Respuesta == "N/A";
+        public bool EsMalo => Respuesta == 1;
+        public bool EsBueno => Respuesta == 2;
+        public bool EsNA => Respuesta == 0;
     }
 }

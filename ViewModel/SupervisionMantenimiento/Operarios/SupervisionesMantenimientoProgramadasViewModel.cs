@@ -7,7 +7,7 @@ using SlackAPI;
 using System.Collections.ObjectModel;
 
 namespace BatiaSuite.ViewModel {
-
+    using BatiaSuite.Services.SupervisionesMantenimiento;
     using CommunityToolkit.Mvvm.ComponentModel;
     using CommunityToolkit.Mvvm.Input;
     using System.Collections.ObjectModel;
@@ -17,6 +17,7 @@ namespace BatiaSuite.ViewModel {
         #region Variables
         private readonly HttpHelper _httpHelper;
         private readonly string _baseUrlApi = Constants.API_BASE_URL;
+        private readonly SupervisionMantenimientoStateService _stateService;
 
         [ObservableProperty]
         private ObservableCollection<OrdenTrabajoModel> _ordenes = new();
@@ -44,10 +45,11 @@ namespace BatiaSuite.ViewModel {
         private List<int> _yearList = new();
         #endregion
 
-        public SupervisionesMantenimientoProgramadasViewModel(HttpHelper httpHelper) {
+        public SupervisionesMantenimientoProgramadasViewModel(HttpHelper httpHelper, SupervisionMantenimientoStateService stateService) {
             _httpHelper = httpHelper;
+            _stateService = stateService;
             InitValues();
-            _ = CargarOrdenesAsync();
+                _ = CargarOrdenesAsync();
         }
 
         private void InitValues() {
@@ -138,6 +140,8 @@ namespace BatiaSuite.ViewModel {
         private async Task VerFormularioSupervision(OrdenTrabajoModel ordenSeleccionada) {
             if(ordenSeleccionada == null) return;
 
+
+            _stateService.FechaInicio = DateTime.Now;
             // Preparamos el diccionario de parámetros con el objeto completo
             var navigationParameters = new Dictionary<string, object>
             {
