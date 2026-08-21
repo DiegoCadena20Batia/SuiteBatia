@@ -8,7 +8,7 @@
              xmlns:const="clr-namespace:BatiaSuite.Utils"
              x:Name="PageRoot"
              Title="Supervisiones"
-             BackgroundColor="WhiteSmoke">
+            BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -29,9 +29,9 @@
 
     <Grid RowDefinitions="auto,*">
 
-        <Border Stroke="#B0D4FF"
+        <Border Stroke="{AppThemeBinding Light=#B0D4FF, Dark=#2B4C7E}"
         StrokeThickness="1.5"
-        BackgroundColor="#F4F8FC"
+        BackgroundColor="{AppThemeBinding Light=#F4F8FC, Dark=#1A2836}"
         StrokeShape="RoundRectangle 12"
         Padding="16, 10"
         HorizontalOptions="Fill">
@@ -40,13 +40,13 @@
 
                 <Label FontSize="11"
                FontAttributes="Bold"
-               TextColor="#4A7BB0"
+               TextColor="{AppThemeBinding Light=#4A7BB0, Dark=#63B3ED}"
                Text="SUCURSAL"
                CharacterSpacing="0.5" />
 
                 <Entry Placeholder="Ingresa la sucursal"
-               PlaceholderColor="#A0B4CC"
-               TextColor="#1E293B"
+               PlaceholderColor="{AppThemeBinding Light=#A0B4CC, Dark=#64748B}"
+               TextColor="{AppThemeBinding Light=#1E293B, Dark=#F8FAFC}"
                FontSize="15"
                BackgroundColor="Transparent"
                HeightRequest="40"
@@ -60,44 +60,44 @@
 
                 <!-- Indicador de Carga -->
                 <ActivityIndicator IsRunning="{Binding IsLoading}"
-                           IsVisible="{Binding IsLoading}"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"
-                           Color="#007ACC"
-                           ZIndex="2" />
+                       IsVisible="{Binding IsLoading}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Color="{AppThemeBinding Light=#007ACC, Dark=#38BDF8}"
+                       ZIndex="2" />
 
                 <!-- Lista de Órdenes -->
                 <CollectionView ItemsSource="{Binding Ordenes}"
-                        Margin="12,8"
-                        VerticalOptions="Fill"
-                        HorizontalOptions="Fill">
+                    Margin="12,8"
+                    VerticalOptions="Fill"
+                    HorizontalOptions="Fill">
 
                     <!-- Vista cuando no hay órdenes -->
                     <CollectionView.EmptyView>
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Padding="20">
                             <Label Text="📋" FontSize="40" HorizontalOptions="Center" />
                             <Label Text="No hay órdenes de trabajo asignadas"
-                           TextColor="Gray" FontSize="16" FontAttributes="Bold"
-                           HorizontalOptions="Center"
-                           HorizontalTextAlignment="Center" />
+                       TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}" 
+                       FontSize="16" 
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center" />
                         </VerticalStackLayout>
                     </CollectionView.EmptyView>
 
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Border
-                                Margin="0,5"
-                                Padding="14"
-                                BackgroundColor="White"
-                                Stroke="#E2E8F0"
-                                StrokeThickness="1">
+                            <Border Margin="0,5"
+                        Padding="14"
+                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                        Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}"
+                        StrokeThickness="1">
 
                                 <Border.Behaviors>
-                                    <toolkit:TouchBehavior 
-            Command="{Binding BindingContext.VerFormularioSupervisionCommand, Source={x:Reference PageRoot}}"
-            CommandParameter="{Binding .}"
-            PressedBackgroundColor="#EBF8FF"                                      
-            PressedOpacity="1" />
+                                    <toolkit:TouchBehavior Command="{Binding BindingContext.VerFormularioSupervisionCommand, Source={x:Reference PageRoot}}"
+                                               CommandParameter="{Binding .}"
+                                               PressedBackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#2C3E50}"
+                                               PressedOpacity="1" />
                                 </Border.Behaviors>
 
                                 <Border.StrokeShape>
@@ -106,81 +106,92 @@
 
                                 <VerticalStackLayout Spacing="8">
 
-                                    <!-- CABECERA: Usamos Grid con proporción * y Auto para evitar desbordes -->
+                                    <!-- CABECERA -->
                                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                                         <VerticalStackLayout Grid.Column="0" Spacing="1">
                                             <Label Text="{Binding cliente, StringFormat='CLIENTE: {0}'}"
-                                           FontSize="11" FontAttributes="Bold" TextColor="#586069" />
-                                            <!-- Nombre del cliente responsivo con ajuste de línea -->
+                                       FontSize="11" 
+                                       FontAttributes="Bold" 
+                                       TextColor="{AppThemeBinding Light=#586069, Dark=#A0AEC0}" />
+
                                             <Label Text="{Binding cliente}"
-                                           FontSize="15" FontAttributes="Bold" TextColor="#24292E"
-                                           LineBreakMode="WordWrap"
-                                           MaxLines="2" />
+                                       FontSize="15" 
+                                       FontAttributes="Bold" 
+                                       TextColor="{AppThemeBinding Light=#24292E, Dark=#F7FAFC}"
+                                       LineBreakMode="WordWrap"
+                                       MaxLines="2" />
                                         </VerticalStackLayout>
 
-                                        <!-- Píldora ID de Orden (Siempre visible a la derecha) -->
+                                        <!-- Píldora ID de Orden -->
                                         <Border Grid.Column="1"
-                                        BackgroundColor="#F1F8FF"
-                                        Stroke="#C8E1FF"
-                                        StrokeThickness="1"
-                                        Padding="8,4"
-                                        VerticalOptions="Start"
-                                        HorizontalOptions="End">
+                                    BackgroundColor="{AppThemeBinding Light=#F1F8FF, Dark=#1E2D42}"
+                                    Stroke="{AppThemeBinding Light=#C8E1FF, Dark=#2B4C7E}"
+                                    StrokeThickness="1"
+                                    Padding="8,4"
+                                    VerticalOptions="Start"
+                                    HorizontalOptions="End">
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="8" />
                                             </Border.StrokeShape>
                                             <Label Text="{Binding idOrden, StringFormat='#{0}'}"
-                                           FontAttributes="Bold" FontSize="13" TextColor="#0366D6" />
+                                       FontAttributes="Bold" 
+                                       FontSize="13" 
+                                       TextColor="{AppThemeBinding Light=#0366D6, Dark=#63B3ED}" />
                                         </Border>
                                     </Grid>
 
-                                    <!-- SUCURSAL: Preparada para nombres largos -->
+                                    <!-- SUCURSAL -->
                                     <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
                                         <Label Grid.Column="0" Text="📍" FontSize="13" VerticalOptions="Start" />
-                                        <Label Grid.Column="1" Text="{Binding sucursal}" FontSize="13" TextColor="#4A5568"
-                                       LineBreakMode="WordWrap" />
+                                        <Label Grid.Column="1" 
+                                   Text="{Binding sucursal}" 
+                                   FontSize="13" 
+                                   TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"
+                                   LineBreakMode="WordWrap" />
                                     </Grid>
 
                                     <!-- Línea Divisoria Sutil -->
-                                    <BoxView HeightRequest="1" BackgroundColor="#EDF2F7" Margin="0,2" />
+                                    <BoxView HeightRequest="1" 
+                                 BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}" 
+                                 Margin="0,2" />
 
-                                    <!-- DESCRIPCIÓN: Ajuste de línea completo -->
+                                    <!-- DESCRIPCIÓN -->
                                     <Label Text="{Binding descripcion}"
-                                   FontSize="13"
-                                   TextColor="#718096"
-                                   LineBreakMode="WordWrap"
-                                   MaxLines="3" />
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}"
+                               LineBreakMode="WordWrap"
+                               MaxLines="3" />
 
-                                    <!-- PIE DE TARJETA: Se adapta a cualquier tamaño de pantalla -->
+                                    <!-- PIE DE TARJETA -->
                                     <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="6" Margin="0,4,0,0">
 
                                         <!-- Badge de Tipo de Mantenimiento -->
                                         <Border Grid.Column="0"
-                                        BackgroundColor="#EBF8FF"
-                                        Stroke="#BEE3F8"
-                                        StrokeThickness="1"
-                                        Padding="8,3"
-                                        VerticalOptions="Center">
+                                    BackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#1E2D42}"
+                                    Stroke="{AppThemeBinding Light=#BEE3F8, Dark=#2B4C7E}"
+                                    StrokeThickness="1"
+                                    Padding="8,3"
+                                    VerticalOptions="Center">
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="6" />
                                             </Border.StrokeShape>
                                             <Label Text="{Binding tipomanto}"
-                                           FontSize="11" FontAttributes="Bold" TextColor="#2B6CB0" />
+                                       FontSize="11" 
+                                       FontAttributes="Bold" 
+                                       TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}" />
                                         </Border>
 
-                                        <!-- Fecha de alta alineada a la derecha -->
+                                        <!-- Fecha de alta -->
                                         <Grid Grid.Column="2" ColumnDefinitions="Auto, Auto" ColumnSpacing="4" VerticalOptions="Center">
                                             <Label Grid.Column="0" Text="📅" FontSize="11" VerticalOptions="Center" />
-                                            <Label Grid.Column="1" Text="{Binding falta}" FontSize="12" TextColor="#718096" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" 
+                                       Text="{Binding falta}" 
+                                       FontSize="12" 
+                                       TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}" 
+                                       VerticalOptions="Center" />
                                         </Grid>
                                     </Grid>
                                 </VerticalStackLayout>
-
-                                <Border.GestureRecognizers>
-
-                                    <!--<TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.VerFormularioSupervisionCommand}"
-                                                      CommandParameter="{Binding .}" />-->
-                                </Border.GestureRecognizers>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

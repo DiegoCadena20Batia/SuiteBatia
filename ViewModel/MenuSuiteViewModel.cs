@@ -21,6 +21,7 @@ using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.Supervision;
 using BatiaSuite.Views.SupervisionMantenimiento;
 using BatiaSuite.Views.SupervisionMantenimiento.Operarios;
+using BatiaSuite.Views.SupervisionMantenimiento.Supervisores;
 using BatiaSuite.Views.SupplierDeliveries;
 using BatiaSuite.Views.Vacantes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -318,12 +319,12 @@ plataforma = "2";
             IdModulo = 10
         }
         ,
-        new Monkey {
-            Name = Constants.SUPERVISION_MANTENIMIENTO,
-            Details = Constants.DETALLES_SUPERVISION_MANTENIMIENTO,
-            ImageUrl = "supervisionmantenimientoiconnew.png",
-            IdModulo = 7
-        },
+        //new Monkey {
+        //    Name = Constants.SUPERVISION_MANTENIMIENTO,
+        //    Details = Constants.DETALLES_SUPERVISION_MANTENIMIENTO,
+        //    ImageUrl = "supervisionmantenimientoiconnew.png",
+        //    IdModulo = 7
+        //},
         //new Monkey {
         //    Name = Constants.SUPERVISION_ALDO_CONTI,
         //    Details = Constants.DETALLES_SUPERVISION_ALDO_CONTI,
@@ -377,6 +378,12 @@ plataforma = "2";
             Details = Constants.DETALLES_SUPERVISION_MANTENIMIENTO_PROGRAMADA,
             ImageUrl = "supervision.png",
             IdModulo = 19
+        },
+        new Monkey {
+            Name = Constants.SUPERVISION_MANTENIMIENTO,
+            Details = Constants.DETALLES_SUPERVISION_MANTENIMIENTO,
+            ImageUrl = "supervisionmantenimientoiconnew.png",
+            IdModulo = 20
         }
         //,
         //new Monkey {
@@ -437,7 +444,7 @@ plataforma = "2";
                 break;
 
             case Constants.SUPERVISION_MANTENIMIENTO:
-                route = $"{nameof(SupervisionMantenimientoPage)}";
+                route = $"{nameof(SupervisionMantenimientoSupervisorPage)}";
                 break;
 
             case Constants.SOLICITUD_COTIZACION:

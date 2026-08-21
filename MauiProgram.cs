@@ -13,6 +13,7 @@ using BatiaSuite.ViewModel.RutasEntregas;
 using BatiaSuite.ViewModel.Supervisionmantenimiento;
 using BatiaSuite.ViewModel.SupervisionMantenimiento;
 using BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
+using BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.EntregasInteligentes;
@@ -20,6 +21,7 @@ using BatiaSuite.Views.NotificacionesSupervisores;
 using BatiaSuite.Views.RutasEntregas;
 using BatiaSuite.Views.SupervisionMantenimiento;
 using BatiaSuite.Views.SupervisionMantenimiento.Operarios;
+using BatiaSuite.Views.SupervisionMantenimiento.Supervisores;
 using BatiaSuite.Views.SupplierDeliveries;
 using Camera.MAUI;
 using CommunityToolkit.Maui;
@@ -144,13 +146,23 @@ public static class MauiProgram {
         builder.Services.AddTransient<SupervisionesMantenimientoProgramadasViewModel>();
         builder.Services.AddTransient<SupervisionesMantenimientoProgramadasPage>();
 
-        builder.Services.AddTransient<SupervisionMantenimientoOperarioPage>();
-        builder.Services.AddTransient<SupervisionMantenimientoOperarioViewModel>();
+        builder.Services.AddTransient<SeleccionPisosPage>();
+        builder.Services.AddTransient<SeleccionPisosViewModel>();
 
+
+        builder.Services.AddTransient<SeccionesFormularioPage>();
+        builder.Services.AddTransient<SeccionesFormularioViewModel>();
         builder.Services.AddTransient<PreguntasSeccionPage>();
         builder.Services.AddTransient<PreguntasSeccionViewModel>();
+        builder.Services.AddTransient<IteracionesSeccionPage>();
+        builder.Services.AddTransient<IteracionesSeccionViewModel>();
+        builder.Services.AddTransient<ResumenSupervisionViewModel>();
+        builder.Services.AddTransient<ResumenSupervisionPage>();
+        builder.Services.AddTransient<SupervisionMantenimientoSupervisorViewModel>();
+        builder.Services.AddTransient<SupervisionMantenimientoSupervisorPage>();
 
-        builder.Services.AddSingleton<SupervisionMantenimientoStateService>();
+       
+        builder.Services.AddSingleton<SupervisionStateService>();
 
 
 

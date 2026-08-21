@@ -32,6 +32,7 @@ public class UserSession {
     static readonly string ID_CLIENTE_CHECKLIST = "IdClienteChecklist key";
     static readonly string ID_INMUEBLE_CHECKLIST = "IdInmuebleChecklist key";
     static readonly string ID_PUESTO = "IdPuesto key";
+    static readonly string ID_ROL = "IdRol key";
 
     public static string NOMBRE {
         get => Preferences.Default.ContainsKey(PER_NOMBRE_KEY)
@@ -55,7 +56,13 @@ public class UserSession {
             ? (int)Preferences.Default.Get(ID_PERSONAL_KEY, 0) : 0;
         set => Preferences.Default.Set(ID_PERSONAL_KEY, value);
     }
+    public static int IdRol {
+        get => Preferences.Default.ContainsKey(ID_ROL)
+            ? (int)Preferences.Default.Get(ID_ROL, 0) : 0;
+        set => Preferences.Default.Set(ID_ROL, value);
+    }
 
+    
     public static int IdCliente {
         get => Preferences.Default.ContainsKey(ID_CLIENTEL_KEY)
             ? (int)Preferences.Default.Get(ID_CLIENTEL_KEY, 0) : 0;
@@ -189,6 +196,7 @@ public class UserSession {
         IdRutaTracking = 0;
         RutaNameTracking = "";
         IdPuesto = data.idPuesto;
+        IdRol = data.idRol;
     }
 
     public static void ClearSession() {

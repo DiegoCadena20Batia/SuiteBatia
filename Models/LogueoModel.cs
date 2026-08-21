@@ -15,6 +15,7 @@ namespace BatiaSuite.Models
         public int idEmpleado { get; set; }
         public int idProveedor { get; set; }
         public int idPuesto { get; set; }
+        public int idRol { get; set; }
         public List<int>? Modulos { get; set; }
     }
 }

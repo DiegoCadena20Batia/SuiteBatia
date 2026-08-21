@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.SeccionesFormularioPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios"
+             xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento.Operarios"           
+             x:DataType="vm:SeccionesFormularioViewModel"
+             Title="Secciones del Piso"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- 1. ENCABEZADO: Información del Piso y Progreso General -->
+        <Border Grid.Row="0"
+                Margin="16,12"
+                Padding="16"
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+            <Border.Shadow>
+                <Shadow Brush="#000000" Opacity="0.08" Offset="0,2" Radius="6" />
+            </Border.Shadow>
+
+            <VerticalStackLayout Spacing="8">
+                <!-- Sucursal y Piso -->
+                <Label Text="{Binding NombreSucursal}"
+                       FontSize="13"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" />
+
+                <Label Text="{Binding NombrePiso, StringFormat='Piso / Área: {0}'}"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#FFFFFF}" />
+
+                <Line X2="300" Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#374151}" HorizontalOptions="Fill" Margin="0,4" />
+
+                <!-- Barra de Progreso General -->
+                <Grid ColumnDefinitions="*, Auto" Margin="0,4,0,0">
+                    <Label Text="Avance Global" 
+                           FontSize="12" 
+                           TextColor="#6B7280" 
+                           FontAttributes="Bold" />
+                    <Label Grid.Column="1" 
+                           Text="{Binding TextoProgresoGeneral}" 
+                           FontSize="12" 
+                           TextColor="#3B82F6" 
+                           FontAttributes="Bold" />
+                </Grid>
+
+                <ProgressBar Progress="{Binding ProgresoGeneralPiso}"
+                             ProgressColor="#3B82F6"
+                             HeightRequest="8"
+                             HorizontalOptions="Fill" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- 2. LISTADO DE SECCIONES -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Secciones}"
+                        Margin="16,0"
+                        SelectionMode="None">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Margin="0,40">
+                    <Image Source="ic_empty_list.png" HeightRequest="60" WidthRequest="60" Opacity="0.5"/>
+                    <Label Text="No hay secciones disponibles para este piso."
+                           FontSize="14"
+                           TextColor="#9CA3AF"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SeccionModel">
+                    <Border Margin="0,6"
+                            Padding="16"
+                            StrokeShape="RoundRectangle 10"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#374151}"
+                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+
+                        <Border.Behaviors> 
+                            <toolkit:TouchBehavior 
+                                PressedBackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#2C3E50}" 
+                                PressedOpacity="1" />
+                        </Border.Behaviors>
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SeccionesFormularioViewModel}}, Path=SeleccionarSeccionCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+
+                            <!-- Nombre e Info de la Sección -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                                <Label Text="{Binding Seccion}"
+                                       FontSize="15"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F3F4F6}" />
+
+                                <Label Text="{Binding Preguntas.Count, StringFormat='{0} Preguntas asociadas'}"
+                                       FontSize="12"
+                                       TextColor="#6B7280" />
+                            </VerticalStackLayout>
+
+                            <!-- Ícono o Flecha de Navegación -->
+                            <Border Grid.Column="1"
+                                    WidthRequest="32"
+                                    HeightRequest="32"
+                                    StrokeShape="RoundRectangle 16"
+                                    BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#2D2D2D}"
+                                    StrokeThickness="0"
+                                    VerticalOptions="Center">
+                                <Label Text="›"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="#3B82F6" />
+                            </Border>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 3. PIE DE PÁGINA: Botón de Finalizar / Regresar -->
+        <Border Grid.Row="2"
+                Padding="16,12"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                StrokeThickness="0">
+            <Border.Shadow>
+                <Shadow Brush="#000000" Opacity="0.05" Offset="0,-2" Radius="4" />
+            </Border.Shadow>
+
+            <Button Text="Guardar / Finalizar Piso"
+                    Command="{Binding FinalizarPisoCommand}"
+                    BackgroundColor="#10B981"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    HeightRequest="48" />
+        </Border>
+
+        <!-- INDICADOR DE CARGA OVERLAY -->
+        <Grid Grid.RowSpan="3"
+              BackgroundColor="#80000000"
+              IsVisible="{Binding IsLoading}"
+              InputTransparent="False">
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               Color="#3B82F6"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               WidthRequest="50"
+                               HeightRequest="50" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

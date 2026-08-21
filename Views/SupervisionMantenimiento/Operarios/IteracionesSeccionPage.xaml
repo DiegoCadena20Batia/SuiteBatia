@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios"
+             xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.IteracionesSeccionPage"
+             x:DataType="vm:IteracionesSeccionViewModel"
+             Title="Control de Iteraciones"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Header con información -->
+        <Border Grid.Row="0" Margin="16,12" Padding="16" StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding NombrePiso, StringFormat='Piso / Área: {0}'}" FontSize="12" FontAttributes="Bold" TextColor="#6B7280" />
+                <Label Text="{Binding NombreSeccion}" FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#FFFFFF}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Lista de Iteraciones Registradas -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Iteraciones}" Margin="16,0" SelectionMode="None">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                    <Label Text="📋" FontSize="40" HorizontalOptions="Center" />
+                    <Label Text="No se han agregado elementos a esta sección." FontSize="14" TextColor="#9CA3AF" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:IteracionModel">
+                    <Border Margin="0,6" Padding="16" StrokeShape="RoundRectangle 10" StrokeThickness="1" Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#374151}" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                        <Grid ColumnDefinitions="*, Auto, Auto">
+                            <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                <Label Text="{Binding Nombre}" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#1F2937, Dark=#F3F4F6}" />
+                                <!--<Label Text="{Binding PreguntasRespondidas}" FontSize="12" TextColor="DarkSeaGreen" />-->
+                            </VerticalStackLayout>
+
+                            <!-- Evaluar / Responder -->
+                            <Button Grid.Column="1" Text="Evaluar" HeightRequest="36" FontSize="12" CornerRadius="6" BackgroundColor="#3B82F6" TextColor="White" Margin="0,0,8,0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:IteracionesSeccionViewModel}}, Path=SeleccionarIteracionCommand}"
+                                    CommandParameter="{Binding .}" />
+
+                            <!-- Eliminar -->
+                            <Button Grid.Column="2" Text="🗑️" HeightRequest="36" WidthRequest="36" FontSize="12" CornerRadius="6" BackgroundColor="#FEE2E2" TextColor="#EF4444" Padding="0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:IteracionesSeccionViewModel}}, Path=EliminarIteracionCommand}"
+                                    CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Botón para Agregar Nueva Iteración -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="15">
+            <Button Grid.Column="0"
+            Text="+ Agregar Elemento"
+            Command="{Binding AgregarIteracionCommand}"
+            BackgroundColor="#10B981"
+            TextColor="White"
+            FontAttributes="Bold"
+            CornerRadius="10"
+            HeightRequest="40" />
+
+            <Button Grid.Column="1"
+            Text="Finalizar Sección"
+            Command="{Binding TerminarSeccionCommand}"
+            BackgroundColor="CadetBlue"
+            TextColor="White"
+            FontAttributes="Bold"
+            CornerRadius="10"
+            HeightRequest="40" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

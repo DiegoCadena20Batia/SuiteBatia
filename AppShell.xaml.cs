@@ -2,6 +2,7 @@
 using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using BatiaSuite.Utils;
 using BatiaSuite.Utils.NotificacionesSupervisor;
+using BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Views;
 using BatiaSuite.Views.CheckListAparadores;
 using BatiaSuite.Views.CheckListAparadoristasAldoConti;
@@ -22,6 +23,7 @@ using BatiaSuite.Views.SolicitudCotizacion;
 using BatiaSuite.Views.Supervision;
 using BatiaSuite.Views.SupervisionMantenimiento;
 using BatiaSuite.Views.SupervisionMantenimiento.Operarios;
+using BatiaSuite.Views.SupervisionMantenimiento.Supervisores;
 using BatiaSuite.Views.SupplierDeliveries;
 using BatiaSuite.Views.Vacantes;
 using CommunityToolkit.Mvvm.Messaging;
@@ -137,8 +139,15 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(SupervisionMantenimientoFirmasPage), typeof(SupervisionMantenimientoFirmasPage));
 
         Routing.RegisterRoute(nameof(SupervisionesMantenimientoProgramadasPage), typeof(SupervisionesMantenimientoProgramadasPage));
-        Routing.RegisterRoute(nameof(SupervisionMantenimientoOperarioPage), typeof(SupervisionMantenimientoOperarioPage));
+        Routing.RegisterRoute(nameof(SeleccionPisosPage), typeof(SeleccionPisosPage));
+        Routing.RegisterRoute(nameof(SeccionesFormularioPage), typeof(SeccionesFormularioPage));
         Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
+        Routing.RegisterRoute(nameof(SeccionesFormularioPage), typeof(SeccionesFormularioPage));
+        Routing.RegisterRoute(nameof(IteracionesSeccionPage), typeof(IteracionesSeccionPage)); // <-- Nueva pantalla
+        Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
+        Routing.RegisterRoute(nameof(ResumenSupervisionPage), typeof(ResumenSupervisionPage));
+
+        Routing.RegisterRoute(nameof(SupervisionMantenimientoSupervisorPage), typeof(SupervisionMantenimientoSupervisorPage));
 
         #endregion SUPERVISION MANTENIMIENTO
 

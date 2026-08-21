@@ -35,13 +35,13 @@ namespace BatiaSuite.Popups.SupervisionMantenimiento;
                 await stream.CopyToAsync(memoryStream);
                 byte[] firmaBytes = memoryStream.ToArray();
 
-                var resultado = new CierreSupervisionResult {
-                    Observaciones = txtObservaciones.Text ?? string.Empty,
-                    NombreFirmante = txtNombreFirmante.Text.Trim(),
-                    FirmaBytes = firmaBytes
-                };
+                //var resultado = new CierreSupervisionResult {
+                //    Observaciones = txtObservaciones.Text ?? string.Empty,
+                //    NombreFirmante = txtNombreFirmante.Text.Trim(),
+                //    FirmaBytes = firmaBytes
+                //};
 
-                Close(resultado); // Cierra regresando los datos de la firma y observaciones
+                //Close(resultado); // Cierra regresando los datos de la firma y observaciones
             } catch(Exception ex) {
                 await Shell.Current.DisplayAlert("Error", $"No se pudo procesar la firma: {ex.Message}", "OK");
             }

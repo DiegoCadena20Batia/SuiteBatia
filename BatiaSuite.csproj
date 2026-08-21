@@ -257,34 +257,31 @@
 		<Compile Update="Views\SolicitudCotizacion\SolicitudCotizacionPage.xaml.cs">
 			<DependentUpon>SolicitudCotizacionPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\Operarios\SupervisionMantenimientoOperarioPage.xaml.cs">
-		  <DependentUpon>SupervisionMantenimientoOperarioPage.xaml</DependentUpon>
-		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoFirmasPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoFirmasPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoEvaluacionPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoEvaluacionPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoEvaluacionPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoExtintoresObjectPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoExtintoresObjectPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoExtintoresObjectPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoHidrantesObjectPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoHidrantesObjectPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoHidrantesObjectPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoSeccionPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoSeccionPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionesPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoSeccionesPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoSeccionesPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPreguntasPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoPreguntasPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoPreguntasPage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoInmueblePage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoInmueblePage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoInmueblePage.xaml</DependentUpon>
 		</Compile>
-		<Compile Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPage.xaml.cs">
+		<Compile Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoPage.xaml.cs">
 			<DependentUpon>SupervisionMantenimientoPage.xaml</DependentUpon>
 		</Compile>
 		<Compile Update="Views\Supervision\EvaluacionPage.xaml.cs">
@@ -367,6 +364,12 @@
 		</MauiXaml>
 		<MauiXaml Update="Resources\Styles\Resources.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\IteracionesSeccionPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\PreguntasSeccionPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresPreguntasResumenPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -482,41 +485,47 @@
 		<MauiXaml Update="Views\CheckListAparadores\CheckListAparadoresInmueblePage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\PreguntasSeccionPage.xaml">
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\ResumenSupervisionPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\SeccionesFormularioPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\SeleccionPisosPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\SupervisionesMantenimientoProgramadasPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\Operarios\SupervisionMantenimientoOperarioPage.xaml">
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoFirmasPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoEvaluacionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoExtintoresObjectPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoHidrantesObjectPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoSeccionPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoSeccionesPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoPreguntasPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoInmueblePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Supervisores\SupervisionMantenimientoSupervisorPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoFirmasPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoEvaluacionPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoExtintoresObjectPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoHidrantesObjectPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoSeccionesPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPreguntasPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoInmueblePage.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionMantenimientoPage.xaml">
-			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\Supervision\ChecklistOperadorPage.xaml">
 			<Generator>MSBuild:Compile</Generator>

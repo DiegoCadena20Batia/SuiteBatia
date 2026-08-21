@@ -1,16 +1,10 @@
-using BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
-
-namespace BatiaSuite.Views.SupervisionMantenimiento.Operarios;
+namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
 
 public partial class PreguntasSeccionPage : ContentPage
 {
-    public PreguntasSeccionPage(PreguntasSeccionViewModel viewModel) {
-        InitializeComponent();
-        BindingContext = viewModel;
-    }
-
-    protected override async void OnAppearing() {
-        base.OnAppearing();
-        await Task.Yield();
-    }
+	public PreguntasSeccionPage(PreguntasSeccionViewModel _viewModel)
+	{
+		InitializeComponent();
+		BindingContext= _viewModel;
+	}
 }

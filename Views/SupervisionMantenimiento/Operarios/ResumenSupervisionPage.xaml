@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.ResumenSupervisionPage"
+    
+             xmlns:views="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="Cierre de Supervisión"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+
+            <!-- OBSERVACIONES GENERALES -->
+            <Border Padding="14" 
+        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" 
+        Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}" 
+        StrokeThickness="1.5">
+
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="8">
+
+                    <Label Text="Observaciones Generales" 
+               FontAttributes="Bold" 
+               FontSize="15" 
+               TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}"/>
+
+                    <Editor Placeholder="Ingresa comentarios, hallazgos o notas adicionales..."
+                PlaceholderColor="{AppThemeBinding Light=#A0AEC0, Dark=#718096}"
+                Text="{Binding ObservacionesGenerales}"
+                TextColor="{AppThemeBinding Light=#1A202C, Dark=#F7FAFC}"
+                HeightRequest="100"
+                AutoSize="Disabled"
+                FontSize="13"
+                BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#2A323D}"/>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SECCIÓN: TÉCNICO OPERATIVO -->
+            <Border Padding="14" 
+        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" 
+        Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}" 
+        StrokeThickness="1.5">
+
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="Técnico Operativo" 
+               FontAttributes="Bold" 
+               FontSize="15" 
+               TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}"/>
+
+                  
+
+                    <Label Text="Firma del Técnico:" 
+               FontSize="12" 
+               TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+
+                    <!-- FIRMA TÉCNICO -->
+                    <Border Stroke="{AppThemeBinding Light=#CBD5E0, Dark=#4A5568}" 
+                StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+
+                        <views:DrawingView
+                x:Name="tecnicoDrawingView"
+                LineColor="{AppThemeBinding Light=#1E293B, Dark=#F8FAFC}"
+                LineWidth="3"
+                Lines="{Binding LineasTecnico}"
+                HeightRequest="120"
+                IsMultiLineModeEnabled="True"
+                ShouldClearOnFinish="False"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A323D}"/>
+                    </Border>
+
+                    <Button Text="Limpiar Firma"
+                            Clicked="OnLimpiarFirmaTecnicoClicked"
+                FontSize="11"
+                HeightRequest="32"
+                HorizontalOptions="End"
+                BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+                TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SECCIÓN: CLIENTE / CONFORMIDAD -->
+            <Border Padding="14" 
+        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" 
+        Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}" 
+        StrokeThickness="1.5">
+
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="Conformidad del Cliente" 
+               FontAttributes="Bold" 
+               FontSize="15" 
+               TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}"/>
+
+                   
+                    <Label Text="Firma del Cliente:" 
+               FontSize="12" 
+               TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+
+                    <!-- FIRMA CLIENTE -->
+                    <Border Stroke="{AppThemeBinding Light=#CBD5E0, Dark=#4A5568}" 
+                StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+
+                        <views:DrawingView
+                x:Name="clienteDrawingView"
+                LineColor="{AppThemeBinding Light=#1E293B, Dark=#F8FAFC}"
+                LineWidth="3"
+                Lines="{Binding LineasCliente}"
+                HeightRequest="120"
+                IsMultiLineModeEnabled="True"
+                ShouldClearOnFinish="False"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A323D}"/>
+                    </Border>
+
+                    <Button Text="Limpiar Firma"
+                Clicked="OnLimpiarFirmaClienteClicked"
+                FontSize="11"
+                HeightRequest="32"
+                HorizontalOptions="End"
+                BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+                TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}"/>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- BOTÓN ENVIAR SUPERVISIÓN -->
+            <Button Text="ENVIAR SUPERVISIÓN"
+                    Command="{Binding GuardarSupervisionCommand}"
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    HeightRequest="48"
+                    CornerRadius="10"
+                    BackgroundColor="#38A169"
+                    TextColor="White"
+                    Margin="0,10,0,20"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

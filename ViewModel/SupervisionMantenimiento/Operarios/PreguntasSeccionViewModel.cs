@@ -1,253 +1,198 @@
-﻿using BatiaSuite.Models;
-using BatiaSuite.Models.OrdenesTrabajo;
+﻿using BatiaSuite.Models.SupervisionMantenimiento;
 using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
-using BatiaSuite.Services;
 using BatiaSuite.Services.SupervisionesMantenimiento;
-using BatiaSuite.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Media;
-using Microsoft.Maui.Storage;
-using System;
+using Microsoft.Maui.Graphics.Platform;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 
 namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
-    [QueryProperty(nameof(Seccion), "SeccionSeleccionada")]
-    [QueryProperty(nameof(Orden), "Orden")]
     public partial class PreguntasSeccionViewModel : ObservableObject {
-        private readonly HttpHelper _httpHelper;
+        private SupervisionStateService _stateService;
+        private const int MAX_FOTOS_POR_SECCION = 5;
 
-        private readonly SupervisionMantenimientoStateService _supervisionService;
+        #region Propiedades de Navegación
+
+        [ObservableProperty]
+        private ObservableCollection<FotoModel> _photoPaths = new();
 
         [ObservableProperty]
         private SeccionModel _seccion;
+        [ObservableProperty]
+        private IteracionModel _iteracion;
+        [ObservableProperty]
+        private PisoModel _piso;
+        [ObservableProperty]
+        private int _countPhoto;
 
         [ObservableProperty]
-        private OrdenTrabajoModel _orden;
-
+        private bool _isBusy;
         [ObservableProperty]
-        private int _idSupervision;
-
+        private bool _esBueno;
         [ObservableProperty]
-        private bool _isSubiendoFotos;
-
+        private bool _esMalo;
         [ObservableProperty]
-        private ObservableCollection<PhotosModel> _photoPaths = new();
+        private bool _esNA;
 
-        private const int MaxPhotos = 5;
+        #endregion Propiedades de Navegación
 
-        private int CountPhoto = 0;
+        public PreguntasSeccionViewModel(SupervisionStateService stateService) {
+            _stateService = stateService;
 
-        private string baseUrlApi = Constants.API_BASE_URL;
+            Seccion = _stateService.SeccionActual;
+            Iteracion = _stateService.IteracionActual;
+            Piso = _stateService.PisoActual;
 
-        public PreguntasSeccionViewModel(HttpHelper httpHelper, SupervisionMantenimientoStateService supervisionMantenimientoService) {
-            _httpHelper = httpHelper;
-            _supervisionService = supervisionMantenimientoService;
+            CargarDatosSeccion();
+
         }
 
-         partial void OnSeccionChanged(SeccionModel value) {
-            if(value == null) return;
-
-            // Limpiamos la colección para la nueva sección cargada
-            PhotoPaths.Clear();
-
-            // Verificamos si ya existen fotos guardadas previamente para esta sección en el servicio
-            if(_supervisionService.FotosPorSeccion.TryGetValue(value.IdSeccion, out var fotosGuardadas)) {
-                foreach(var foto in fotosGuardadas) {
-                    // Reconstruimos la lista bindable para la interfaz gráfica
-                    PhotoPaths.Add(new PhotosModel {
-                        UrlPhoto = foto.LocalPath
-                    });
-                }
-            }
-        }
-
-        // Guardar o confirmar respuestas de esta sección
-        [RelayCommand]
-        private async Task GuardarSeccionAsync() {
-            if(Seccion == null) return;
-
-            int sinResponder = Seccion.Preguntas.Count(p => !p.EstaRespondida);
-            if(sinResponder > 0) {
-                bool continuar = await Shell.Current.DisplayAlert(
-                    "Preguntas pendientes",
-                    $"Tienes {sinResponder} pregunta(s) sin responder en esta sección. ¿Deseas regresar de todos modos?",
-                    "Sí, regresar",
-                    "Cancelar");
-                if(!continuar) return;
-            }
+        private void CargarDatosSeccion() {
+            IsBusy = true;
 
             try {
-                IsSubiendoFotos = true;
-
-                if(_supervisionService.IdSupervisionActual <= 0) {
-                    int idNuevo = await CrearCabeceraSiNoExisteAsync();
-                    if(idNuevo <= 0) {
-                        await Shell.Current.DisplayAlert("Error", "No se pudo iniciar la supervisión.", "OK");
-                        return;
-                    }
-                    _supervisionService.IdSupervisionActual = idNuevo;
-                }
-
-                // Refs existentes de esta sección (con su estado de "Subida")
-                _supervisionService.FotosPorSeccion.TryGetValue(Seccion.IdSeccion, out var refsExistentes);
-                refsExistentes ??= new List<FotoSeccionEstado>();
-
-                // Rutas válidas actualmente en pantalla
-                var rutasActuales = PhotoPaths
-                    .Where(f => !string.IsNullOrEmpty(f.UrlPhoto) && File.Exists(f.UrlPhoto))
-                    .Select(f => f.UrlPhoto)
-                    .ToList();
-
-                // Solo las que NO estaban ya registradas como subidas
-                var rutasNuevas = rutasActuales
-                    .Where(r => !refsExistentes.Any(e => e.LocalPath == r && e.Subida))
-                    .ToList();
-
-                if(rutasNuevas.Any()) {
-                    bool ok = await SubirFotosDeSeccionAsync(_supervisionService.IdSupervisionActual, Seccion.IdSeccion, rutasNuevas);
-                    if(!ok) {
-                        await Shell.Current.DisplayAlert("Aviso", "No se pudieron subir las fotos nuevas de esta sección. Se reintentará más adelante.", "OK");
-                    }
-
-                    // Actualiza/agrega refs SOLO de las nuevas, marcadas según resultado
-                    foreach(var ruta in rutasNuevas) {
-                        var existente = refsExistentes.FirstOrDefault(e => e.LocalPath == ruta);
-                        if(existente != null) {
-                            existente.Subida = ok;
-                        } else {
-                            refsExistentes.Add(new FotoSeccionEstado { IdSeccion = Seccion.IdSeccion, LocalPath = ruta, Subida = ok });
-                        }
+                PhotoPaths.Clear();
+                if(Iteracion.Fotos != null && Iteracion.Fotos.Any()) {
+                    foreach(var foto in Iteracion.Fotos) {
+                        PhotoPaths.Add(foto);
                     }
                 }
 
-                _supervisionService.FotosPorSeccion[Seccion.IdSeccion] = refsExistentes;
-
-                await Shell.Current.GoToAsync("..");
+               
+                if(Seccion.Preguntas == null) {
+                    Seccion.Preguntas = new ObservableCollection<PreguntaModel>();
+                }
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al cargar preguntas de la sección: {ex.Message}");
             } finally {
-                IsSubiendoFotos = false;
+                IsBusy = false;
             }
         }
 
-        private async Task<int> CrearCabeceraSiNoExisteAsync() {
-            var payloadCabecera = new SupervisionMantenimientoDTO {
-                IdPersonal = UserSession.IdPersonal,
-                IdOrden = Orden?.idOrden ?? 0,
-                IdCliente = Orden?.idCliente ?? 0,
-                IdInmueble = Orden?.idInmueble ?? 0,
-                Fechainicio = _supervisionService.FechaInicio,
-                Fechafin = DateTime.Now, // se sobreescribe al final, en el cierre real
-                Observaciones = "",
-                Latitud = Orden.latitud,
-                Longitud = Orden.longitud
-            };
-
-            string url = $"{baseUrlApi}SupervisionMantenimiento/cabecera";
-            return await _httpHelper.PostBodyAsync<SupervisionMantenimientoDTO, int>(url, payloadCabecera);
-        }
-
-        private async Task<bool> SubirFotosDeSeccionAsync(int idSupervision, int idSeccion, List<string> rutas) {
-            try {
-                using var content = new MultipartFormDataContent();
-                content.Add(new StringContent(idSeccion.ToString()), "idSeccion");
-
-                // Streams abiertos directo desde disco — nunca se cargan todos en memoria a la vez
-                var streams = new List<FileStream>();
-                try {
-                    foreach(var ruta in rutas) {
-                        var stream = File.OpenRead(ruta);
-                        streams.Add(stream);
-                        var fileContent = new StreamContent(stream);
-                        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-                        content.Add(fileContent, "fotos", Path.GetFileName(ruta));
-                    }
-
-                    string url = $"{baseUrlApi}SupervisionMantenimiento/{idSupervision}/fotos";
-                    return await _httpHelper.PostMultipartAsync(url, content);
-                } finally {
-                    foreach(var s in streams) s.Dispose();
-                }
-            } catch {
-                return false;
-            }
-        }
-
+        #region Asignacion de Respuestas
         [RelayCommand]
         private void MarcarBueno(PreguntaModel pregunta) {
-            if(pregunta == null) return;
-            pregunta.Respuesta = 2;
-            Seccion?.NotificarCambioProgreso();
+            pregunta?.SeleccionarRespuestaCommand.Execute("2");
         }
-
         [RelayCommand]
         private void MarcarMalo(PreguntaModel pregunta) {
-            if(pregunta == null) return;
-            pregunta.Respuesta = 1;
-            Seccion?.NotificarCambioProgreso();
+            pregunta?.SeleccionarRespuestaCommand.Execute("1");
         }
-
         [RelayCommand]
         private void MarcarNA(PreguntaModel pregunta) {
-            if(pregunta == null) return;
-            pregunta.Respuesta = 0;
-            Seccion?.NotificarCambioProgreso();
+            pregunta?.SeleccionarRespuestaCommand.Execute("0");
         }
 
+        #endregion
+
+        #region Comandos de Gestión de Fotos (Máximo 5 por Sección)
+
         [RelayCommand]
-        private async Task PhotoAsync() {
+        private async Task Photo() {
             try {
-                if(PhotoPaths.Count >= MaxPhotos) {
-                    await Shell.Current.DisplayAlert("Mensaje", $"Se ha alcanzado el número máximo de fotos permitidas ({MaxPhotos})", "Cerrar");
-                    return;
+                if(CountPhoto < 5) {
+                    FileResult photo = await MediaPicker.CapturePhotoAsync();
+                    if(photo != null) {
+                        string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                        // Usa File.Create en lugar de File.OpenWrite para liberar y cerrar el Stream correctamente
+                        using(Stream source = await photo.OpenReadAsync())
+                        using(FileStream localFile = File.Create(localFilePath)) {
+                            await source.CopyToAsync(localFile);
+                        }
+
+                        // Agrega a la PROPIEDAD PÚBLICA (PhotoPaths), no al campo privado (_photoPaths)
+                        PhotoPaths.Add(new FotoModel {
+                            LocalPath = localFilePath
+                        });
+
+                        CountPhoto++;
+                    }
+                } else {
+                    await Shell.Current.DisplayAlert("Mensaje", "Se ha alcanzado el número máximo de fotos permitidas", "Cerrar");
                 }
-
-                FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
-                if(photo == null) return;
-
-                string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
-
-                using(Stream source = await photo.OpenReadAsync())
-                using(FileStream localFile = File.Create(localFilePath)) {
-                    await source.CopyToAsync(localFile);
-                }
-
-                PhotoPaths.Add(new PhotosModel {
-                    UrlPhoto = localFilePath
-                });
             } catch(Exception ex) {
                 await Shell.Current.DisplayAlert("Error", ex.Message, "Cerrar");
             }
         }
 
-        private async Task<List<FotoSeccionEstado>> ObtenerFotosSeccionAsync(int idSeccion) {
-            var listaFotos = new List<FotoSeccionEstado>();
+        //private async Task PhotoAsync() {
+        //    if(PhotoPaths.Count >= MAX_FOTOS_POR_SECCION) {
+        //        await Shell.Current.DisplayAlert("Límite Alcanzado", $"Solo se permiten un máximo de {MAX_FOTOS_POR_SECCION} fotografías de evidencia por sección.", "Aceptar");
+        //        return;
+        //    }
 
-            foreach(var foto in PhotoPaths) {
-                if(!string.IsNullOrEmpty(foto.UrlPhoto) && File.Exists(foto.UrlPhoto)) {
-                    // Leemos la imagen almacenada en CacheDirectory como arreglo de bytes
-                    byte[] bytes = await File.ReadAllBytesAsync(foto.UrlPhoto);
+        //    try {
+        //        if(!MediaPicker.Default.IsCaptureSupported) {
+        //            await Shell.Current.DisplayAlert("Cámara no disponible", "Este dispositivo no permite capturar fotografías.", "Aceptar");
+        //            return;
+        //        }
 
-                    listaFotos.Add(new FotoSeccionEstado {
-                        IdSeccion = idSeccion,
+        //        FileResult? photo = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions {
+        //            Title = $"Evidencia_{_stateService.SeccionActual.Seccion}_{PhotoPaths.Count + 1}"
+        //        });
 
-                        LocalPath = foto.UrlPhoto
-                    });
-                }
-            }
+        //        if(photo != null) {
+        //            string extension = Path.GetExtension(photo.FileName);
+        //            if(string.IsNullOrWhiteSpace(extension)) extension = ".jpg";
+        //            string fileName = $"{Guid.NewGuid()}{extension}";
+        //            string localFilePath = Path.Combine(FileSystem.CacheDirectory, fileName);
 
-            return listaFotos;
-        }
+        //            using(Stream sourceStream = await photo.OpenReadAsync())
+        //            using(Microsoft.Maui.Graphics.IImage originalImage = PlatformImage.FromStream(sourceStream))
+        //            using(Microsoft.Maui.Graphics.IImage resizedImage = originalImage.Downsize(1600, disposeOriginal: false))
+        //            using(Stream resizedStream = resizedImage.AsStream(ImageFormat.Jpeg))
+        //            using(FileStream localFileStream = File.Create(localFilePath)) {
+        //                await resizedStream.CopyToAsync(localFileStream);
+        //            }
+        //            System.Diagnostics.Debug.WriteLine($"Path: {localFilePath}");
+        //            System.Diagnostics.Debug.WriteLine($"Existe: {File.Exists(localFilePath)}, Tamaño: {new FileInfo(localFilePath).Length} bytes");
+        //            MainThread.BeginInvokeOnMainThread(() =>
+        //            {
+        //                PhotoPaths.Add(new FotoModel { LocalPath = localFilePath });
+        //            });
+        //        }
+        //    } catch(PermissionException) {
+        //        await Shell.Current.DisplayAlert("Permisos denegados", "Se requieren permisos de cámara para continuar.", "Aceptar");
+        //    } catch(Exception ex) {
+        //        System.Diagnostics.Debug.WriteLine($"Error al tomar foto: {ex.Message}");
+        //    }
+        //}
 
         [RelayCommand]
-        private void DeletePhoto(PhotosModel elemento) {
-            PhotoPaths.Remove(elemento);
+        private void DeletePhoto(FotoModel foto) {
+            if(foto == null) return;
+
+            PhotoPaths.Remove(foto);
             CountPhoto--;
         }
+
+        #endregion Comandos de Gestión de Fotos (Máximo 5 por Sección)
+
+        #region Guardar y Finalizar
+
+        [RelayCommand]
+        private async Task GuardarSeccionAsync() {
+            int preguntasSinResponder = _stateService.IteracionActual.Preguntas?.Count(p => !p.EstaRespondida) ?? 0;
+
+            if(preguntasSinResponder > 0) {
+                bool salir = await Shell.Current.DisplayAlert(
+                    "Preguntas Pendientes",
+                    $"Faltan {preguntasSinResponder} preguntas por responder en esta sección. ¿Deseas salir de todos modos?",
+                    "Sí, Salir",
+                    "Permanecer");
+
+                if(!salir) return;
+            }
+
+            // Asignar la lista final de fotos de la iteración al modelo de la iteración
+            _stateService.IteracionActual.Fotos = PhotoPaths.ToList();
+
+
+            await Shell.Current.GoToAsync("..");
+        }
+
+        #endregion Guardar y Finalizar
     }
 }
