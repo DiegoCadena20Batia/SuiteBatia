@@ -9,11 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
-
-   
-[QueryProperty(nameof(Piso), "PisoSeleccionado")]
-    public partial class SeccionesFormularioViewModel : ObservableObject {
+namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
+    [QueryProperty(nameof(Piso), "PisoSeleccionado")]
+    public partial class SeccionesFormularioSupervisorViewModel : ObservableObject {
         private readonly SupervisionStateService _stateService;
 
         #region Propiedades
@@ -39,10 +37,12 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
         private bool _isLoading;
         #endregion
 
-        public SeccionesFormularioViewModel(SupervisionStateService stateService) {
+        public SeccionesFormularioSupervisorViewModel(SupervisionStateService stateService) {
             _stateService = stateService;
             CargarSecciones();
         }
+
+
 
         /// <summary>
         /// Invocar este método desde el OnAppearing de la View para actualizar
@@ -55,7 +55,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
             if(pisoActual == null) return;
 
             NombrePiso = pisoActual.Nombre;
-            NombreSucursal = _stateService.OrdenActual?.sucursal ?? string.Empty;
+            NombreSucursal = _stateService.Inmueble.nombre ?? string.Empty;
 
             // Cargar secciones del piso activo
             Secciones = new ObservableCollection<SeccionModel>(pisoActual.Secciones);
@@ -76,7 +76,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 _stateService.SeccionActual = seccionSeleccionada;
 
                 // 2. Navegar a la pantalla de iteración de preguntas
-                await Shell.Current.GoToAsync("IteracionesSeccionPage");
+                await Shell.Current.GoToAsync("IteracionesSeccionSupervisorPage");
             } catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine($"Error al seleccionar sección: {ex.Message}");
                 await Shell.Current.DisplayAlert("Error", "No se pudo abrir la sección seleccionada.", "OK");
@@ -108,7 +108,6 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
         private async Task FinalizarPisoAsync() {
             int totalSeciones = Secciones.Count();
             int totalCompletadas = Secciones.Count(s => s.EstaCompletada);
-
             if(totalCompletadas < 1) {
                 await Shell.Current.DisplayAlert(
                     "Piso Incompleto",
@@ -116,22 +115,21 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                     "Ok");
                 return;
             }
-
             if(totalCompletadas < totalSeciones) {
                 bool confirmar = await Shell.Current.DisplayAlert(
                     "Piso Incompleto",
                     $"Tienes {totalSeciones - totalCompletadas} secciones pendientes en este piso. ¿Deseas regresar a la lista de pisos de todos modos?",
-                    "Sí, Salir",
+                    "Volver",
                     "Cancelar");
 
                 if(!confirmar) return;
             }
 
             _stateService.PisoActual.EstaCompletado = true;
+
             // Simplemente regresamos. 'PisoActual.EstaCompletado' se calculará solo automáticamente.
             await Shell.Current.GoToAsync("..");
         }
-
         [RelayCommand]
         private async Task VolverPantallaSeleccionPiso() {
             int totalSeciones = Secciones.Count();

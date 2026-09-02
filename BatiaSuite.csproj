@@ -17,8 +17,12 @@
 		<ApplicationIdGuid>c32f8002-8c0d-47c2-a53b-d2a8e250d3db</ApplicationIdGuid>
 
 		<ApplicationDisplayVersion>2.9.0</ApplicationDisplayVersion>
-		<ApplicationVersion>55</ApplicationVersion>
+		<!-- Código de versión incrementado para superar la versión 67 de Google Play -->
+		<ApplicationVersion>68</ApplicationVersion>
 		<Version>2.9.0</Version>
+
+		<SupportedOSPlatformVersion>12.2</SupportedOSPlatformVersion>
+		<AndroidTargetSdkVersion>36</AndroidTargetSdkVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
@@ -40,8 +44,12 @@
 <!--Release aab Android-->
 	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
-		<RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
-		<RunAOTCompilation>True</RunAOTCompilation>
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
+		<AndroidUseAapt2>True</AndroidUseAapt2>
+		<AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+		<AndroidLinkTool>r8</AndroidLinkTool>
+		<RuntimeIdentifiers>android-arm;android-arm64;android-x64</RuntimeIdentifiers>
+		<PublishTrimmed>true</PublishTrimmed>
 		<AndroidKeyStore>True</AndroidKeyStore>
 		<AndroidSigningKeyStore>SuiteBatiaFirma.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
@@ -85,7 +93,7 @@
 		<ArchiveOnBuild>true</ArchiveOnBuild>
 	</PropertyGroup>-->
 
-<!--CONFIGURACIÓN COMPLETA PARA GENERAR EL ARCHIVE (RELEASE) -->
+	<!--CONFIGURACIÓN COMPLETA PARA GENERAR EL ARCHIVE (RELEASE) -->
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<ServerAddress>192.168.11.146</ServerAddress>
@@ -107,12 +115,12 @@
 	</PropertyGroup>
 
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <AndroidKeyStore>True</AndroidKeyStore>
 	  <AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
 	  <AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
 	  <AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
-	</PropertyGroup>
+	</PropertyGroup>-->
 	
 	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <AndroidKeyStore>True</AndroidKeyStore>
@@ -523,6 +531,21 @@
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\SupervisionesOld\SupervisionMantenimientoPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Supervisores\IteracionesSeccionSupervisorPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Supervisores\PreguntasSeccionSupervisorPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Supervisores\ResumenSupervisionSupervisorPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Supervisores\SeccionesFormularioSupervisorPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\SupervisionMantenimiento\Supervisores\SeleccionPisoSupervisorPage.xaml">
+		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
 		<MauiXaml Update="Views\SupervisionMantenimiento\Supervisores\SupervisionMantenimientoSupervisorPage.xaml">
 		  <Generator>MSBuild:Compile</Generator>

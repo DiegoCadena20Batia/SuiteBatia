@@ -9,7 +9,7 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:myConverters="clr-namespace:BatiaSuite.Converters"
     Style="{StaticResource PageStyle}"
-    
+    BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}"
     Shell.NavBarIsVisible="False"
     Shell.FlyoutBehavior="Disabled">
 
@@ -32,21 +32,26 @@
           ColumnDefinitions="*, auto"
           Margin="0, 5, 0, 0">
 
+            <!-- Mensaje de Bienvenida -->
             <Label Text="Bienvenido(a)"
                HorizontalTextAlignment="Center"
                VerticalTextAlignment="Start"
                FontFamily="MontSemibold"
                FontSize="{OnIdiom 16, Tablet=22}"
+               TextColor="{AppThemeBinding Light=#1E293B, Dark=#F8FAFC}"
                Margin="0, 0, 0, 5" />
 
+            <!-- Nombre de Usuario -->
             <Label Grid.Row="1"
                Text="{x:Static utils:UserSession.NOMBRE}"
                HorizontalTextAlignment="Center"
                VerticalTextAlignment="Start"
                FontFamily="MontSemibold"
                FontSize="{OnIdiom 18, Tablet=24}"
+               TextColor="{AppThemeBinding Light=#0F172A, Dark=#FFFFFF}"
                Margin="0, 0, 0, 10" />
 
+            <!-- Botón Logout -->
             <ImageButton Grid.Column="1"
                      Grid.RowSpan="2"
                      VerticalOptions="Center"
@@ -57,10 +62,11 @@
                 <ImageButton.Source>
                     <FontImageSource Glyph="{x:Static icons:Icons.Logout}"
                                  FontFamily="{x:Static icons:Icons.Family}"
-                                 Color="{StaticResource AzulClaro}" />
+                                 Color="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}" />
                 </ImageButton.Source>
             </ImageButton>
 
+            <!-- Contenido de Módulos (RefreshView + CollectionView) -->
             <RefreshView Grid.Row="2"
                      Grid.ColumnSpan="2"
                      x:Name="RefreshViewModulos"
@@ -68,47 +74,51 @@
                      HorizontalOptions="Fill"
                      IsRefreshing="{Binding IsRefreshing}"
                      Command="{Binding RefreshPageCommand}"
-                     RefreshColor="{StaticResource AzulClaro}"
+                     RefreshColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}"
                      Margin="0">
 
                 <CollectionView x:Name="collectionView"
-                ItemsSource="{Binding Monkeys}"
-                VerticalOptions="Fill"
-                HorizontalOptions="Fill"
-                VerticalScrollBarVisibility="Never">
+                            ItemsSource="{Binding Monkeys}"
+                            VerticalOptions="Fill"
+                            HorizontalOptions="Fill"
+                            VerticalScrollBarVisibility="Never">
                     <CollectionView.Footer>
                         <BoxView HeightRequest="90" Color="Transparent" />
                     </CollectionView.Footer>
 
                     <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical"
-                                       ItemSpacing="0" />
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
                     </CollectionView.ItemsLayout>
 
+                    <!-- Vista Vacía -->
                     <CollectionView.EmptyView>
                         <Label Margin="20, 100"
                            FontSize="{OnIdiom 18, Tablet=25}"
                            VerticalOptions="Start"
                            HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light=#64748B, Dark=#A1A1AA}"
                            Text="Sin módulos asignados, verifique con su encargado" />
                     </CollectionView.EmptyView>
 
+                    <!-- Items del Módulo -->
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame Margin="5,2,5,2"
                                Style="{StaticResource FrameStyle}"
-                               BorderColor="LightBlue"
+                               BorderColor="{AppThemeBinding Light=LightBlue, Dark=#27272A}"
+                               BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
                                Padding="0"
                                CornerRadius="20">
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Path=BindingContext.NextPageCommand, Source={x:Reference collectionView}}"
-                                                     CommandParameter="{Binding Name}"
-                                                     Tapped="TapGestureRecognizer_Tapped" />
+                                                      CommandParameter="{Binding Name}"
+                                                      Tapped="TapGestureRecognizer_Tapped" />
                                 </Frame.GestureRecognizers>
 
-                                <Grid ColumnDefinitions="auto, *"
-                                  RowDefinitions="auto">
+                                <Grid ColumnDefinitions="auto, *" RowDefinitions="auto">
 
+                                    <!-- Gráfica de Porcentaje -->
                                     <Grid RowDefinitions="auto, auto"
                                       BindingContext="{Binding OrdenesTotales}"
                                       WidthRequest="{Binding Width}"
@@ -138,6 +148,7 @@
                                            IsVisible="{Binding PorcentajeSupNoRealizadas, Converter={StaticResource DoubleToBoolConverter}}" />
                                     </Grid>
 
+                                    <!-- Información del Módulo -->
                                     <Grid Grid.Column="1"
                                       ColumnDefinitions="auto, *, auto"
                                       RowDefinitions="auto, auto"
@@ -154,7 +165,7 @@
                                         <Label Grid.Column="1"
                                            Text="{Binding Name, Converter={StaticResource TextCaseConverter}}"
                                            FontSize="{OnIdiom 15, Tablet=20}"
-                                           TextColor="#3775B5"
+                                           TextColor="{AppThemeBinding Light=#3775B5, Dark=#60A5FA}"
                                            VerticalTextAlignment="Center"
                                            FontFamily="MontBold" />
 
@@ -163,7 +174,7 @@
                                            Text="{Binding Details}"
                                            FontSize="{OnIdiom 11, Tablet=16}"
                                            VerticalTextAlignment="Start"
-                                           TextColor="Gray"
+                                           TextColor="{AppThemeBinding Light=Gray, Dark=#9CA3AF}"
                                            FontFamily="MontRegular" />
 
                                         <Label Grid.Column="2"
@@ -171,7 +182,7 @@
                                            Style="{StaticResource ContentLabelStyle}"
                                            Text="{x:Static icons:Icons.RightOpen}"
                                            FontFamily="{x:Static icons:Icons.Family}"
-                                           TextColor="{StaticResource Gray}"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray}, Dark=#6B7280}"
                                            VerticalOptions="Center"
                                            HorizontalOptions="End"
                                            FontSize="{OnIdiom 40, Tablet=60}"
@@ -184,37 +195,35 @@
                 </CollectionView>
             </RefreshView>
 
-            <!-- Fila 3: Barra inferior -->
-            <Grid BackgroundColor="#F5F5F5"
+            <!-- Fila 3: Barra inferior de versión -->
+            <Grid BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#18181B}"
               Grid.Row="3"
               Grid.ColumnSpan="2"
               Padding="5, 5">
 
-                <HorizontalStackLayout HorizontalOptions="Center"
-                                   Spacing="10">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
                     <Label Text="{OnPlatform Android={x:Static icons:Icons.Android}, iOS={x:Static icons:Icons.Apple}}"
                        FontFamily="{x:Static icons:Icons.Family}"
-                       TextColor="{StaticResource AzulClaro}"
+                       TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}"
                        VerticalTextAlignment="Center"
                        FontSize="{OnPlatform Android=18, iOS=20}" />
 
                     <Label Text="{Binding AppName}"
-                       TextColor="{StaticResource AzulClaro}"
+                       TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}"
                        VerticalTextAlignment="End"
                        FontAttributes="Bold"
                        FontSize="{OnPlatform Android=18, iOS=20}" />
                 </HorizontalStackLayout>
 
-                <HorizontalStackLayout HorizontalOptions="End"
-                                   Spacing="5">
+                <HorizontalStackLayout HorizontalOptions="End" Spacing="5">
                     <Label Text="v"
-                       TextColor="{StaticResource AzulClaro}"
+                       TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}"
                        FontAttributes="Italic"
                        VerticalTextAlignment="End"
                        FontSize="15" />
 
                     <Label Text="{Binding AppVersionString}"
-                       TextColor="{StaticResource AzulClaro}"
+                       TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}"
                        VerticalTextAlignment="End"
                        FontSize="15"
                        Margin="0, 0, 30, 0" />
@@ -222,7 +231,7 @@
             </Grid>
         </Grid>
 
-        <!-- 🔔 CAMPANITA FLOTANTE (Corregido HeightRequest) -->
+        <!-- 🔔 Campanita Flotante -->
         <Grid IsVisible="{Binding EsSupervisor}"
           HorizontalOptions="Start" 
           VerticalOptions="End"
@@ -259,13 +268,13 @@
             </Border>
         </Grid>
 
-        <!-- Pantalla de carga -->
-        <Grid BackgroundColor="#88000000"
+        <!-- Overlay de carga -->
+        <Grid BackgroundColor="{AppThemeBinding Light=#88000000, Dark=#B3000000}"
           HorizontalOptions="Fill"
           VerticalOptions="Fill"
           IsVisible="{Binding IsLoading}">
 
-            <ActivityIndicator Color="{StaticResource AzulOscuro}"
+            <ActivityIndicator Color="{AppThemeBinding Light={StaticResource AzulOscuro}, Dark=#60A5FA}"
                            IsRunning="{Binding IsLoading}"
                            HeightRequest="{OnIdiom 70, Tablet=120}" />
         </Grid>

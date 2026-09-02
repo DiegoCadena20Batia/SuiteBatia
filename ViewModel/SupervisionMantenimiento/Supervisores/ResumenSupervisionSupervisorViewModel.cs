@@ -1,20 +1,18 @@
 ﻿using BatiaSuite.Models.SupervisionMantenimiento;
+using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Services.SupervisionesMantenimiento;
 using BatiaSuite.Utils;
-using BatiaSuite.Views.SupervisionMantenimiento.Operarios;
+using BatiaSuite.Views.SupervisionMantenimiento.Supervisores;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Core.Views;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Views;
 using System.Collections.ObjectModel;
-using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
 
-namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
+namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
 
-    public partial class ResumenSupervisionViewModel : ViewModelBase {
+    public partial class ResumenSupervisionSupervisorViewModel : ViewModelBase {
 
         #region Propiedades de Cabecero
 
@@ -36,7 +34,13 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
         #endregion Propiedades de Cabecero
 
-        public ResumenSupervisionViewModel(SupervisionStateService stateService) {
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CondicionRespondida))]
+        private string? _condicionSeleccionada;
+
+        public bool CondicionRespondida => !string.IsNullOrWhiteSpace(CondicionSeleccionada);
+
+        public ResumenSupervisionSupervisorViewModel(SupervisionStateService stateService) {
             _stateService = stateService;
         }
 
@@ -78,6 +82,8 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
                 string url = $"{ApiBaseUrl}SupervisionMantenimiento/subir-fotos";
 
+                var json= Newtonsoft.Json.JsonConvert.SerializeObject(content);
+
                 var respuesta = await _httpHelper.PostMultipartAsync<List<string>>(
                     url,
                     content,
@@ -90,7 +96,8 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 return false;
             }
         }
-        #endregion
+
+        #endregion Métodos Auxiliares
 
         #region Comando Principal
 
@@ -122,7 +129,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 // 2. Mapear rutas locales con un GUID único para asignarlo en la BD desde antes de subir el archivo
                 var mapaFotos = todasLasRutasFotos.ToDictionary(
                     ruta => ruta,
-                    ruta => $"foto_{Guid.NewGuid()}{Path.GetExtension(ruta)}"
+                    ruta => $"{Guid.NewGuid()}{Path.GetExtension(ruta)}"
                 );
 
                 // 3. Convertir Streams de firmas a Base64
@@ -131,16 +138,18 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
                 // 4. Construir DTO Principal
                 var payload = new SupervisionPayloadDto {
-                    IdOrdenSupervisionM = _stateService.OrdenActual.idOrden,
+                    IdOrdenSupervisionM = 0,
                     IdPersonal = UserSession.IdPersonal,
                     FechaIni = _stateService.FechaInicio,
                     FechaFin = DateTime.Now,
-                    IdCliente = _stateService.OrdenActual.idCliente,
-                    IdInmueble = _stateService.OrdenActual.idInmueble,
-                    Latitud = _stateService.OrdenActual.latitud,
-                    Longitud = _stateService.OrdenActual.longitud,
+                    IdCliente = _stateService.IdCliente,
+                    IdInmueble = _stateService.Inmueble.id_inmueble,
+                    Latitud = _stateService.Inmueble.latitud,
+                    Longitud = _stateService.Inmueble.longitud,
                     Observaciones = ObservacionesGenerales,
                     IdRol = UserSession.IdRol,
+                    IdTipoServicio = _stateService.IdTipoServicio,
+                    ResumenSupervision = CondicionSeleccionada ?? string.Empty,
                     Firmas = new List<FirmaDto>
                     {
                         new FirmaDto { IdFirma = 1, Nombre = Guid.NewGuid().ToString(), Firmas = base64Tecnico },
@@ -180,7 +189,6 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 var response = await _httpHelper.PostBodyAsync<SupervisionPayloadDto, SupervisionResponseDto>(urlGuardar, payload);
 
                 if(response != null && response.Success && response.Id_Supervisionm > 0) {
-
                     // 7. Ya con el ID devuelto por SQL Server, subir los archivos físicos de fotos a su carpeta
                     if(todasLasRutasFotos.Any()) {
                         await SubirFotografiasAsync(todasLasRutasFotos, response.Id_Supervisionm, mapaFotos);
@@ -188,7 +196,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
                     await Shell.Current.DisplayAlert("Éxito", response.Mensaje ?? "Supervisión guardada correctamente.", "OK");
                     await Shell.Current.Navigation.PopToRootAsync(false);
-                    await Shell.Current.GoToAsync(nameof(SupervisionesMantenimientoProgramadasPage), true);
+                    await Shell.Current.GoToAsync(nameof(SupervisionMantenimientoSupervisorPage), true);
                 } else {
                     string mensajeError = response?.Mensaje ?? "Ocurrió un error al procesar la solicitud en el servidor.";
                     await Shell.Current.DisplayAlert("Error", mensajeError, "OK");
@@ -200,72 +208,83 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
             }
         }
 
-        #endregion
+        #endregion Comando Principal
 
-        #if DEBUG
+        [RelayCommand]
+        private void SeleccionarCondicion(string valor) {
+            if(string.IsNullOrWhiteSpace(valor)) return;
 
+            if(CondicionSeleccionada == valor) {
+                CondicionSeleccionada = null;
+            } else {
+                CondicionSeleccionada = valor;
+            }
+        }
 
-[RelayCommand]
-    private void AutoLlenarSupervisionModoDebug() {
-        // 1. Llenar campos del cabecero
-        ObservacionesGenerales = "Prueba automatizada de supervisión en modo Debug.";
-   
-       
+#if DEBUG
 
-        // 2. Simular trazado ficticio de firma
-        LineasTecnico.Clear();
-        LineasCliente.Clear();
+        [RelayCommand]
+        private void AutoLlenarSupervisionModoDebug() {
+            // 1. Llenar campos del cabecero
+            ObservacionesGenerales = "Prueba automatizada de supervisión en modo Debug.";
 
-        var trazoMockTecnico = new DrawingLine {
-            LineColor = Colors.Black,
-            LineWidth = 3,
-            Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
-            {
+            CondicionSeleccionada = "Excelente";
+
+            // 2. Simular trazado ficticio de firma
+            LineasTecnico.Clear();
+            LineasCliente.Clear();
+
+            var trazoMockTecnico = new DrawingLine {
+                LineColor = Colors.Black,
+                LineWidth = 3,
+                Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
+                {
             new PointF(10, 50), new PointF(50, 20), new PointF(100, 80), new PointF(150, 30)
         }
-        };
+            };
 
-        var trazoMockCliente = new DrawingLine {
-            LineColor = Colors.Blue,
-            LineWidth = 3,
-            Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
-            {
+            var trazoMockCliente = new DrawingLine {
+                LineColor = Colors.Blue,
+                LineWidth = 3,
+                Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
+                {
             new PointF(15, 60), new PointF(60, 30), new PointF(110, 90), new PointF(160, 40)
         }
-        };
+            };
 
-        LineasTecnico.Add(trazoMockTecnico);
-        LineasCliente.Add(trazoMockCliente);
+            LineasTecnico.Add(trazoMockTecnico);
+            LineasCliente.Add(trazoMockCliente);
 
-        // 3. Responder automáticamente todas las preguntas
-        if(_stateService.Pisos != null) {
-            foreach(var piso in _stateService.Pisos) {
-                foreach(var seccion in piso.Secciones) {
-                    if(!seccion.Iteraciones.Any()) {
-                        var nuevaIteracion = new IteracionModel {
-                            Nombre = $"{seccion.Seccion} #1",
-                            Preguntas = seccion.Preguntas.Select(p => new PreguntaModel {
-                                IdPregunta = p.IdPregunta,
-                                Pregunta = p.Pregunta,
-                                Respuesta = 2, // Bueno
-                                Observaciones = "OK Debug"
-                            }).ToList()
-                        };
-                        seccion.Iteraciones.Add(nuevaIteracion);
-                    } else {
-                        foreach(var iteracion in seccion.Iteraciones) {
-                            foreach(var pregunta in iteracion.Preguntas) {
-                                pregunta.Respuesta = 2; // Bueno
-                                pregunta.Observaciones = "Sin hallazgos - Test Debug";
+            // 3. Responder automáticamente todas las preguntas
+            if(_stateService.Pisos != null) {
+                foreach(var piso in _stateService.Pisos) {
+                    foreach(var seccion in piso.Secciones) {
+                        if(!seccion.Iteraciones.Any()) {
+                            var nuevaIteracion = new IteracionModel {
+                                Nombre = $"{seccion.Seccion} #1",
+                                Preguntas = seccion.Preguntas.Select(p => new PreguntaModel {
+                                    IdPregunta = p.IdPregunta,
+                                    Pregunta = p.Pregunta,
+                                    Respuesta = 2, // Bueno
+                                    Observaciones = "OK Debug"
+                                }).ToList()
+                            };
+                            seccion.Iteraciones.Add(nuevaIteracion);
+                        } else {
+                            foreach(var iteracion in seccion.Iteraciones) {
+                                foreach(var pregunta in iteracion.Preguntas) {
+                                    pregunta.Respuesta = 2; // Bueno
+                                    pregunta.Observaciones = "Sin hallazgos - Test Debug";
+                                }
                             }
                         }
                     }
                 }
             }
+
+            Shell.Current.DisplayAlert("Debug", "Supervisión auto-llenada exitosamente.", "OK");
         }
 
-        Shell.Current.DisplayAlert("Debug", "Supervisión auto-llenada exitosamente.", "OK");
-    }
 #endif
-}
+    }
 }

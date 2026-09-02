@@ -1,7 +1,6 @@
 ﻿using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Services.SupervisionesMantenimiento;
-using CommunityToolkit.Maui.Core.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -11,9 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
 
-namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
-    public partial class SeleccionPisosViewModel : ViewModelBase {
+    public partial class SeleccionPisoSupervisorViewModel : ViewModelBase {
         private readonly SupervisionStateService _stateService;
 
         [ObservableProperty]
@@ -21,9 +20,8 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
         // Directamente enlazado a la lista central de pisos del StateService
         public ObservableCollection<PisoModel> Pisos => _stateService.Pisos;
-        public OrdenTrabajoModel? Orden => _stateService.OrdenActual;
 
-        public SeleccionPisosViewModel(SupervisionStateService stateService) {
+        public SeleccionPisoSupervisorViewModel(SupervisionStateService stateService) {
             _stateService = stateService;
         }
 
@@ -73,7 +71,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
             { "PisoSeleccionado", piso }
         };
 
-            await Shell.Current.GoToAsync("SeccionesFormularioPage", navigationParameter);
+            await Shell.Current.GoToAsync("SeccionesFormularioSupervisorPage", navigationParameter);
         }
 
         [RelayCommand]
@@ -108,13 +106,13 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
             var pisosJson = System.Text.Json.JsonSerializer.Serialize(Pisos);
             _stateService.Pisos = Pisos; // Aseguramos que el StateService tenga la lista actualizada
 
-            await Shell.Current.GoToAsync("ResumenSupervisionPage");
-               }
+            await Shell.Current.GoToAsync("ResumenSupervisionSupervisorPage");
+        }
 
         [RelayCommand]
         private async Task VolverPantallaDatos() {
             bool datosConfirmados = Pisos.All(p => p.EstaCompletado);
-
+           
 
             if(!datosConfirmados || Pisos.Any()) {
                 bool salir = await Shell.Current.DisplayAlert(

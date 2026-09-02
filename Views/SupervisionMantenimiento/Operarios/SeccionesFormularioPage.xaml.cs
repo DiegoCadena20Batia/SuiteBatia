@@ -1,4 +1,5 @@
 using BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
+using BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores;
 
 namespace BatiaSuite.Views.SupervisionMantenimiento.Operarios;
 

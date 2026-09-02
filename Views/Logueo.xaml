@@ -5,227 +5,152 @@
     x:Class="BatiaSuite.Views.Logueo"
     xmlns:controls="clr-namespace:BatiaSuite.Controls"
     Title=""
-    BackgroundColor="#F5F5F5">
-    <ScrollView>
+      BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
+    <ScrollView VerticalOptions="Fill">
+        <Grid VerticalOptions="Center"
+          RowDefinitions="auto, auto, auto, auto, auto, auto"
+          Margin="25,0"
+          RowSpacing="15">
 
-    <Grid
-        RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto,*,auto"
-        ColumnDefinitions="*, *"
-        Margin="25">
-        <Grid
-            BackgroundColor="Transparent"
-            Grid.Row="0"
-            Grid.ColumnSpan="2"
-            HeightRequest="170"
-            WidthRequest="100"
-            VerticalOptions="End"
-            HorizontalOptions="Center">
-            <Image
-                VerticalOptions="End"
-                HorizontalOptions="End"
-                Source="logosuitebatia.png"
-                HeightRequest="150"></Image>
-        </Grid>
+            <!-- Header: Logo + Título -->
+            <VerticalStackLayout Grid.Row="0"
+                             HorizontalOptions="Center"
+                             Spacing="10"
+                             Margin="0,10,0,10">
 
-        <Label
-            Grid.Row="1"
-            FontSize="35"
-            FontAttributes="Bold"
-            FontFamily="MontSemibold"
-            Text="SUITE"
-            TextColor="{StaticResource AzulOscuro}"
-            HeightRequest="50"
-            HorizontalTextAlignment="End"
-            VerticalTextAlignment="Start"
-            Margin="0,0,5,20" />
+                <Image Source="logosuitebatia.png"
+                   HeightRequest="120"
+                   HorizontalOptions="Center" />
 
-        <Label
-            Grid.Row="1"
-            Grid.Column="1"
-            FontSize="35"
-            FontAttributes="Bold"
-            FontFamily="MontSemibold"
-            Text="BATIA"
-            TextColor="{StaticResource AzulClaro}"
-            HeightRequest="50"
-            HorizontalTextAlignment="Start"
-            VerticalTextAlignment="Start"
-            Margin="5,0,0,20" />
+                <Label FontSize="32"
+                   FontAttributes="Bold"
+                   FontFamily="MontSemibold"
+                   HorizontalOptions="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="SUITE " TextColor="{AppThemeBinding Light={StaticResource AzulOscuro}, Dark=#60A5FA}" />
+                            <Span Text="BATIA" TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#93C5FD}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
 
-        <Label
-            
-            BackgroundColor="Transparent"
-            Grid.Row="2"
-            Grid.ColumnSpan="2"
-            Text="INICIAR SESIÓN"
-            FontSize="15"
-            FontFamily="MontBold"
-            HeightRequest="40"
-            TextColor="Black"
-            HorizontalTextAlignment="Center"
-            VerticalTextAlignment="Center" />
+            <!-- Subtítulo Iniciar Sesión -->
+            <Label Grid.Row="1"
+               Text="INICIAR SESIÓN"
+               FontSize="15"
+               FontFamily="MontBold"
+               TextColor="{AppThemeBinding Light=Black, Dark=#F8FAFC}"
+               HorizontalTextAlignment="Center"
+               VerticalTextAlignment="Center"
+               Margin="0,0,0,5" />
 
-        <Frame
-            CornerRadius="15"
-            Grid.Row="3"
-            Grid.ColumnSpan="2"
-            BackgroundColor="White"
-            Margin="10"
-            Padding="{OnPlatform Android=10, iOS='10, 17'}"
-            BorderColor="LightGray">
+            <!-- Campo Usuario -->
+            <Frame Grid.Row="2"
+               CornerRadius="15"
+               BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}"
+               Padding="12,5"
+               BorderColor="{AppThemeBinding Light=LightGray, Dark=#334155}">
 
-            <Grid
-               ColumnDefinitions="auto, *">
-                <Image
-                    Source="userr.png"
-                    HeightRequest="30"
-                    WidthRequest="30" />
+                <Grid ColumnDefinitions="auto, *" VerticalOptions="Center">
+                    <Image Source="userr.png"
+                       HeightRequest="24"
+                       WidthRequest="24"
+                       VerticalOptions="Center" />
 
-                <controls:TransparentEntry
-                    Grid.Column="1"
-                    TextColor="{StaticResource AzulClaro}"
-                    PlaceholderColor="{StaticResource DarkGray}"
-                    VerticalOptions="Center"
-                    Placeholder="Usuario"
-                    FontSize="18"
-                    FontFamily="MontRegular"
-                    Keyboard="Email"
-                    Text="{Binding UserName}"
-                    ReturnType="Next"
-                    Margin="10, 0, 0 ,0" />
+                    <controls:TransparentEntry Grid.Column="1"
+                                            TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#FFFFFF}"
+                                            PlaceholderColor="{AppThemeBinding Light={StaticResource DarkGray}, Dark=#94A3B8}"
+                                            VerticalOptions="Center"
+                                            Placeholder="Usuario"
+                                            FontSize="16"
+                                            FontFamily="MontRegular"
+                                            Keyboard="Email"
+                                            Text="{Binding UserName}"
+                                            ReturnType="Next"
+                                            Margin="10,0,0,0" />
+                </Grid>
+            </Frame>
+
+            <!-- Campo Contraseña -->
+            <Frame Grid.Row="3"
+               CornerRadius="15"
+               BackgroundColor="{AppThemeBinding Light=White, Dark=#1E293B}"
+               Padding="12,5"
+               BorderColor="{AppThemeBinding Light=LightGray, Dark=#334155}">
+
+                <Grid ColumnDefinitions="auto, *, auto" VerticalOptions="Center">
+                    <Image Source="lockk.png"
+                       HeightRequest="24"
+                       WidthRequest="24"
+                       VerticalOptions="Center" />
+
+                    <controls:TransparentEntry Grid.Column="1"
+                                            TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#FFFFFF}"
+                                            PlaceholderColor="{AppThemeBinding Light={StaticResource DarkGray}, Dark=#94A3B8}"
+                                            VerticalOptions="Center"
+                                            Placeholder="Contraseña"
+                                            FontFamily="MontRegular"
+                                            FontSize="16"
+                                            IsPassword="{Binding IsPassword}"
+                                            Text="{Binding Password}"
+                                            Margin="10,0,0,0" />
+
+                    <ImageButton Grid.Column="2"
+                             Source="{Binding IconPass}"
+                             Command="{Binding ShowPasswordCommand}"
+                             WidthRequest="24"
+                             HeightRequest="24"
+                             BackgroundColor="Transparent"
+                             VerticalOptions="Center" />
+                </Grid>
+            </Frame>
+
+            <!-- Botón de Acción / Indicador de Carga -->
+            <Grid Grid.Row="4" Margin="0,10,0,0" VerticalOptions="Center">
+                <Button Text="INGRESAR"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    FontFamily="MontSemibold"
+                    Command="{Binding LoginCommand}"
+                    FontSize="16"
+                    TextColor="White"
+                    CornerRadius="10"
+                    Background="{AppThemeBinding Light=#2E3192, Dark=#3B82F6}"
+                    HeightRequest="50"
+                    HorizontalOptions="Fill" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HeightRequest="40"
+                               WidthRequest="40"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Color="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}" />
             </Grid>
-        </Frame>
 
-        <Frame
-            CornerRadius="15"
-            Grid.Row="4"
-            Grid.ColumnSpan="2"
-            BackgroundColor="White"
-            Margin="10"
-            Padding="10"
-            BorderColor="LightGray"
-            >
+            <!-- Sección Registrarse -->
+            <HorizontalStackLayout Grid.Row="5"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Margin="0,15,0,0"
+                               Spacing="5">
 
-            <Grid
-                ColumnDefinitions="auto, *, auto">
+                <Label Text="¿No tienes una cuenta?"
+                   TextColor="{AppThemeBinding Light=Black, Dark=#CBD5E1}"
+                   FontSize="15"
+                   VerticalOptions="Center" />
 
-                <Image
-                    Source="lockk.png"
-                    HeightRequest="30"
-                    WidthRequest="30" />
-
-                <controls:TransparentEntry
-                    
-                    Grid.Column="1"
-                    TextColor="{StaticResource AzulClaro}"
-                    PlaceholderColor="{StaticResource DarkGray}"
-                    VerticalOptions="Center"
-                    Placeholder="Contraseña"
-                    FontFamily="MontRegular"
-                    FontSize="18"
-                    IsPassword="{Binding IsPassword}"
-                    Text="{Binding Password}"
-                    Margin="10, 0, 0 ,0"/>
-
-                <ImageButton
-                    Grid.Column="2"                    
-                    Source="{Binding IconPass}"
-                    Command="{Binding ShowPasswordCommand}"
-                    WidthRequest="30"
-                    HeightRequest="30"
-                    BackgroundColor="Transparent"
-                    Scale="{OnPlatform Android=1, iOS=.7}"/>
-            </Grid>
-        </Frame>
-
-
-        <ActivityIndicator
-            Scale="{OnPlatform Android=1, iOS=1.5}"
-            Grid.Row="7"
-            Grid.ColumnSpan="2"
-            IsRunning="{Binding IsBusy}"
-            HeightRequest="50"
-            WidthRequest="50"
-            Color="{StaticResource AzulClaro}"/>
-
-        <Button
-            Grid.Row="6"
-            Grid.ColumnSpan="2"
-            Text="INGRESAR"
-            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-            IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-            FontFamily="MontSemibold"
-            Command="{Binding LoginCommand}"
-            FontSize="18"
-            TextColor="White"
-            CornerRadius="5"
-            Background="#2E3192"
-            x:Name="btnIngresar"
-            HeightRequest="60"
-            Margin="100,20" />
-
-
-        <Grid
-            Grid.Row="8"
-            Grid.ColumnSpan="2"
-            VerticalOptions="End"
-            Margin="0,0,0,50"
-            RowDefinitions="auto"
-            ColumnDefinitions="*,*,*,*,*">
-            <Label
-                Margin="0,0,0,0"
-                Grid.Row="5"
-                Grid.Column="0"
-                Grid.ColumnSpan="3"
-                TextColor="Black"                        
-                BackgroundColor="Transparent"
-                HorizontalOptions="End"
-                FontSize="16"
-                Text="¿No tienes una cuenta?"
-                HeightRequest="50"
-                VerticalOptions="Center"
-                Padding="13,10,0,0"
-                ></Label>
-            <Label
-                Margin="0,0,0,0"
-                Grid.Row="5"
-                Grid.Column="3"
-                BackgroundColor="Transparent"
-                FontSize="16"
-                Text="         Regístrate"
-                HeightRequest="50"
-                WidthRequest="150"
-                VerticalOptions="Center"
-                Padding="13,10,0,0"
-    >
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer
-                        Command="{Binding OpenRegisterPageCommand}">
-                    </TapGestureRecognizer>
-                </Label.GestureRecognizers>
-            </Label>
+                <Label Text="Regístrate"
+                   TextColor="{AppThemeBinding Light={StaticResource AzulClaro}, Dark=#60A5FA}"
+                   FontSize="15"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenRegisterPageCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
         </Grid>
-        <Label
-    HeightRequest="300"
-    Margin="0,0,0,0"
-    Grid.Row="9"
-    Grid.ColumnSpan="3"
-    TextColor="Black"                        
-    BackgroundColor="Transparent"
-    HorizontalOptions="End"
-    FontSize="16"
-    VerticalOptions="Center"
-    Padding="13,10,0,0"
-    ></Label>
-
-        <!--<Button
-            Grid.Row="5"
-            
-            BackgroundColor="#4a92fe"
-            FontSize="18"
-            Text="¿No tienes una cuenta?"
-            HeightRequest="50">
-        </Button>-->
-    </Grid>
     </ScrollView>
 </ContentPage>

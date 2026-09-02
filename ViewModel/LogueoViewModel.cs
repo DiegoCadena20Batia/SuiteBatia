@@ -84,37 +84,48 @@ plataforma = "2";
         if(!await ValidateData()) {
             return;
         }
+
         if(!Utils.InternetUtil.IsConnectedInternet()) {
             await App.Current.MainPage.DisplayAlert(string.Empty, Constants.ERROR_INTERNET, Constants.ACEPTAR);
             return;
         }
 
-        IsBusy = true;
-        await Task.Delay(200);
-        string url = $"Login?usr={UserName}&pwd={Password}";
+        try {
+            IsBusy = true;
+            await Task.Delay(200);
 
-        LogueoModel response = await _httpHelper.GetAsync<LogueoModel>(url);
+            // EscapeDataString evita errores si la contraseña contiene caracteres como &, #, +, etc.
+            string safeUser = Uri.EscapeDataString(UserName ?? string.Empty);
+            string safePwd = Uri.EscapeDataString(Password ?? string.Empty);
 
-        if(!string.IsNullOrEmpty(response.per_Nombre)) {
-            UserSession.SetData(response);
+            string url = $"Login?usr={safeUser}&pwd={safePwd}";
 
-            try {
-                var syncService = new SyncService();
+            LogueoModel response = await _httpHelper.GetAsync<LogueoModel>(url);
 
-                await syncService.SincronizarTodoElEcosistemaAsync(UserSession.Cliente);
+            if(response != null) {
+                UserSession.SetData(response);
 
-            } catch(Exception ex) {
-                System.Diagnostics.Debug.WriteLine($"Error en la sincronización automatizada: {ex.Message}");
+                try {
+                    var syncService = new SyncService();
+                    await syncService.SincronizarTodoElEcosistemaAsync(UserSession.Cliente);
+                } catch(Exception ex) {
+                    System.Diagnostics.Debug.WriteLine($"Error en la sincronización automatizada: {ex.Message}");
+                }
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    App.Current.MainPage = new AppShell();
+                });
+            } else {
+                await App.Current.MainPage.DisplayAlert(string.Empty, Constants.ERROR_API, Constants.ACEPTAR);
             }
-
-            MainThread.BeginInvokeOnMainThread(() => {
-                App.Current.MainPage = new AppShell();
-            });
-        } else {
+        } catch(Exception ex) {
+            System.Diagnostics.Debug.WriteLine($"Error general en el proceso de Login: {ex.Message}");
             await App.Current.MainPage.DisplayAlert(string.Empty, Constants.ERROR_API, Constants.ACEPTAR);
+        } finally {
+            // Garantiza que IsBusy vuelva a false incluso si ocurre una excepción no controlada
+            IsBusy = false;
         }
-
-        IsBusy = false;
     }
 
     [RelayCommand]

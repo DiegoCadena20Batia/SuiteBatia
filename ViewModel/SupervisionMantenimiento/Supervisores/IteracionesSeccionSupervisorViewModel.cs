@@ -10,10 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
+namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
 
-    public partial class IteracionesSeccionViewModel : ViewModelBase {
-
+    public partial class IteracionesSeccionSupervisorViewModel : ViewModelBase {
         private readonly SupervisionStateService _stateService;
 
         [ObservableProperty]
@@ -21,15 +20,17 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
         [ObservableProperty]
         private string _nombrePiso = string.Empty;
+
         [ObservableProperty]
         private SeccionModel _seccion;
+
         [ObservableProperty]
         private PisoModel _piso;
 
         [ObservableProperty]
         private ObservableCollection<IteracionModel> _iteraciones = new();
 
-        public IteracionesSeccionViewModel(SupervisionStateService supervisionStateService) {
+        public IteracionesSeccionSupervisorViewModel(SupervisionStateService supervisionStateService) {
             _stateService = supervisionStateService;
             CargarIteraciones();
         }
@@ -44,8 +45,6 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
             NombreSeccion = Seccion.Seccion;
             NombrePiso = Piso.Nombre;
             Iteraciones = Seccion.Iteraciones;
-
-            
         }
 
         [RelayCommand]
@@ -55,7 +54,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
             string resultado = await Shell.Current.DisplayPromptAsync(
                 "Nueva Iteración",
                 "Ingresa el nombre o identificador del elemento: ",
-                initialValue: nombreDefecto, 
+                initialValue: nombreDefecto,
                 accept: "Agregar",
                 cancel: "Cancelar");
 
@@ -78,12 +77,13 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
             Iteraciones.Add(nuevaIteracion);
         }
+
         [RelayCommand]
         private async Task SeleccionarIteracionAsync(IteracionModel iteracion) {
             if(iteracion == null) return;
 
             _stateService.IteracionActual = iteracion;
-            await Shell.Current.GoToAsync("PreguntasSeccionPage");
+            await Shell.Current.GoToAsync("PreguntasSeccionSupervisorPage");
         }
 
         [RelayCommand]
@@ -109,13 +109,11 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 "Terminar",
                 "Cancelar");
             if(confirmar) {
-                _stateService.PisoActual.Secciones.FirstOrDefault(s=>s.IdSeccion==Seccion.IdSeccion).EstaCompletada=true;
-                // Aquí puedes agregar la lógica para marcar la sección como terminada
-                // Por ejemplo, podrías actualizar un estado en el servicio o en el modelo
-                await Shell.Current.GoToAsync(".."); // Regresar a la página anterior
+                _stateService.PisoActual.Secciones.FirstOrDefault(s => s.IdSeccion == Seccion.IdSeccion).EstaCompletada = true;
+
+                await Shell.Current.GoToAsync("..");
             }
         }
-
 
         [RelayCommand]
         private async Task VolverPantallaSecciones() {

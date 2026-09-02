@@ -6,17 +6,19 @@
              Title="Supervisión Mantenimiento"
              xmlns:utils="clr-namespace:BatiaSuite.Utils"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             BackgroundColor="WhiteSmoke">
-    <ScrollView BackgroundColor="#F1F5F9" Padding="16,12">
+             Style="{StaticResource PageStyle}">
+    
+    
+    <ScrollView BackgroundColor="{AppThemeBinding Light=#F1F5F9, Dark=#0F172A}" Padding="16,12">
         <VerticalStackLayout Spacing="16">
 
-           
+            <!-- Header Supervisor -->
             <Border StrokeShape="RoundRectangle 20"
-                BackgroundColor="#0F172A"
+                BackgroundColor="{AppThemeBinding Light=#0F172A, Dark=#1E293B}"
                 Stroke="Transparent"
                 Padding="16,14">
                 <Border.Shadow>
-                    <Shadow Brush="#0F172A" Offset="0,6" Radius="12" Opacity="0.15" />
+                    <Shadow Brush="#0F172A" Offset="0,6" Radius="12" Opacity="{AppThemeBinding Light=0.15, Dark=0.3}" />
                 </Border.Shadow>
 
                 <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
@@ -27,7 +29,7 @@
                         WidthRequest="48"
                         Stroke="#38BDF8" 
                         StrokeThickness="2"
-                        BackgroundColor="#1E293B"
+                        BackgroundColor="{AppThemeBinding Light=#1E293B, Dark=#0F172A}"
                         Margin="0,0,12,0"
                         Padding="0">
                         <Image Source="profile.png" Aspect="AspectFill" />
@@ -48,11 +50,10 @@
 
                     <Border Grid.Column="2"
                         StrokeShape="RoundRectangle 12"
-                        BackgroundColor="#1E293B"
-                        Stroke="#334155"
+                        BackgroundColor="{AppThemeBinding Light=#1E293B, Dark=#0F172A}"
+                        Stroke="{AppThemeBinding Light=#334155, Dark=#334155}"
                         Padding="10,6">
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="0">
-                           
                             <Label Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:dd MMM}'}" 
                                TextColor="#F8FAFC" 
                                FontSize="13" 
@@ -62,12 +63,14 @@
                 </Grid>
             </Border>
 
+            <!-- Card Formulario "Datos del Servicio" -->
             <Border StrokeShape="RoundRectangle 20"
-                BackgroundColor="White"
-                Stroke="Transparent"
+                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E293B}"
+                Stroke="{AppThemeBinding Light=Transparent, Dark=#334155}"
+                StrokeThickness="{AppThemeBinding Light=0, Dark=1}"
                 Padding="20">
                 <Border.Shadow>
-                    <Shadow Brush="#64748B" Offset="0,4" Radius="10" Opacity="0.08" />
+                    <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="{AppThemeBinding Light=0.08, Dark=0.25}" />
                 </Border.Shadow>
 
                 <VerticalStackLayout Spacing="18">
@@ -75,84 +78,84 @@
                     <Label Text="Datos del Servicio" 
                        FontSize="16" 
                        FontAttributes="Bold" 
-                       TextColor="#0F172A" />
+                       TextColor="{AppThemeBinding Light=#0F172A, Dark=#F8FAFC}" />
 
+                    <!-- Tipo de Servicio -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Tipo de Servicio" FontSize="12" FontAttributes="Bold" TextColor="#64748B" />
+                        <Label Text="Tipo de Servicio" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
                         <Border StrokeShape="RoundRectangle 12"
-                            BackgroundColor="#F8FAFC"
-                            Stroke="#E2E8F0"
+                            BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}"
+                            Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
                             Padding="10,2">
                             <Picker Title="-- Seleccione tipo --"
                                 ItemsSource="{Binding TiposServicio}"
                                 SelectedItem="{Binding TipoServicioSelected}"
-                                    ItemDisplayBinding="{Binding Descripcion}"
-                                TitleColor="#94A3B8"
-                                TextColor="#0F172A"
+                                ItemDisplayBinding="{Binding Descripcion}"
+                                TitleColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}"
+                                TextColor="{AppThemeBinding Light=#0F172A, Dark=#F8FAFC}"
                                 FontSize="14"
                                 HeightRequest="44" />
                         </Border>
                     </VerticalStackLayout>
 
+                    <!-- Cliente -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Cliente" FontSize="12" FontAttributes="Bold" TextColor="#64748B" />
+                        <Label Text="Cliente" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
                         <Border StrokeShape="RoundRectangle 12"
-                            BackgroundColor="#F8FAFC"
-                            Stroke="#E2E8F0"
+                            BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}"
+                            Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
                             Padding="10,2">
-                            <Picker 
-                                Title="-- Seleccione cliente --" 
+                            <Picker Title="-- Seleccione cliente --" 
                                 ItemsSource="{Binding Clientes}" 
                                 SelectedItem="{Binding ClienteSelected, Mode=TwoWay}" 
                                 ItemDisplayBinding="{Binding nombre}" 
-                                TitleColor="#94A3B8" 
-                                TextColor="#0F172A" 
+                                TitleColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}" 
+                                TextColor="{AppThemeBinding Light=#0F172A, Dark=#F8FAFC}" 
                                 FontSize="14" 
                                 HeightRequest="44">
                                 <Picker.Behaviors>
                                     <toolkit:EventToCommandBehavior 
-                                        EventName="SelectedIndexChanged" 
-                                        Command="{Binding ObtenerSucursalesCommand}" />
+                                    EventName="SelectedIndexChanged" 
+                                    Command="{Binding ObtenerSucursalesCommand}" />
                                 </Picker.Behaviors>
                             </Picker>
                         </Border>
                     </VerticalStackLayout>
 
+                    <!-- Sucursal -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Sucursal" FontSize="12" FontAttributes="Bold" TextColor="#64748B" />
+                        <Label Text="Sucursal" FontSize="12" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#64748B, Dark=#94A3B8}" />
                         <Border StrokeShape="RoundRectangle 12"
-                            BackgroundColor="#F8FAFC"
-                            Stroke="#E2E8F0"
+                            BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#0F172A}"
+                            Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#334155}"
                             Padding="10,2">
                             <Picker Title="-- Seleccione sucursal --"
                                 ItemsSource="{Binding Inmuebles}"
                                 SelectedItem="{Binding InmuebleSelected, Mode=TwoWay}"
                                 ItemDisplayBinding="{Binding nombre}"
                                 IsEnabled="{Binding SucursalesHabilitadas}"
-                                TitleColor="#94A3B8"
-                                TextColor="#0F172A"
+                                TitleColor="{AppThemeBinding Light=#94A3B8, Dark=#64748B}"
+                                TextColor="{AppThemeBinding Light=#0F172A, Dark=#F8FAFC}"
                                 FontSize="14"
                                 HeightRequest="44" />
                         </Border>
                     </VerticalStackLayout>
 
-                 
-
                 </VerticalStackLayout>
             </Border>
 
-
+            <!-- Botón Principal -->
             <Button Text="Continuar a Secciones ➔"
-        Command="{Binding IrASeccionesCommand}"
-        BackgroundColor="#2563EB"
-        TextColor="White"
-        FontSize="16"
-        FontAttributes="Bold"
-        HeightRequest="54"
-        CornerRadius="14"
-        Margin="0,8,0,0">
+                Command="{Binding IrASeccionesCommand}"
+                BackgroundColor="{AppThemeBinding Light=#2563EB, Dark=#3B82F6}"
+                TextColor="White"
+                FontSize="16"
+                FontAttributes="Bold"
+                HeightRequest="54"
+                CornerRadius="14"
+                Margin="0,8,0,0">
                 <Button.Shadow>
-                    <Shadow Brush="#2563EB" Offset="0,6" Radius="12" Opacity="0.3" />
+                    <Shadow Brush="{AppThemeBinding Light=#2563EB, Dark=#3B82F6}" Offset="0,6" Radius="12" Opacity="0.3" />
                 </Button.Shadow>
             </Button>
 

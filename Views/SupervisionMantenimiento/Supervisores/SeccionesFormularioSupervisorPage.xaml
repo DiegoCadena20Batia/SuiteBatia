@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.SeccionesFormularioPage"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Supervisores.SeccionesFormularioSupervisorPage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios"
+             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores"
              xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento.Operarios"           
-             x:DataType="vm:SeccionesFormularioViewModel"
+             x:DataType="vm:SeccionesFormularioSupervisorViewModel"
              Title="Secciones del Piso"
              Shell.NavBarIsVisible="True"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding VolverPantallaSeleccionPisoCommand}"
-                      IsEnabled="True"/>
+                         IsEnabled="True"/>
     </Shell.BackButtonBehavior>
 
     <Grid RowDefinitions="Auto, *, Auto">
@@ -87,7 +87,7 @@
                             Stroke="{AppThemeBinding Light=#E5E7EB, Dark=#374151}"
                             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
 
-                        <Border.Behaviors> 
+                        <Border.Behaviors>
                             <toolkit:TouchBehavior 
                                 PressedBackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#2C3E50}" 
                                 PressedOpacity="1" />
@@ -95,7 +95,7 @@
 
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer 
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SeccionesFormularioViewModel}}, Path=SeleccionarSeccionCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SeccionesFormularioSupervisorViewModel}}, Path=SeleccionarSeccionCommand}"
                                 CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
 

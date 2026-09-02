@@ -1,4 +1,5 @@
-﻿using BatiaSuite.Models.OrdenesTrabajo;
+﻿using BatiaSuite.Models;
+using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Models.SupervisionMantenimiento;
 using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Utils;
@@ -17,7 +18,7 @@ namespace BatiaSuite.Services.SupervisionesMantenimiento {
         public DateTime FechaInicio { get; set; } = DateTime.Now;
         public int IdTipoServicio { get; set; }
         public int IdCliente { get; set; }
-        public int IdSucursal { get; set; }
+        public InmuebleModel Inmueble { get; set; }
         public PisoModel? PisoActual { get; set; }
         public SeccionModel? SeccionActual { get; set; }
         public IteracionModel? IteracionActual { get; set; }

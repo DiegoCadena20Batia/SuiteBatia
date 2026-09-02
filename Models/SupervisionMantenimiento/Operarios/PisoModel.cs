@@ -18,7 +18,8 @@ namespace BatiaSuite.Models.SupervisionMantenimiento.Operarios {
         public ObservableCollection<SeccionModel> Secciones { get; set; } = new();
 
         [JsonIgnore]
-        public bool EstaCompletado => Secciones.Any() && Secciones.All(s => s.EstaCompletada);
+        public bool EstaCompletado;
+        //public bool EstaCompletado => Secciones.Any() && Secciones.All(s => s.EstaCompletada);
         [JsonIgnore]
         public int SeccionesCompletadas => Secciones.Count(s => s.EstaCompletada);
         [JsonIgnore]

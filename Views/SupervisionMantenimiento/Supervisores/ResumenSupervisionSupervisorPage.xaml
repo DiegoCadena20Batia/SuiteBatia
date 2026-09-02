@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Supervisores.ResumenSupervisionSupervisorPage"
+             xmlns:views="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="Cierre de Supervisión"
+             xmlns:flags="clr-namespace:BatiaSuite.Utils"
+             BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
+    <Grid>
+
+        <!-- RESUMEN GENERAL DE LA SUPERVISIÓN -->
+        <ScrollView Padding="16">
+
+            <VerticalStackLayout Spacing="16">
+                <!-- OBSERVACIONES GENERALES -->
+                <Border Padding="14"
+BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}"
+StrokeThickness="1.5">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="8">
+
+                        <Label Text="Observaciones Generales"
+       FontAttributes="Bold"
+       FontSize="15"
+       TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}" />
+
+                        <Editor Placeholder="Ingresa comentarios, hallazgos o notas adicionales..."
+        PlaceholderColor="{AppThemeBinding Light=#A0AEC0, Dark=#718096}"
+        Text="{Binding ObservacionesGenerales}"
+        TextColor="{AppThemeBinding Light=#1A202C, Dark=#F7FAFC}"
+        HeightRequest="100"
+        AutoSize="Disabled"
+        FontSize="13"
+        BackgroundColor="{AppThemeBinding Light=#F8FAFC, Dark=#2A323D}" />
+                    </VerticalStackLayout>
+                </Border>
+                <!--Pregunta-->
+                <Border Margin="0,6"
+        Padding="14"
+        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+        Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}"
+        StrokeThickness="1.5">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+
+                    <Border.Triggers>
+                        <!-- Marco verde y fondo sutil al seleccionar cualquier opción -->
+                        <DataTrigger TargetType="Border" Binding="{Binding CondicionInmuebleRespondida}" Value="True">
+                            <Setter Property="Stroke" Value="{AppThemeBinding Light=#38A169, Dark=#48BB78}" />
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F6FFF8, Dark=#1A2E22}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+
+                    <VerticalStackLayout Spacing="10">
+                        <!-- Encabezado -->
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Resumen General"
+                       FontAttributes="Bold"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}" />
+
+                                <Label Text="Condiciones generales del inmueble"
+                       FontSize="13"
+                       TextColor="{AppThemeBinding Light=#1F2937, Dark=#F7FAFC}" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="1"
+                   Text="✓"
+                   TextColor="{AppThemeBinding Light=#38A169, Dark=#48BB78}"
+                   FontAttributes="Bold"
+                   FontSize="16"
+                   IsVisible="{Binding CondicionInmuebleRespondida}"
+                   VerticalOptions="Start" />
+                        </Grid>
+
+                        <!-- BOTONES DE SELECCIÓN (4 Opciones) -->
+                        <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="6" Margin="0,4,0,0">
+
+                            <!-- Excelente -->
+                            <Button Grid.Column="0"
+        Text="Excelente"
+        FontSize="10" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" Padding="0"
+        BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+        TextColor="{AppThemeBinding Light=#2D3748, Dark=#E2E8F0}"
+        Command="{Binding SeleccionarCondicionCommand}"
+        CommandParameter="Excelente">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding CondicionSeleccionada}" Value="Excelente">
+                                        <Setter Property="BackgroundColor" Value="#38A169" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
+                            <!-- Buena -->
+                            <Button Grid.Column="1"
+        Text="Buena"
+        FontSize="10" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" Padding="0"
+        BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+        TextColor="{AppThemeBinding Light=#2D3748, Dark=#E2E8F0}"
+        Command="{Binding SeleccionarCondicionCommand}"
+        CommandParameter="Buena">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding CondicionSeleccionada}" Value="Buena">
+                                        <Setter Property="BackgroundColor" Value="#3182CE" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
+                            <!-- Regular -->
+                            <Button Grid.Column="2"
+        Text="Regular"
+        FontSize="10" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" Padding="0"
+        BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+        TextColor="{AppThemeBinding Light=#2D3748, Dark=#E2E8F0}"
+        Command="{Binding SeleccionarCondicionCommand}"
+        CommandParameter="Regular">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding CondicionSeleccionada}" Value="Regular">
+                                        <Setter Property="BackgroundColor" Value="#DD6B20" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
+                            <!-- Deficiente -->
+                            <Button Grid.Column="3"
+        Text="Deficiente"
+        FontSize="10" FontAttributes="Bold" CornerRadius="8" HeightRequest="38" Padding="0"
+        BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+        TextColor="{AppThemeBinding Light=#2D3748, Dark=#E2E8F0}"
+        Command="{Binding SeleccionarCondicionCommand}"
+        CommandParameter="Deficiente">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding CondicionSeleccionada}" Value="Deficiente">
+                                        <Setter Property="BackgroundColor" Value="#E53E3E" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- SECCIÓN: TÉCNICO OPERATIVO -->
+                <Border Padding="14"
+BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}"
+StrokeThickness="1.5">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label Text="Supervisor"
+       FontAttributes="Bold"
+       FontSize="15"
+       TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}" />
+
+                        <Label Text="Firma del Supervisor:"
+       FontSize="12"
+       TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}" />
+
+                        <!-- FIRMA TÉCNICO -->
+                        <Border Stroke="{AppThemeBinding Light=#CBD5E0, Dark=#4A5568}"
+        StrokeThickness="1">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+
+                            <views:DrawingView
+        x:Name="tecnicoDrawingView"
+        LineColor="{AppThemeBinding Light=#1E293B, Dark=#F8FAFC}"
+        LineWidth="3"
+        Lines="{Binding LineasTecnico}"
+        HeightRequest="120"
+        IsMultiLineModeEnabled="True"
+        ShouldClearOnFinish="False"
+        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A323D}" />
+                        </Border>
+
+                        <Button Text="Limpiar Firma"
+                    Clicked="OnLimpiarFirmaTecnicoClicked"
+        FontSize="11"
+        HeightRequest="32"
+        HorizontalOptions="End"
+        BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+        TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- SECCIÓN: CLIENTE / CONFORMIDAD -->
+                <Border Padding="14"
+BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}"
+StrokeThickness="1.5">
+
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label Text="Conformidad del Cliente"
+       FontAttributes="Bold"
+       FontSize="15"
+       TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}" />
+
+                        <Label Text="Firma del Cliente:"
+       FontSize="12"
+       TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}" />
+
+                        <!-- FIRMA CLIENTE -->
+                        <Border Stroke="{AppThemeBinding Light=#CBD5E0, Dark=#4A5568}"
+        StrokeThickness="1">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+
+                            <views:DrawingView
+        x:Name="clienteDrawingView"
+        LineColor="{AppThemeBinding Light=#1E293B, Dark=#F8FAFC}"
+        LineWidth="3"
+        Lines="{Binding LineasCliente}"
+        HeightRequest="120"
+        IsMultiLineModeEnabled="True"
+        ShouldClearOnFinish="False"
+        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#2A323D}" />
+                        </Border>
+
+                        <Button Text="Limpiar Firma"
+        Clicked="OnLimpiarFirmaClienteClicked"
+        FontSize="11"
+        HeightRequest="32"
+        HorizontalOptions="End"
+        BackgroundColor="{AppThemeBinding Light=#EDF2F7, Dark=#2D3748}"
+        TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- BOTÓN ENVIAR SUPERVISIÓN -->
+                <Button Text="ENVIAR SUPERVISIÓN"
+            Command="{Binding GuardarSupervisionCommand}"
+            FontAttributes="Bold"
+            FontSize="14"
+            HeightRequest="48"
+            CornerRadius="10"
+            BackgroundColor="#38A169"
+            TextColor="White"
+            Margin="0,10,0,20" />
+            </VerticalStackLayout>
+        </ScrollView>
+        <!-- CAPA DE CARGA -->
+        <Grid BackgroundColor="{AppThemeBinding Light=#80000000, Dark=#B0000000}"
+        IsVisible="{Binding IsBusy}"
+        InputTransparent="False">
+
+            <Border Padding="24,20"
+              HorizontalOptions="Center"
+              VerticalOptions="Center"
+              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+              Stroke="{AppThemeBinding Light=#E2E8F0, Dark=#2D3748}"
+              StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                 Color="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}"
+                                 HeightRequest="40"
+                                 WidthRequest="40" />
+
+                    <Label Text="Guardando supervisión..."
+                     FontSize="13"
+                     FontAttributes="Bold"
+                     TextColor="{AppThemeBinding Light=#2D3748, Dark=#E2E8F0}"
+                     HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Botón auxiliar de testing rápido -->
+        <Button Text="⚡ AUTO-LLENAR (DEBUG)"
+        Command="{Binding AutoLlenarSupervisionModoDebugCommand}"
+        BackgroundColor="#E53E3E"
+        TextColor="White"
+        FontAttributes="Bold"
+        CornerRadius="8"
+        HeightRequest="36"
+        Margin="0,0,0,10"/>
+    </Grid>
+</ContentPage>

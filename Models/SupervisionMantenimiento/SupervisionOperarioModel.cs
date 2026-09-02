@@ -19,6 +19,8 @@ namespace BatiaSuite.Models.SupervisionMantenimiento {
         public string Longitud { get; set; } = string.Empty;
         public string Observaciones { get; set; } = string.Empty;
         public int IdRol { get; set; }
+        public int IdTipoServicio { get; set; }
+        public string ResumenSupervision { get; set; }
 
         public List<InstanciaDto> Instancias { get; set; } = new();
         public List<FirmaDto> Firmas { get; set; } = new();

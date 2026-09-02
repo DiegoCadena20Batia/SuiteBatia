@@ -37,8 +37,10 @@
 
     <Style TargetType="Page" x:Key="PageStyle" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="BackgroundColor" Value="#F5F5F5" />
-        <Setter Property="Shell.BackgroundColor" Value="#F5F5F5" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F4F6F8, Dark=#121212}" />
+        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light=#F4F6F8, Dark=#121212}" />
+        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light=#3775B5, Dark=#60A5FA}" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light=#1E293B, Dark=#F8FAFC}"/>
     </Style>
     
     <!--#region Popup styles-->

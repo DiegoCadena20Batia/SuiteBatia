@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.SeleccionPisosPage"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Supervisores.SeleccionPisoSupervisorPage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento.Operarios"
              Title="Selección de Pisos / Áreas"
@@ -10,94 +10,94 @@
 
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding VolverPantallaDatosCommand}"
-                        IsEnabled="True"/>
+                            IsEnabled="True"/>
     </Shell.BackButtonBehavior>
 
     <Grid RowDefinitions="Auto, Auto, *, Auto">
 
         <!-- Detalle de la Orden de Trabajo -->
-        <Border Grid.Row="0" 
-Margin="12,10" 
-Padding="16" 
-BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" 
-Stroke="{AppThemeBinding Light=#E1E4E8, Dark=#2D3748}" 
-StrokeThickness="1">
+        <!--<Border Grid.Row="0" 
+        Margin="12,10" 
+        Padding="16" 
+        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}" 
+        Stroke="{AppThemeBinding Light=#E1E4E8, Dark=#2D3748}" 
+        StrokeThickness="1">
 
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="14"/>
             </Border.StrokeShape>
 
             <VerticalStackLayout Spacing="8">
-                <!-- Cliente e ID -->
+                --><!-- Cliente e ID --><!--
                 <Grid ColumnDefinitions="*, Auto">
                     <VerticalStackLayout Grid.Column="0" Spacing="1">
                         <Label Text="{Binding Orden.idCliente, StringFormat='CLIENTE: {0}'}" 
-               FontSize="11" 
-               FontAttributes="Bold" 
-               TextColor="{AppThemeBinding Light=#586069, Dark=#A0AEC0}"/>
+                       FontSize="11" 
+                       FontAttributes="Bold" 
+                       TextColor="{AppThemeBinding Light=#586069, Dark=#A0AEC0}"/>
 
                         <Label Text="{Binding Orden.cliente}" 
-               FontSize="16" 
-               FontAttributes="Bold" 
-               TextColor="{AppThemeBinding Light=#1A202C, Dark=#F7FAFC}" 
-               LineBreakMode="WordWrap"/>
+                       FontSize="16" 
+                       FontAttributes="Bold" 
+                       TextColor="{AppThemeBinding Light=#1A202C, Dark=#F7FAFC}" 
+                       LineBreakMode="WordWrap"/>
                     </VerticalStackLayout>
 
-                    <!-- Badge ID Orden -->
+                    --><!-- Badge ID Orden --><!--
                     <Border Grid.Column="1" 
-            BackgroundColor="{AppThemeBinding Light=#F1F8FF, Dark=#1A2A3A}" 
-            Stroke="{AppThemeBinding Light=#C8E1FF, Dark=#2B4C7E}" 
-            StrokeThickness="1" 
-            Padding="8,4" 
-            VerticalOptions="Start">
+                    BackgroundColor="{AppThemeBinding Light=#F1F8FF, Dark=#1A2A3A}" 
+                    Stroke="{AppThemeBinding Light=#C8E1FF, Dark=#2B4C7E}" 
+                    StrokeThickness="1" 
+                    Padding="8,4" 
+                    VerticalOptions="Start">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8"/>
                         </Border.StrokeShape>
 
                         <Label Text="{Binding Orden.idOrden, StringFormat='#{0}'}" 
-               FontAttributes="Bold" 
-               FontSize="13" 
-               TextColor="{AppThemeBinding Light=#0366D6, Dark=#63B3ED}"/>
+                       FontAttributes="Bold" 
+                       FontSize="13" 
+                       TextColor="{AppThemeBinding Light=#0366D6, Dark=#63B3ED}"/>
                     </Border>
                 </Grid>
 
-                <!-- Sucursal y Coordenadas -->
+                --><!-- Sucursal y Coordenadas --><!--
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
                     <Label Grid.Column="0" Text="📍" FontSize="13" VerticalOptions="Start"/>
                     <Label Grid.Column="1" 
-           Text="{Binding Orden.sucursal}" 
-           FontSize="13"  
-           TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}" 
-           LineBreakMode="WordWrap"/>
+                   Text="{Binding Orden.sucursal}" 
+                   FontSize="13"  
+                   TextColor="{AppThemeBinding Light=#4A5568, Dark=#CBD5E0}" 
+                   LineBreakMode="WordWrap"/>
                 </Grid>
 
-                <!-- Pie de Cabecera: Tipo de Orden y Fecha -->
+                --><!-- Pie de Cabecera: Tipo de Orden y Fecha --><!--
                 <Grid ColumnDefinitions="Auto, *, Auto" Margin="0,4,0,0">
-                    <!-- Badge Tipo Mantenimiento -->
+                    --><!-- Badge Tipo Mantenimiento --><!--
                     <Border Grid.Column="0" 
-            BackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#1A2E3B}" 
-            Stroke="{AppThemeBinding Light=#BEE3F8, Dark=#2C5282}" 
-            Padding="8,3">
+                    BackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#1A2E3B}" 
+                    Stroke="{AppThemeBinding Light=#BEE3F8, Dark=#2C5282}" 
+                    Padding="8,3">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="6"/>
                         </Border.StrokeShape>
 
                         <Label Text="{Binding Orden.tipomanto}" 
-               FontSize="11" 
-               FontAttributes="Bold" 
-               TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}"/>
+                       FontSize="11" 
+                       FontAttributes="Bold" 
+                       TextColor="{AppThemeBinding Light=#2B6CB0, Dark=#63B3ED}"/>
                     </Border>
 
                     <HorizontalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
                         <Label Text="📅" FontSize="11" VerticalOptions="Center"/>
                         <Label Text="{Binding Orden.falta}" 
-               FontSize="12" 
-               TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}" 
-               VerticalOptions="Center"/>
+                       FontSize="12" 
+                       TextColor="{AppThemeBinding Light=#718096, Dark=#A0AEC0}" 
+                       VerticalOptions="Center"/>
                     </HorizontalStackLayout>
                 </Grid>
             </VerticalStackLayout>
-        </Border>
+        </Border>-->
 
 
         <!-- Formulario para Agregar Piso -->
@@ -149,7 +149,7 @@ StrokeThickness="1">
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
-           
+
 
             <!-- Plantilla de Elemento -->
             <CollectionView.ItemTemplate>
@@ -162,7 +162,8 @@ StrokeThickness="1">
                             <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
 
-                        <Border.Behaviors> <toolkit:TouchBehavior 
+                        <Border.Behaviors>
+                            <toolkit:TouchBehavior 
                             PressedBackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#2C3E50}" 
                             PressedOpacity="1" />
                         </Border.Behaviors>
@@ -224,9 +225,6 @@ StrokeThickness="1">
             FontAttributes="Bold" 
             CornerRadius="8" 
             HeightRequest="44"/>
-            
-           
         </Border>
-        
     </Grid>
 </ContentPage>

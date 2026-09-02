@@ -1,4 +1,5 @@
 ﻿using BatiaSuite.Models;
+using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Services.SupervisionesMantenimiento;
 using BatiaSuite.Utils;
 using BatiaSuite.Views.SupervisionMantenimiento;
@@ -65,6 +66,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
                 Shell.Current.DisplayAlert("Error", "No se pudieron obtener los tipos de servicio. Por favor, inténtelo de nuevo más tarde.", "OK");
             }
         }
+
         private async Task ObtenerClientes() {
             try {
                 string url = $"{urlApiBase}Cliente/ClientesMatenimiento";
@@ -110,13 +112,28 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
                 await Shell.Current.DisplayAlert("Error", "Por favor, seleccione un tipo de servicio, un inmueble y un cliente antes de continuar.", "OK");
                 return;
             }
-            // Guardamos los datos seleccionados en el servicio de estado
+            // 1. Limpiar sesión e inicializar la orden seleccionada en el StateService
+            _stateService.LimpiarSesion();
+            _stateService.FechaInicio = DateTime.Now;
+            _stateService.IdCliente = ClienteSelected.idCliente;
+            _stateService.Inmueble = InmuebleSelected;
             _stateService.IdTipoServicio = TipoServicioSelected.IdTipoServicio;
-            _stateService.IdCliente = InmuebleSelected.id_cliente;
-            _stateService.IdSucursal = InmuebleSelected.id_inmueble;
-            // Navegamos a la página de secciones
-            await Shell.Current.GoToAsync(nameof(SeleccionPisosPage));
-        }
 
+            // 2. Si la plantilla de secciones y preguntas no está cargada, la consultamos
+            if(_stateService.PlantillaBaseSecciones == null || !_stateService.PlantillaBaseSecciones.Any()) {
+                string urlPlantilla = $"{urlApiBase}SupervisionMantenimeintoChecklist?id_rol={UserSession.IdRol}";
+                var plantilla = await _httpHelper.GetAsync<List<SeccionModel>>(urlPlantilla);
+
+                if(plantilla == null || !plantilla.Any()) {
+                    await Shell.Current.DisplayAlert("Atención", "No se pudo obtener el catálogo de secciones y preguntas.", "OK");
+                    return;
+                }
+
+                // Guardamos la plantilla base con sus preguntas anidadas en el StateService
+                _stateService.PlantillaBaseSecciones = plantilla;
+            }
+            // 3. Navegamos a la pantalla de selección de pisos
+            await Shell.Current.GoToAsync("SeleccionPisoSupervisorPage");
+        }
     }
 }

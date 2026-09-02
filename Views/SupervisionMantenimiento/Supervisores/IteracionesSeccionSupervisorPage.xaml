@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Operarios.IteracionesSeccionPage"
-             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Supervisores.IteracionesSeccionSupervisorPage"
+             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores"
              xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento"
-             x:DataType="vm:IteracionesSeccionViewModel"
+             x:DataType="vm:IteracionesSeccionSupervisorViewModel"
              Title="Control de Iteraciones"
              Shell.NavBarIsVisible="True"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}">
 
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding VolverPantallaSeccionesCommand}"
-                       IsEnabled="True"/>
+                         IsEnabled="True"/>
     </Shell.BackButtonBehavior>
-    
     <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- Header con información -->
@@ -44,19 +43,18 @@
 
                             <!-- Evaluar / Responder -->
                             <Button Grid.Column="1" Text="Evaluar" HeightRequest="36" FontSize="12" CornerRadius="6" BackgroundColor="#3B82F6" TextColor="White" Margin="0,0,8,0"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:IteracionesSeccionViewModel}}, Path=SeleccionarIteracionCommand}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:IteracionesSeccionSupervisorViewModel}}, Path=SeleccionarIteracionCommand}"
                                     CommandParameter="{Binding .}" />
 
                             <!-- Eliminar -->
                             <Button Grid.Column="2" Text="🗑️" HeightRequest="36" WidthRequest="36" FontSize="12" CornerRadius="6" BackgroundColor="#FEE2E2" TextColor="#EF4444" Padding="0"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:IteracionesSeccionViewModel}}, Path=EliminarIteracionCommand}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:IteracionesSeccionSupervisorViewModel}}, Path=EliminarIteracionCommand}"
                                     CommandParameter="{Binding .}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-        </CollectionView> 
-        
+        </CollectionView>
 
         <!-- Botón para Agregar Nueva Iteración -->
         <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="15">

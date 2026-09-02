@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios.PreguntasSeccionPage"
-             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios"
+             x:Class="BatiaSuite.Views.SupervisionMantenimiento.Supervisores.PreguntasSeccionSupervisorPage"
+             xmlns:vm="clr-namespace:BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores"
              xmlns:models="clr-namespace:BatiaSuite.Models.SupervisionMantenimiento.Operarios"
-             x:DataType="vm:PreguntasSeccionViewModel"
+             x:DataType="vm:PreguntasSeccionSupervisorViewModel"
              BackgroundColor="{AppThemeBinding Light=#F4F6F8, Dark=#121212}"
+             Shell.NavBarIsVisible="True"
              Title="{Binding Seccion.Seccion, StringFormat='Sección: {0}'}">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding VolverPantallaIteracionesCommand}"
+                         IsEnabled="True"/>
+    </Shell.BackButtonBehavior>
 
     <Grid RowDefinitions="Auto, *, Auto">
 

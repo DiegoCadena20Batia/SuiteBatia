@@ -94,7 +94,7 @@ public static class MauiProgram {
 
         #endregion xaml pages Entregas
 
-        // CHECKLIST APARADORES
+        #region CHECKLIST APARADORES
         builder.Services.AddSingleton<CheckListService>();
 
         builder.Services.AddTransient<CheckListAparadoresInmuebleViewModel>();
@@ -117,8 +117,9 @@ public static class MauiProgram {
 
         builder.Services.AddTransient<CheckListAparadoresPreguntasResumenViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasResumenPage>();
+        #endregion  
 
-        //SUPERVISION MANTENIMIENTO
+        #region SUPERVISION MANTENIMIENTO
 
         builder.Services.AddSingleton<SupervisionMantenimientoService>();
 
@@ -148,8 +149,9 @@ public static class MauiProgram {
 
         builder.Services.AddTransient<SeleccionPisosPage>();
         builder.Services.AddTransient<SeleccionPisosViewModel>();
+        #endregion
 
-
+        #region SupervisionMantenimientoTecnico
         builder.Services.AddTransient<SeccionesFormularioPage>();
         builder.Services.AddTransient<SeccionesFormularioViewModel>();
         builder.Services.AddTransient<PreguntasSeccionPage>();
@@ -158,29 +160,42 @@ public static class MauiProgram {
         builder.Services.AddTransient<IteracionesSeccionViewModel>();
         builder.Services.AddTransient<ResumenSupervisionViewModel>();
         builder.Services.AddTransient<ResumenSupervisionPage>();
-        builder.Services.AddTransient<SupervisionMantenimientoSupervisorViewModel>();
-        builder.Services.AddTransient<SupervisionMantenimientoSupervisorPage>();
+        #endregion
 
-       
+        #region SupervisionMantenimientoSupervisor
+        builder.Services.AddTransient<SupervisionMantenimientoSupervisorPage>();
+        builder.Services.AddTransient<SupervisionMantenimientoSupervisorViewModel>();
+        builder.Services.AddTransient<IteracionesSeccionSupervisorViewModel>();
+        builder.Services.AddTransient<PreguntasSeccionSupervisorViewModel>();
+        builder.Services.AddTransient<SeccionesFormularioSupervisorViewModel>();
+        builder.Services.AddTransient<SeleccionPisoSupervisorViewModel>();
+        builder.Services.AddTransient<SeleccionPisoSupervisorViewModel>();
+        builder.Services.AddTransient<ResumenSupervisionSupervisorViewModel>();
+        #endregion
+
+
+
+
         builder.Services.AddSingleton<SupervisionStateService>();
 
 
 
         builder.Services.AddSingleton<DbContext>();
 
-        //Correctivos Mayores
+        #region Correctivos Mayores
         builder.Services.AddTransient<CorrectivosMayoresViewModel>();
 
         builder.Services.AddSingleton<LocalDatabaseService>();
+        #endregion
 
-        //EntregasRutas
+        #region EntregasRutas
         builder.Services.AddTransient<TiposListadoPage>();
         builder.Services.AddTransient<TiposListadoViewModel>();
 
         builder.Services.AddTransient<CentroNotificacionesSupervisorViewModel>();
         builder.Services.AddTransient<CentroNotificacionesSupervisor>();
+        #endregion
 
-        
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();

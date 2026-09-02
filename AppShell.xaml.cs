@@ -137,7 +137,9 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(SupervisionMantenimientoHidrantesObjectPage), typeof(SupervisionMantenimientoHidrantesObjectPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoExtintoresObjectPage), typeof(SupervisionMantenimientoExtintoresObjectPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoFirmasPage), typeof(SupervisionMantenimientoFirmasPage));
+        #endregion
 
+        #region Supervision Mantenimiento Tecnico
         Routing.RegisterRoute(nameof(SupervisionesMantenimientoProgramadasPage), typeof(SupervisionesMantenimientoProgramadasPage));
         Routing.RegisterRoute(nameof(SeleccionPisosPage), typeof(SeleccionPisosPage));
         Routing.RegisterRoute(nameof(SeccionesFormularioPage), typeof(SeccionesFormularioPage));
@@ -146,10 +148,17 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(IteracionesSeccionPage), typeof(IteracionesSeccionPage)); // <-- Nueva pantalla
         Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
         Routing.RegisterRoute(nameof(ResumenSupervisionPage), typeof(ResumenSupervisionPage));
+        #endregion
 
+        #region Supervision Mantenimiento Supervisor
         Routing.RegisterRoute(nameof(SupervisionMantenimientoSupervisorPage), typeof(SupervisionMantenimientoSupervisorPage));
+        Routing.RegisterRoute(nameof(IteracionesSeccionSupervisorPage), typeof(IteracionesSeccionSupervisorPage));
+        Routing.RegisterRoute(nameof(PreguntasSeccionSupervisorPage), typeof(PreguntasSeccionSupervisorPage));
+        Routing.RegisterRoute(nameof(SeccionesFormularioSupervisorPage), typeof(SeccionesFormularioSupervisorPage));
+        Routing.RegisterRoute(nameof(SeleccionPisoSupervisorPage), typeof(SeleccionPisoSupervisorPage));
+        Routing.RegisterRoute(nameof(ResumenSupervisionSupervisorPage), typeof(ResumenSupervisionSupervisorPage));
 
-        #endregion SUPERVISION MANTENIMIENTO
+        #endregion
 
         #region SOLICITUD COTIZACION
 

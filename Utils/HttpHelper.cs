@@ -64,6 +64,7 @@ public class HttpHelper {
             if(isSupervisionModule) {
                 _httpClient.DefaultRequestHeaders.Add("folder", "supervision");
             }
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
             HttpResponseMessage result = await _httpClient.PostAsync(url, content);
 
             if(result.IsSuccessStatusCode) {
