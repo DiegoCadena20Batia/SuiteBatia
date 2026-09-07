@@ -103,17 +103,29 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
 
         [RelayCommand]
         private async Task TerminarSeccionAsync() {
-            bool confirmar = await Shell.Current.DisplayAlert(
-                "Terminar Sección",
-                $"Estás seguro de terminar la sección '{NombreSeccion}'?",
-                "Terminar",
-                "Cancelar");
-            if(confirmar) {
-                _stateService.PisoActual.Secciones.FirstOrDefault(s=>s.IdSeccion==Seccion.IdSeccion).EstaCompletada=true;
-                // Aquí puedes agregar la lógica para marcar la sección como terminada
-                // Por ejemplo, podrías actualizar un estado en el servicio o en el modelo
-                await Shell.Current.GoToAsync(".."); // Regresar a la página anterior
+
+            bool faltanIteraciones = !Iteraciones.Any();
+
+            bool iteracionesIncompletas = Iteraciones.Any(i => !i.EstaCompletada);
+            if(faltanIteraciones) {
+                await Shell.Current.DisplayAlert(
+                    "Sección Incompleta",
+                    $"No se han agregado iteraciones a la sección '{NombreSeccion}'. Por favor, agrega al menos una iteración antes de terminar.",
+                    "Aceptar");
+                return;
             }
+
+            if(iteracionesIncompletas) {
+                await Shell.Current.DisplayAlert(
+                   "Sección Incompleta",
+                   $"Existen iteraciones incompletas. Por favor, completa las iteraciones antes de terminar.",
+                   "Aceptar");
+                return;
+            }
+            _stateService.PisoActual.Secciones.FirstOrDefault(s => s.IdSeccion == Seccion.IdSeccion).EstaCompletada = true;
+
+            await Shell.Current.GoToAsync("..");
+
         }
 
 

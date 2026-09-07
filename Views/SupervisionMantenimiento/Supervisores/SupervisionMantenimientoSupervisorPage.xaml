@@ -145,13 +145,14 @@
             </Border>
 
             <!-- Botón Principal -->
-            <Button Text="Continuar a Secciones ➔"
+            <Button Text="Continuar ➔"
                 Command="{Binding IrASeccionesCommand}"
                 BackgroundColor="{AppThemeBinding Light=#2563EB, Dark=#3B82F6}"
                 TextColor="White"
                 FontSize="16"
                 FontAttributes="Bold"
                 HeightRequest="54"
+                WidthRequest="280"
                 CornerRadius="14"
                 Margin="0,8,0,0">
                 <Button.Shadow>

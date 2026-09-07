@@ -149,8 +149,6 @@ StrokeThickness="1">
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
-           
-
             <!-- Plantilla de Elemento -->
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:PisoModel">
@@ -162,18 +160,15 @@ StrokeThickness="1">
                             <RoundRectangle CornerRadius="10"/>
                         </Border.StrokeShape>
 
-                        <Border.Behaviors> <toolkit:TouchBehavior 
-                            PressedBackgroundColor="{AppThemeBinding Light=#EBF8FF, Dark=#2C3E50}" 
-                            PressedOpacity="1" />
-                        </Border.Behaviors>
-
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding BindingContext.SeleccionarPisoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                          CommandParameter="{Binding .}"/>
-                        </Border.GestureRecognizers>
-
                         <Grid ColumnDefinitions="*, Auto, Auto" VerticalOptions="Center">
-                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+
+                            <!-- Gesto de navegación limitado a columnas 0 y 1, NO incluye el botón -->
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BindingContext.SeleccionarPisoCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                               CommandParameter="{Binding .}"/>
+                            </Grid.GestureRecognizers>
+
+                            <VerticalStackLayout Grid.Column="0" Spacing="2" InputTransparent="True">
                                 <Label Text="{Binding Nombre}" 
                                FontAttributes="Bold" 
                                FontSize="14" 
@@ -189,7 +184,9 @@ StrokeThickness="1">
                            FontSize="16" 
                            TextColor="{AppThemeBinding Light=#A0AEC0, Dark=#718096}" 
                            VerticalOptions="Center" 
-                           Margin="10,0"/>
+                           Margin="10,0"
+                           InputTransparent="True"/>
+
                             <Button Grid.Column="2" 
                             Text="🗑" 
                             BackgroundColor="#FEE2E2" 
