@@ -16,11 +16,8 @@ namespace BatiaSuite.Models.SupervisionMantenimiento.Operarios {
         [JsonIgnore]
         public ObservableCollection<PreguntaModel> Preguntas { get; set; } = new();
 
-        //public List<FotoModel> Fotos { get; set; } = new();
-
         public ObservableCollection<IteracionModel> Iteraciones { get; set; } = new();
 
-        //public bool EstaCompletada => Preguntas.Any() && Preguntas.All(p => p.EstaRespondida);
         [JsonIgnore]
         public bool EstaCompletada { get; set; } = false;
 

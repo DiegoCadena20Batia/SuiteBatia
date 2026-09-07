@@ -8,17 +8,24 @@ using System.Collections.ObjectModel;
 
 namespace BatiaSuite.ViewModel {
 
+    using BatiaSuite.Data;
+    using BatiaSuite.Interfaz.Repositories;
+    using BatiaSuite.Models.EntidadesLocal.Supervisiones;
     using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
+    using BatiaSuite.Repositories;
     using BatiaSuite.Services.SupervisionesMantenimiento;
     using CommunityToolkit.Mvvm.ComponentModel;
     using CommunityToolkit.Mvvm.Input;
     using System.Collections.ObjectModel;
+    using System.Diagnostics;
 
     public partial class SupervisionesMantenimientoProgramadasViewModel : ObservableObject {
+
         #region Variables y Servicios
-        private readonly HttpHelper _httpHelper;
+
         private readonly SupervisionStateService _stateService;
-        private readonly string _baseUrlApi = Constants.API_BASE_URL;
+        private readonly IOrdenesRepository _ordenesRepository;
+        private readonly IPlantillasRepository _plantillasRepository;
 
         [ObservableProperty]
         private ObservableCollection<OrdenTrabajoModel> _ordenes = new();
@@ -44,16 +51,16 @@ namespace BatiaSuite.ViewModel {
         private string _filtroTexto = string.Empty;
 
         private readonly List<int> _yearList = new();
-        #endregion
 
-        public SupervisionesMantenimientoProgramadasViewModel(
-            HttpHelper httpHelper,
-            SupervisionStateService stateService) {
-            _httpHelper = httpHelper;
+        #endregion Variables y Servicios
+
+        public SupervisionesMantenimientoProgramadasViewModel(SupervisionStateService stateService,IOrdenesRepository ordenesRepository,IPlantillasRepository plantillasRepository) {
+            _ordenesRepository = ordenesRepository;
             _stateService = stateService;
+            _plantillasRepository = plantillasRepository;
 
             InitValues();
-            _ = CargarOrdenesAsync();
+           
         }
 
         private void InitValues() {
@@ -105,64 +112,54 @@ namespace BatiaSuite.ViewModel {
         [RelayCommand]
         public async Task CargarOrdenesAsync() {
             if(IsLoading) return;
-
             try {
-                IsLoading = true;
+                IsLoading=true; 
 
-                int idTecnico = UserSession.IdEmpleado;
-                int mes = _filterMonth;
-                int anio = FilterYear;
+                int idTecnico = UserSession.IdEmpleado;  
+                int mes= _filterMonth;
+                int anio= FilterYear;
 
-                string url = $"{_baseUrlApi}SupervisionMantenimientoProgramada/SupervisionesProgramadas?idTecnico={idTecnico}";
-                var resultado = await _httpHelper.GetAsync<List<OrdenTrabajoModel>>(url);
+                var resultado=await _ordenesRepository.ObtenerOrdenesAsync(idTecnico, mes, anio);
 
-                if(resultado != null) {
-                    var filtradas = resultado.Where(x => {
-                        if(DateTime.TryParse(x.falta, out DateTime fecha)) {
-                            return fecha.Month == mes && fecha.Year == anio;
-                        }
-                        return false;
-                    }).ToList();
-
-                    Ordenes = new ObservableCollection<OrdenTrabajoModel>(filtradas);
-                    OnFiltroTextoChanged(FiltroTexto);
-                }
+                Ordenes=new ObservableCollection<OrdenTrabajoModel>(resultado);
+                OnFiltroTextoChanged(FiltroTexto);
             } catch(Exception ex) {
-                System.Diagnostics.Debug.WriteLine($"Error al cargar órdenes: {ex.Message}");
+
+                await Shell.Current.DisplayAlert("Error", "No se cargó la información correctamente. Intente de nuevo", "Ok");
+
+                Debug.WriteLine($"Error en CargarOrdenesAsync: {ex.Message}");
             } finally {
                 IsLoading = false;
-                IsRefreshing = false;
+                IsRefreshing=false;
             }
         }
 
         [RelayCommand]
         private async Task VerFormularioSupervision(OrdenTrabajoModel ordenSeleccionada) {
             if(ordenSeleccionada == null || IsLoading) return;
-
             try {
-                IsLoading = true;
-
-                // 1. Limpiar sesión e inicializar la orden seleccionada en el StateService
+             IsLoading = true;
+                // 1. Inicializar sesión y estado
                 _stateService.LimpiarSesion();
                 _stateService.OrdenActual = ordenSeleccionada;
                 _stateService.FechaInicio = DateTime.Now;
 
-                // 2. Si la plantilla de secciones y preguntas no está cargada, la consultamos
+                // 2. Cargar plantilla usando el repositorio si no está en memoria
                 if(_stateService.PlantillaBaseSecciones == null || !_stateService.PlantillaBaseSecciones.Any()) {
-                    string urlPlantilla = $"{_baseUrlApi}SupervisionMantenimeintoChecklist?id_rol={UserSession.IdRol}";
-                    var plantilla = await _httpHelper.GetAsync<List<SeccionModel>>(urlPlantilla);
+
+                    var plantilla = await _plantillasRepository.ObtenerPlantillaAsync(UserSession.IdRol);
 
                     if(plantilla == null || !plantilla.Any()) {
                         await Shell.Current.DisplayAlert("Atención", "No se pudo obtener el catálogo de secciones y preguntas.", "OK");
                         return;
                     }
 
-                    // Guardamos la plantilla base con sus preguntas anidadas en el StateService
                     _stateService.PlantillaBaseSecciones = plantilla;
                 }
 
-                // 3. Navegamos a la pantalla de selección de pisos
+                // 3. Navegación
                 await Shell.Current.GoToAsync("SeleccionPisosPage");
+
             } catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine($"Error en VerFormularioSupervision: {ex.Message}");
                 await Shell.Current.DisplayAlert("Error", "Ocurrió un inconveniente al abrir la supervisión.", "OK");

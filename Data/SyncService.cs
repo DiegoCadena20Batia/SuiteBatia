@@ -32,34 +32,30 @@ namespace BatiaSuite.Data {
                 string url = instanciador.ObtenerUrlDescarga(_baseApiUrl, clienteId);
                 var response = await _httpClient.GetAsync(url);
                 if(!response.IsSuccessStatusCode) return false;
+
                 string rawJson = await response.Content.ReadAsStringAsync();
-                if(typeof(T) == typeof(CatalogoCacheEntity)) {
-                    var cache = new CatalogoCacheEntity {
-                        Clave = instanciador.ClaveCatalogo,
-                        JsonData = rawJson,
-                        UltimaSincronizacion = DateTime.Now
-                    };
-                    await _dbContext.GuardarLocalAsync(cache as T);
+
+                // Evaluación polimórfica: Aplica para cualquier clase que implemente ICacheable
+                if(instanciador is ICacheable cacheable) {
+                    // La entidad misma se auto-popula sin importar de qué clase concreta se trate
+                    cacheable.CargarDatosCache(rawJson);
+
+                    // Se guarda la entidad del tipo T correspondiente en la base de datos local
+                    await _dbContext.GuardarLocalAsync((T)cacheable);
                 } else {
+                    // Flujo normal para listas de entidades mapeadas
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     var listaEntidades = JsonSerializer.Deserialize<List<T>>(rawJson, options);
-                    if(listaEntidades != null) {
+                    if(listaEntidades != null && listaEntidades.Count > 0) {
                         await _dbContext.BorrarTablaCompletaAsync<T>();
-                        if(listaEntidades.Count > 0) {
-                            foreach(var entidad in listaEntidades) {
-                                if(entidad is InmuebleEntity inmueble) {
-                                    inmueble.IdCliente = clienteId;
-                                    inmueble.IdEstado = 0;
-                                }
-                                await _dbContext.GuardarLocalAsync<T>(entidad);
-                                
-                            }
-                        }
                     }
                 }
+
+                await  _dbContext.VerificarRegistrosSeccionesSupervision();
+
                 return true;
             } catch(Exception ex) {
-                Console.WriteLine($"Error crítico en sincronización genérica de {typeof(T).Name}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error crítico en sincronización de {typeof(T).Name}: {ex.Message}");
                 return false;
             }
         }
@@ -109,7 +105,7 @@ namespace BatiaSuite.Data {
             if(!string.IsNullOrWhiteSpace(UserSession.Modulos)) {
                 modulosDelUsuario = UserSession.Modulos
                     .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Where(m => int.TryParse(m.Trim(), out _)) 
+                    .Where(m => int.TryParse(m.Trim(), out _))
                     .Select(m => int.Parse(m.Trim()))
                     .ToList();
             }
@@ -134,10 +130,9 @@ namespace BatiaSuite.Data {
 
                         if(!tienePermiso) {
                             System.Diagnostics.Debug.WriteLine($"[Sync] Saltando {tipo.Name}: El usuario no cuenta con los módulos requeridos.");
-                            continue; 
+                            continue;
                         }
                     }
-                   
 
                     System.Diagnostics.Debug.WriteLine($"[Sync] Detectada entidad automática y autorizada: {tipo.Name}");
 

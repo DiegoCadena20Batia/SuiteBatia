@@ -1,4 +1,6 @@
 ﻿using BatiaSuite.Data;
+using BatiaSuite.Interfaz.Repositories;
+using BatiaSuite.Repositories;
 using BatiaSuite.Resources.IconFonts;
 using BatiaSuite.Services;
 using BatiaSuite.Services.SupervisionesMantenimiento;
@@ -181,6 +183,9 @@ public static class MauiProgram {
 
 
         builder.Services.AddSingleton<DbContext>();
+        builder.Services.AddSingleton<LocalDbContext>();
+        builder.Services.AddSingleton<IOrdenesRepository, OrdenesRepository>();
+        builder.Services.AddSingleton<IPlantillasRepository, PlantillasRepository>();
 
         #region Correctivos Mayores
         builder.Services.AddTransient<CorrectivosMayoresViewModel>();

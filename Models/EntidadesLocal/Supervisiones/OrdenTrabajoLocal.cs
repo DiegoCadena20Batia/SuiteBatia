@@ -1,0 +1,35 @@
+﻿using BatiaSuite.Interfaz;
+using BatiaSuite.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BatiaSuite.Models.EntidadesLocal.Supervisiones {
+
+    [ModulosRequeridos(19)]
+    public class OrdenTrabajoLocal : IDescargable {
+
+        public string ObtenerUrlDescarga(string baseUrl, int Parametro) {
+            return $"{baseUrl}SupervisionMantenimientoProgramada/SupervisionesProgramadas?idTecnico={UserSession.IdEmpleado}";
+        }
+
+        [SQLite.PrimaryKey, SQLite.AutoIncrement]
+        public int? IdLocal { get; set; }
+
+        public int idOrden { get; set; }
+        public int idCliente { get; set; }
+        public int idInmueble { get; set; }
+        public string latitud { get; set; }
+        public string longitud { get; set; }
+        public string sucursal { get; set; }
+        public string cliente { get; set; }
+        public string falta { get; set; }
+        public string status { get; set; }
+        public string tipomanto { get; set; }
+        public string tipoOrden { get; set; }
+        public string descripcion { get; set; }
+        public DateTime SyncDate { get; internal set; }
+    }
+}
