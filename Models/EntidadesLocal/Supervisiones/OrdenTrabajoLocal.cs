@@ -15,6 +15,10 @@ namespace BatiaSuite.Models.EntidadesLocal.Supervisiones {
             return $"{baseUrl}SupervisionMantenimientoProgramada/SupervisionesProgramadas?idTecnico={UserSession.IdEmpleado}";
         }
 
+        public void CargarDatosCache(string rawJson) {
+            throw new NotImplementedException();
+        }
+
         [SQLite.PrimaryKey, SQLite.AutoIncrement]
         public int? IdLocal { get; set; }
 

@@ -3,16 +3,18 @@ using BatiaSuite.Interfaz.Repositories;
 using BatiaSuite.Models.EntidadesLocal.Supervisiones;
 using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
 using BatiaSuite.Utils;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static SQLite.SQLite3;
 
 namespace BatiaSuite.Repositories {
-    internal class PlantillasRepository : IPlantillasRepository {
 
+    internal class PlantillasRepository : IPlantillasRepository {
         private readonly HttpHelper _httpHelper;
         private readonly LocalDbContext _localDbContext;
         private readonly string _baseUrlApi = Constants.API_BASE_URL;
@@ -21,6 +23,7 @@ namespace BatiaSuite.Repositories {
             _httpHelper = httpHelper;
             _localDbContext = localDbContext;
         }
+
         public async Task<List<SeccionModel>> ObtenerPlantillaAsync(int idRol) {
             string claveRegistro = nameof(SeccionesSupervisionLocal);
 
@@ -34,21 +37,19 @@ namespace BatiaSuite.Repositories {
                 if(plantillaApi != null && plantillaApi.Any()) {
                     // 2. Guardar/Actualizar la caché local para cuando se pierda la conexión
                     try {
-                        string rawJson = JsonSerializer.Serialize(plantillaApi);
+                        string rawJson = System.Text.Json.JsonSerializer.Serialize(plantillaApi);
 
                         var cacheLocal = new SeccionesSupervisionLocal();
                         cacheLocal.CargarDatosCache(rawJson);
 
-                    
                         var existentes = await _localDbContext.ObtenerListaLocalAsync<SeccionesSupervisionLocal>(x => x.Clave == claveRegistro);
                         var existente = existentes?.FirstOrDefault();
 
                         if(existente != null) {
-                            await _localDbContext.BorrarLocalAsync(existente); 
+                            await _localDbContext.BorrarLocalAsync(existente);
                         }
 
-                      
-                        await _localDbContext.GuardarLocalAsync(cacheLocal); 
+                        await _localDbContext.GuardarLocalAsync(cacheLocal);
                     } catch(Exception ex) {
                         //await Shell.Current.DisplayAlert("Error", $"Error actualizando caché de secciones: {ex.Message}", "OK");
                         System.Diagnostics.Debug.WriteLine($"Error actualizando caché de secciones: {ex.Message}");
@@ -63,9 +64,10 @@ namespace BatiaSuite.Repositories {
                 var registroCache = registrosLocales?.FirstOrDefault();
 
                 if(registroCache != null && !string.IsNullOrWhiteSpace(registroCache.JsonData)) {
-                    var plantillaLocal = JsonSerializer.Deserialize<List<SeccionModel>>(registroCache.JsonData, new JsonSerializerOptions {
-                        PropertyNameCaseInsensitive = true
-                    });
+                    //var plantillaLocal = JsonSerializer.Deserialize<List<SeccionModel>>(registroCache.JsonData, new JsonSerializerOptions {
+                    //    PropertyNameCaseInsensitive = true
+                    //});
+                    var plantillaLocal = JsonConvert.DeserializeObject<List<SeccionModel>>(registroCache.JsonData);
 
                     return plantillaLocal ?? new List<SeccionModel>();
                 }

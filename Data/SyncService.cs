@@ -48,10 +48,14 @@ namespace BatiaSuite.Data {
                     var listaEntidades = JsonSerializer.Deserialize<List<T>>(rawJson, options);
                     if(listaEntidades != null && listaEntidades.Count > 0) {
                         await _dbContext.BorrarTablaCompletaAsync<T>();
+
+                        foreach(var entidad in listaEntidades) {
+                            await _dbContext.GuardarLocalAsync(entidad);
+                        }
                     }
                 }
 
-                await  _dbContext.VerificarRegistrosSeccionesSupervision();
+                await _dbContext.VerificarRegistrosSeccionesSupervision();
 
                 return true;
             } catch(Exception ex) {
