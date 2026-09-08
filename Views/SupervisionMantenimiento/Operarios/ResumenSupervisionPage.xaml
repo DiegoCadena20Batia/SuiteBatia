@@ -147,7 +147,7 @@
                         Margin="0,0,0,10" />
 
                 <!-- BOTÓN ENVIAR SUPERVISIÓN -->
-                <Button Text="ENVIAR SUPERVISIÓN"
+                <!--<Button Text="ENVIAR SUPERVISIÓN"
                         Command="{Binding GuardarSupervisionCommand}"
                         FontAttributes="Bold"
                         FontSize="14"
@@ -155,7 +155,7 @@
                         CornerRadius="10"
                         BackgroundColor="#38A169"
                         TextColor="White"
-                        Margin="0,10,0,20"/>
+                        Margin="0,10,0,20"/>-->
 
             </VerticalStackLayout>
         </ScrollView>

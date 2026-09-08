@@ -292,13 +292,13 @@ StrokeThickness="1.5">
         </Grid>
 
         <!-- Botón auxiliar de testing rápido -->
-        <Button Text="⚡ AUTO-LLENAR (DEBUG)"
+        <!--<Button Text="⚡ AUTO-LLENAR (DEBUG)"
         Command="{Binding AutoLlenarSupervisionModoDebugCommand}"
         BackgroundColor="#E53E3E"
         TextColor="White"
         FontAttributes="Bold"
         CornerRadius="8"
         HeightRequest="36"
-        Margin="0,0,0,10"/>
+        Margin="0,0,0,10"/>-->
     </Grid>
 </ContentPage>
