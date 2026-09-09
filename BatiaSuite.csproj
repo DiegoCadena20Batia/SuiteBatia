@@ -42,7 +42,7 @@
 	</PropertyGroup>
 	
 <!--Release aab Android-->
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
 		<AndroidUseAapt2>True</AndroidUseAapt2>
@@ -55,7 +55,7 @@
 		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
 		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
 		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
-    </PropertyGroup>
+    </PropertyGroup>-->
 
 
 	<!--Release apk Android-->
@@ -98,27 +98,22 @@
     <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
 
-    <!-- Publicación e IPA -->
 	<BuildIpa>true</BuildIpa>
 	<ArchiveOnBuild>true</ArchiveOnBuild>
 	<ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
 	<ApplicationTitle>Suite Batia</ApplicationTitle>
 
-	<!-- Conexión a Mac Pair to Mac (remueve ServerTcpPort a menos que uses un túnel SSH manual) -->
 	<ServerAddress>192.168.11.146</ServerAddress>
 	<ServerUser>ricardoberistain</ServerUser>
 
-	<!-- Firma de Código para Distribución (App Store / TestFlight) -->
 	<ProvisioningType>manual</ProvisioningType>
 	<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
 	<CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
 
-	<!-- Optimización y Enlazador para Release (Requerido por Apple / Rendimiento) -->
 	<MtouchLink>SdkOnly</MtouchLink>
 	<UseInterpreter>false</UseInterpreter>
 	<MtouchFastDev>false</MtouchFastDev>
 
-	<!-- Configuración de Trimming recomendable para iOS -->
 	<PublishTrimmed>true</PublishTrimmed>
 	<TrimMode>partial</TrimMode>
 	</PropertyGroup>

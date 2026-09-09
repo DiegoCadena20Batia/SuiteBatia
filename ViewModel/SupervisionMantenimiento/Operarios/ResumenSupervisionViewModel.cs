@@ -7,8 +7,10 @@ using CommunityToolkit.Maui.Core.Views;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
+
 using System.Collections.ObjectModel;
 using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
 
@@ -90,7 +92,8 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 return false;
             }
         }
-        #endregion
+
+        #endregion Métodos Auxiliares
 
         #region Comando Principal
 
@@ -180,7 +183,6 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 var response = await _httpHelper.PostBodyAsync<SupervisionPayloadDto, SupervisionResponseDto>(urlGuardar, payload);
 
                 if(response != null && response.Success && response.Id_Supervisionm > 0) {
-
                     // 7. Ya con el ID devuelto por SQL Server, subir los archivos físicos de fotos a su carpeta
                     if(todasLasRutasFotos.Any()) {
                         await SubirFotografiasAsync(todasLasRutasFotos, response.Id_Supervisionm, mapaFotos);
@@ -200,72 +202,70 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
             }
         }
 
-        #endregion
+        #endregion Comando Principal
 
-        #if DEBUG
+#if DEBUG
 
+        [RelayCommand]
+        private void AutoLlenarSupervisionModoDebug() {
+            // 1. Llenar campos del cabecero
+            ObservacionesGenerales = "Prueba automatizada de supervisión en modo Debug.";
 
-[RelayCommand]
-    private void AutoLlenarSupervisionModoDebug() {
-        // 1. Llenar campos del cabecero
-        ObservacionesGenerales = "Prueba automatizada de supervisión en modo Debug.";
-   
-       
+            // 2. Simular trazado ficticio de firma
+            LineasTecnico.Clear();
+            LineasCliente.Clear();
 
-        // 2. Simular trazado ficticio de firma
-        LineasTecnico.Clear();
-        LineasCliente.Clear();
-
-        var trazoMockTecnico = new DrawingLine {
-            LineColor = Colors.Black,
-            LineWidth = 3,
-            Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
-            {
+            var trazoMockTecnico = new DrawingLine {
+                LineColor = Colors.Black,
+                LineWidth = 3,
+                Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
+                {
             new PointF(10, 50), new PointF(50, 20), new PointF(100, 80), new PointF(150, 30)
         }
-        };
+            };
 
-        var trazoMockCliente = new DrawingLine {
-            LineColor = Colors.Blue,
-            LineWidth = 3,
-            Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
-            {
+            var trazoMockCliente = new DrawingLine {
+                LineColor = Colors.Blue,
+                LineWidth = 3,
+                Points = new System.Collections.ObjectModel.ObservableCollection<PointF>
+                {
             new PointF(15, 60), new PointF(60, 30), new PointF(110, 90), new PointF(160, 40)
         }
-        };
+            };
 
-        LineasTecnico.Add(trazoMockTecnico);
-        LineasCliente.Add(trazoMockCliente);
+            LineasTecnico.Add(trazoMockTecnico);
+            LineasCliente.Add(trazoMockCliente);
 
-        // 3. Responder automáticamente todas las preguntas
-        if(_stateService.Pisos != null) {
-            foreach(var piso in _stateService.Pisos) {
-                foreach(var seccion in piso.Secciones) {
-                    if(!seccion.Iteraciones.Any()) {
-                        var nuevaIteracion = new IteracionModel {
-                            Nombre = $"{seccion.Seccion} #1",
-                            Preguntas = seccion.Preguntas.Select(p => new PreguntaModel {
-                                IdPregunta = p.IdPregunta,
-                                Pregunta = p.Pregunta,
-                                Respuesta = 2, // Bueno
-                                Observaciones = "OK Debug"
-                            }).ToList()
-                        };
-                        seccion.Iteraciones.Add(nuevaIteracion);
-                    } else {
-                        foreach(var iteracion in seccion.Iteraciones) {
-                            foreach(var pregunta in iteracion.Preguntas) {
-                                pregunta.Respuesta = 2; // Bueno
-                                pregunta.Observaciones = "Sin hallazgos - Test Debug";
+            // 3. Responder automáticamente todas las preguntas
+            if(_stateService.Pisos != null) {
+                foreach(var piso in _stateService.Pisos) {
+                    foreach(var seccion in piso.Secciones) {
+                        if(!seccion.Iteraciones.Any()) {
+                            var nuevaIteracion = new IteracionModel {
+                                Nombre = $"{seccion.Seccion} #1",
+                                Preguntas = seccion.Preguntas.Select(p => new PreguntaModel {
+                                    IdPregunta = p.IdPregunta,
+                                    Pregunta = p.Pregunta,
+                                    Respuesta = 2, // Bueno
+                                    Observaciones = "OK Debug"
+                                }).ToList()
+                            };
+                            seccion.Iteraciones.Add(nuevaIteracion);
+                        } else {
+                            foreach(var iteracion in seccion.Iteraciones) {
+                                foreach(var pregunta in iteracion.Preguntas) {
+                                    pregunta.Respuesta = 2; // Bueno
+                                    pregunta.Observaciones = "Sin hallazgos - Test Debug";
+                                }
                             }
                         }
                     }
                 }
             }
+
+            Shell.Current.DisplayAlert("Debug", "Supervisión auto-llenada exitosamente.", "OK");
         }
 
-        Shell.Current.DisplayAlert("Debug", "Supervisión auto-llenada exitosamente.", "OK");
-    }
 #endif
-}
+    }
 }
