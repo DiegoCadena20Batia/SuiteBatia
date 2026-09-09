@@ -1,9 +1,11 @@
 ﻿using BatiaSuite.Data;
+using BatiaSuite.Interfaz;
 using BatiaSuite.Interfaz.Repositories;
 using BatiaSuite.Repositories;
 using BatiaSuite.Resources.IconFonts;
 using BatiaSuite.Services;
 using BatiaSuite.Services.SupervisionesMantenimiento;
+using BatiaSuite.SyncHandlers;
 using BatiaSuite.Utils;
 using BatiaSuite.ViewModel;
 
@@ -68,6 +70,10 @@ public static class MauiProgram {
         //#if IOS
         //        builder.Logging.AddConsole();
         //#endif
+
+
+        builder.Services.AddSingleton<AppShell>();
+
 
         // Para configurar servicios de navegación si los usas
         //builder.Services.AddSingleton<INavigationService, NavigationService>();
@@ -162,6 +168,7 @@ public static class MauiProgram {
         builder.Services.AddTransient<IteracionesSeccionViewModel>();
         builder.Services.AddTransient<ResumenSupervisionViewModel>();
         builder.Services.AddTransient<ResumenSupervisionPage>();
+        builder.Services.AddTransient<SupervisionesService>();
         #endregion
 
         #region SupervisionMantenimientoSupervisor
@@ -201,6 +208,14 @@ public static class MauiProgram {
         builder.Services.AddTransient<CentroNotificacionesSupervisor>();
         #endregion
 
+
+        #region Notificaciones
+        builder.Services.AddSingleton<SyncService>();
+        builder.Services.AddTransient<ISyncHandler, EntregasSyncHandler>();
+        builder.Services.AddTransient<ISyncHandler, SupervisionesSyncHandler>();
+
+        builder.Services.AddSingleton<IAutoSyncService, AutoSyncService>();
+        #endregion
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();

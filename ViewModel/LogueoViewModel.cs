@@ -114,7 +114,10 @@ plataforma = "2";
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    App.Current.MainPage = new AppShell();
+                    var appShell = IPlatformApplication.Current?.Services.GetRequiredService<AppShell>();
+                    if(appShell != null) {
+                        App.Current!.MainPage = appShell;
+                    }
                 });
             } else {
                 await App.Current.MainPage.DisplayAlert(string.Empty, Constants.ERROR_API, Constants.ACEPTAR);

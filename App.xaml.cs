@@ -19,14 +19,14 @@ namespace BatiaSuite;
 public partial class App : Application {
     private readonly SyncService _syncService;
 
-    public App() {
+    public App(AppShell mainPage) {
         _syncService = new SyncService();
 
         SQLitePCL.Batteries_V2.Init();
         InitializeComponent();
 
         if(UserSession.IdPersonal != 0) {
-            MainPage = new AppShell();
+            MainPage = mainPage;
         } else {
             MainPage = new Logueo();
         }

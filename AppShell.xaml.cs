@@ -1,5 +1,6 @@
 ﻿using BatiaSuite.Data;
 using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
+using BatiaSuite.Services;
 using BatiaSuite.Utils;
 using BatiaSuite.Utils.NotificacionesSupervisor;
 using BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
@@ -34,8 +35,9 @@ using System.Runtime.CompilerServices;
 namespace BatiaSuite;
 
 public partial class AppShell : Shell, INotifyPropertyChanged {
-    private readonly SyncService _syncService;
-    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService; private bool _isSyncing = false;
+    private readonly IAutoSyncService _autoSyncService;
+    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService; 
+    private bool _isSyncing = false;
 
     private int _conteoNotificaciones;
 
@@ -51,8 +53,9 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
     public bool MostrarBadge => ConteoNotificaciones > 0;
     public bool EsSupervisor { get; set; }
 
-    public AppShell() {
+    public AppShell(IAutoSyncService autoSyncService) {
         InitializeComponent();
+        _autoSyncService = autoSyncService;
 
         EsSupervisor = UserSession.IdPuesto == 118;
         BindingContext = this;
@@ -202,7 +205,7 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         
         #endregion Rutas
 
-        _syncService = new SyncService();
+       
         Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
 
         WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
@@ -228,35 +231,10 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
             await Task.Run(async () => {
                 try {
                     _isSyncing = true;
-                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión detectada. Procesando cola de entregas...");
+                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión a Internet detectada. Ejecutando motor de sincronización...");
 
-                    int registrosSincronizados = await _syncService.ProcesarPendientesAsync<RutaInmueblePendiente>();
-
-                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Sincronización automática de entregas completada.");
-
-                    if(registrosSincronizados > 0) {
-                        string descripcionNotif = registrosSincronizados == 1
-                            ? "Tu entrega pendiente se ha enviado al sistema correctamente. 👍"
-                            : $"Tus {registrosSincronizados} entregas pendientes se han enviado al sistema correctamente. 👍";
-
-                        var notificacion = new NotificationRequest {
-                            NotificationId = 1001,
-                            Title = "BatiaSuite - Sincronización Exitosa",
-                            Description = descripcionNotif,
-                            BadgeNumber = 0,
-                            Schedule = {
-                                NotifyTime = DateTime.Now
-                            },
-                            Android = new Plugin.LocalNotification.AndroidOption.AndroidOptions { }
-                        };
-
-                        await LocalNotificationCenter.Current.Show(notificacion);
-                        MainThread.BeginInvokeOnMainThread(() => {
-                            CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Send("SyncCompletado");
-                        });
-                    } else {
-                        System.Diagnostics.Debug.WriteLine("[Automated_Sync] No se encontraron registros pendientes de envío. Notificación omitida.");
-                    }
+                    // Toda la lógica de iteración, notificaciones y envío se realiza aquí
+                    await _autoSyncService.SincronizarTodoAsync();
                 } catch(Exception ex) {
                     System.Diagnostics.Debug.WriteLine($"[Automated_Sync_Error] Error de sincronización: {ex.Message}");
                 } finally {

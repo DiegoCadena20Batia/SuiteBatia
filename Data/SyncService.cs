@@ -15,10 +15,12 @@ using System.Threading.Tasks;
 namespace BatiaSuite.Data {
 
     public class SyncService {
+        #region variables
         private readonly HttpClient _httpClient;
         private readonly LocalDbContext _dbContext;
         private readonly string _baseApiUrl = $"{Constants.API_BASE_URL}";
         private static readonly HashSet<Type> _tablasLimpiadas = new HashSet<Type>();
+        #endregion
 
         public SyncService() {
             _httpClient = new HttpClient();
@@ -79,6 +81,7 @@ namespace BatiaSuite.Data {
                     var payloadFinal = await pendiente.PrepararPayloadAsync();
                     if(payloadFinal == null) continue;
 
+                    var jsonpayload = JsonSerializer.Serialize(payloadFinal);
                     string url = pendiente.ObtenerUrlApi(_baseApiUrl);
                     var response = await _httpClient.PostAsJsonAsync(url, payloadFinal);
 
