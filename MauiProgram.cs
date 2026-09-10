@@ -72,6 +72,7 @@ public static class MauiProgram {
         //#endif
 
 
+        builder.Services.AddSingleton<App>();
         builder.Services.AddSingleton<AppShell>();
 
 

@@ -52,7 +52,9 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
 
     public bool MostrarBadge => ConteoNotificaciones > 0;
     public bool EsSupervisor { get; set; }
-
+    // 1. Constructor por defecto (para llamadas con `new AppShell()`)
+    public AppShell() : this(IPlatformApplication.Current?.Services.GetRequiredService<IAutoSyncService>()!) {
+    }
     public AppShell(IAutoSyncService autoSyncService) {
         InitializeComponent();
         _autoSyncService = autoSyncService;
