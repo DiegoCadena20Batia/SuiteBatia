@@ -42,7 +42,7 @@
 	</PropertyGroup>
 	
 <!--Release aab Android-->
-	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
 		<AndroidUseAapt2>True</AndroidUseAapt2>
@@ -55,7 +55,7 @@
 		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
 		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
 		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
-    </PropertyGroup>-->
+    </PropertyGroup>
 
 
 	<!--Release apk Android-->
@@ -94,7 +94,7 @@
 	</PropertyGroup>-->
 
 	<!--CONFIGURACIÓN COMPLETA PARA GENERAR EL ARCHIVE (RELEASE) -->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
+	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
     <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
 
@@ -116,7 +116,7 @@
 
 	<PublishTrimmed>true</PublishTrimmed>
 	<TrimMode>partial</TrimMode>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 
 	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">

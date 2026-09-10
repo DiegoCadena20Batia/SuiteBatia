@@ -117,7 +117,7 @@ plataforma = "2";
                     App.Current.MainPage = new AppShell();
                 });
             } else {
-                await App.Current.MainPage.DisplayAlert(string.Empty, Constants.ERROR_API, Constants.ACEPTAR);
+                await App.Current.MainPage.DisplayAlert(string.Empty, Constants.USER_PASS_INCORRECTOS, Constants.ACEPTAR);
             }
         } catch(Exception ex) {
             System.Diagnostics.Debug.WriteLine($"Error general en el proceso de Login: {ex.Message}");
