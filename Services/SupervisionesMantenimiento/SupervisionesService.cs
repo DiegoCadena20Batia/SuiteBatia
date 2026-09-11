@@ -26,10 +26,7 @@ namespace BatiaSuite.Services.SupervisionesMantenimiento {
         /// Procesa el guardado de la supervisión. Si hay internet intenta enviarla a la API,
         /// si falla o no hay conexión, la guarda en SQLite de forma local.
         /// </summary>
-        public async Task<(bool FueEnviadoOnline, string Mensaje)> ProcesarGuardadoSupervisionAsync(
-            SupervisionPayloadDto payload,
-            Dictionary<string, string> mapaFotos,
-            List<string> rutasFotosLocales) {
+        public async Task<(bool FueEnviadoOnline, string Mensaje)> ProcesarGuardadoSupervisionAsync( SupervisionPayloadDto payload, Dictionary<string, string> mapaFotos, List<string> rutasFotosLocales) {
             bool hayInternet = Utils.InternetUtil.IsConnectedInternet();
 
             if(hayInternet) {

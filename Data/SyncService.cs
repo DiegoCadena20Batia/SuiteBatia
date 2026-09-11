@@ -57,7 +57,7 @@ namespace BatiaSuite.Data {
                     }
                 }
 
-                await _dbContext.VerificarRegistrosSeccionesSupervision();
+                await _dbContext.VerificarRegistrosOrdenesTrabajo();
 
                 return true;
             } catch(Exception ex) {
