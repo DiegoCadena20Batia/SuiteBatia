@@ -41,7 +41,7 @@
 		<UseMauiMaps>true</UseMauiMaps>
 	</PropertyGroup>
 	
-<!--Release aab Android-->
+	<!--Release aab Android-->
 	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
 		<AndroidPackageFormat>aab</AndroidPackageFormat>
@@ -56,7 +56,6 @@
 		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
 		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
     </PropertyGroup>-->
-
 
 	<!--Release apk Android-->
 	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
@@ -95,28 +94,48 @@
 
 	<!--CONFIGURACIÓN COMPLETA PARA GENERAR EL ARCHIVE (RELEASE) -->
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Release'">
-		<MtouchLink>false</MtouchLink>
-
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
 		<BuildIpa>true</BuildIpa>
 		<ArchiveOnBuild>true</ArchiveOnBuild>
 		<ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
 		<ApplicationTitle>Suite Batia</ApplicationTitle>
-		<ServerAddress>192.168.11.146</ServerAddress>
+
+		<!-- Configuración del Mac de compilación -->
+		<ServerAddress>192.168.11.194</ServerAddress>
 		<ServerUser>ricardoberistain</ServerUser>
+
+		<!-- Firmado de la App -->
 		<ProvisioningType>manual</ProvisioningType>
 		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
-		<!--<CodesignProvision>SuiteBatia_AdHoc</CodesignProvision>-->
 		<CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
-		<MtouchLink>SdkOnly</MtouchLink>
-		<UseInterpreter>false</UseInterpreter>
-		<MtouchFastDev>false</MtouchFastDev>
-	</PropertyGroup>
-	
-	
-	
 
+		<!-- PREVENCIÓN DE CRASHES AOT/TRIMMING EN DISPOSITIVOS FÍSICOS -->
+		<PublishTrimmed>true</PublishTrimmed>
+		<MtouchLink>None</MtouchLink>
+		<UseInterpreter>true</UseInterpreter>
+		<MtouchFastDev>false</MtouchFastDev>
+		<EnableAssemblyILStripping>false</EnableAssemblyILStripping>
+	</PropertyGroup>
+
+	<!--iOS Debug-->
+	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Debug'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<MtouchDebug>true</MtouchDebug>
+		<Optimize>false</Optimize>
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>portable</DebugType>
+		<MtouchDebug>true</MtouchDebug>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>partial</TrimMode>
+		<MtouchLink>SdkOnly</MtouchLink>
+		<UseInterpreter>true</UseInterpreter>
+		<MtouchFastDev>false</MtouchFastDev>
+
+		<ProvisioningType>manual</ProvisioningType>
+		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
+		<CodesignProvision>SuiteBatia_AdHoc</CodesignProvision>
+	</PropertyGroup>-->
 
 	<!--<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <AndroidKeyStore>True</AndroidKeyStore>

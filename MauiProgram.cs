@@ -4,8 +4,6 @@ using BatiaSuite.Services;
 using BatiaSuite.Services.SupervisionesMantenimiento;
 using BatiaSuite.Utils;
 using BatiaSuite.ViewModel;
-
-//using Plugin.Maui.SegmentedControl;
 using BatiaSuite.ViewModel.CheckListAparadores;
 using BatiaSuite.ViewModel.EntregasInteligentes;
 using BatiaSuite.ViewModel.NotificacionesSupervisores;
@@ -39,12 +37,9 @@ public static class MauiProgram {
         builder
             .UseMauiApp<App>()
             .UseLocalNotification()
-
-            //.UseSegmentedControl()
             .UseMauiMaps()
             .UseShiny()
             .UseMauiCommunityToolkitMediaElement()
-
             .UseMauiCommunityToolkit()
             .ConfigureMopups()
             .UseMauiCameraView()
@@ -58,100 +53,66 @@ public static class MauiProgram {
                 fonts.AddFont("icons.ttf", Icons.Family);
                 fonts.AddFont("Font Awesome 7 Free_Solid-900.otf", "FASolid");
             });
-        //#if DEBUG
-        //#if !IOS
-        //        builder.Logging.AddDebug();
-        //#endif
-        //#endif
-        //#if IOS
-        //        builder.Logging.AddConsole();
-        //#endif
 
-        // Para configurar servicios de navegación si los usas
-        //builder.Services.AddSingleton<INavigationService, NavigationService>();
+        // Servicios Base
         builder.Services.AddSingleton<IMediaPicker>(MediaPicker.Default);
+        builder.Services.AddSingleton<DbContext>();
+        builder.Services.AddSingleton<HttpHelper>();
+        builder.Services.AddSingleton<LocalDatabaseService>();
+        builder.Services.AddSingleton<SupervisionStateService>();
+
+        // Módulo: Entregas
         builder.Services.AddTransient<RegisterDelivery>();
         builder.Services.AddTransient<SupplierRegisterDelivery>();
-        builder.Services.AddTransient<ListaCorrectivosM>();
-        builder.Services.AddSingleton<DbContext>();
         builder.Services.AddTransient<EntregasInteligentesViewModel>();
         builder.Services.AddTransient<EntregasInteligentesPage>();
         builder.Services.AddTransient<DeliveriesViewModel>();
         builder.Services.AddTransient<Deliveries>();
         builder.Services.AddTransient<DeliveriesRoute>();
-
-        builder.Services.AddSingleton<HttpHelper>();
-
-        #region viewmodels Entregas
-
         builder.Services.AddTransient<DeliveriesDetailViewModel>();
-
-        #endregion viewmodels Entregas
-
-        #region xaml pages Entregas
-
         builder.Services.AddTransient<DeliveriesDetail>();
+        builder.Services.AddTransient<TiposListadoPage>();
+        builder.Services.AddTransient<TiposListadoViewModel>();
 
-        #endregion xaml pages Entregas
-
-        #region CHECKLIST APARADORES
+        // Módulo: Checklist Aparadores
         builder.Services.AddSingleton<CheckListService>();
-
         builder.Services.AddTransient<CheckListAparadoresInmuebleViewModel>();
         builder.Services.AddTransient<CheckListAparadoresInmueblePage>();
-
         builder.Services.AddTransient<CheckListAparadoresPreguntasUnoViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasUnoPage>();
-
         builder.Services.AddTransient<CheckListAparadoresPreguntasDosViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasDosPage>();
-
         builder.Services.AddTransient<CheckListAparadoresPreguntasTresViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasTresPage>();
-
         builder.Services.AddTransient<CheckListAparadoresPreguntasCuatroViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasCuatroPage>();
-
         builder.Services.AddTransient<CheckListAparadoresPreguntasCincoViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasCincoPage>();
-
         builder.Services.AddTransient<CheckListAparadoresPreguntasResumenViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasResumenPage>();
-        #endregion  
 
-        #region SUPERVISION MANTENIMIENTO
-
+        // Módulo: Supervisión Mantenimiento (General)
         builder.Services.AddSingleton<SupervisionMantenimientoService>();
-
         builder.Services.AddTransient<SupervisionMantenimientoInmuebleViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoInmueblePage>();
-
         builder.Services.AddTransient<SupervisionMantenimientoPreguntasViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoPreguntasPage>();
-
         builder.Services.AddTransient<SupervisionMantenimientoSeccionesViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoSeccionesPage>();
-
         builder.Services.AddTransient<SupervisionMantenimientoSeccionViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoSeccionPage>();
-
         builder.Services.AddTransient<SupervisionMantenimientoHidrantesObjectViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoHidrantesObjectPage>();
-
         builder.Services.AddTransient<SupervisionMantenimientoExtintoresObjectViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoExtintoresObjectPage>();
-
         builder.Services.AddTransient<SupervisionMantenimientoFirmasViewModel>();
         builder.Services.AddTransient<SupervisionMantenimientoFirmasPage>();
-
         builder.Services.AddTransient<SupervisionesMantenimientoProgramadasViewModel>();
         builder.Services.AddTransient<SupervisionesMantenimientoProgramadasPage>();
-
         builder.Services.AddTransient<SeleccionPisosPage>();
         builder.Services.AddTransient<SeleccionPisosViewModel>();
-        #endregion
 
-        #region SupervisionMantenimientoTecnico
+        // Módulo: Supervisión Mantenimiento Técnico
         builder.Services.AddTransient<SeccionesFormularioPage>();
         builder.Services.AddTransient<SeccionesFormularioViewModel>();
         builder.Services.AddTransient<PreguntasSeccionPage>();
@@ -160,42 +121,21 @@ public static class MauiProgram {
         builder.Services.AddTransient<IteracionesSeccionViewModel>();
         builder.Services.AddTransient<ResumenSupervisionViewModel>();
         builder.Services.AddTransient<ResumenSupervisionPage>();
-        #endregion
 
-        #region SupervisionMantenimientoSupervisor
+        // Módulo: Supervisión Mantenimiento Supervisor
         builder.Services.AddTransient<SupervisionMantenimientoSupervisorPage>();
         builder.Services.AddTransient<SupervisionMantenimientoSupervisorViewModel>();
         builder.Services.AddTransient<IteracionesSeccionSupervisorViewModel>();
         builder.Services.AddTransient<PreguntasSeccionSupervisorViewModel>();
         builder.Services.AddTransient<SeccionesFormularioSupervisorViewModel>();
         builder.Services.AddTransient<SeleccionPisoSupervisorViewModel>();
-        builder.Services.AddTransient<SeleccionPisoSupervisorViewModel>();
         builder.Services.AddTransient<ResumenSupervisionSupervisorViewModel>();
-        #endregion
 
-
-
-
-        builder.Services.AddSingleton<SupervisionStateService>();
-
-
-
-        builder.Services.AddSingleton<DbContext>();
-
-        #region Correctivos Mayores
+        // Módulo: Correctivos Mayores y Notificaciones
+        builder.Services.AddTransient<ListaCorrectivosM>();
         builder.Services.AddTransient<CorrectivosMayoresViewModel>();
-
-        builder.Services.AddSingleton<LocalDatabaseService>();
-        #endregion
-
-        #region EntregasRutas
-        builder.Services.AddTransient<TiposListadoPage>();
-        builder.Services.AddTransient<TiposListadoViewModel>();
-
         builder.Services.AddTransient<CentroNotificacionesSupervisorViewModel>();
         builder.Services.AddTransient<CentroNotificacionesSupervisor>();
-        #endregion
-
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();

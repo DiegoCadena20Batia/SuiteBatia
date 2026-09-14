@@ -35,8 +35,8 @@ namespace BatiaSuite;
 
 public partial class AppShell : Shell, INotifyPropertyChanged {
     private readonly SyncService _syncService;
-    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService; private bool _isSyncing = false;
-
+    private BatiaSuite.Utils.NotificacionesSupervisor.SignalRService? _signalRService;
+    private bool _isSyncing = false;
     private int _conteoNotificaciones;
 
     public int ConteoNotificaciones {
@@ -54,48 +54,57 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
     public AppShell() {
         InitializeComponent();
 
-        EsSupervisor = UserSession.IdPuesto == 118;
         BindingContext = this;
 
-        #region Rutas
+        // Registro de rutas centralizado y sin duplicados
+        RegistrarRutas();
 
+        _syncService = new SyncService();
+        Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
+
+        WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
+            MainThread.BeginInvokeOnMainThread(() => {
+                ConteoNotificaciones = m.Value;
+            });
+        });
+
+        // Conectar servicios dependientes de sesión y red tras cargar la vista
+        Loaded += AppShell_Loaded;
+    }
+
+    private void RegistrarRutas() {
         #region SUPPLIERDELIVERIES
-
         Routing.RegisterRoute(nameof(SupplierDeliveries), typeof(SupplierDeliveries));
         Routing.RegisterRoute(nameof(SupplierDeliveriesDetail), typeof(SupplierDeliveriesDetail));
         Routing.RegisterRoute(nameof(SupplierListadoMateriales), typeof(SupplierListadoMateriales));
         Routing.RegisterRoute(nameof(SupplierRegisterDelivery), typeof(SupplierRegisterDelivery));
-
-        #endregion SUPPLIERDELIVERIES
+        #endregion
 
         #region DELIVERIES
-
         Routing.RegisterRoute(nameof(Deliveries), typeof(Deliveries));
         Routing.RegisterRoute(nameof(DeliveriesRoute), typeof(DeliveriesRoute));
         Routing.RegisterRoute(nameof(EntregasInteligentesPage), typeof(EntregasInteligentesPage));
         Routing.RegisterRoute(nameof(DeliveriesDetail), typeof(DeliveriesDetail));
         Routing.RegisterRoute(nameof(ListadoMateriales), typeof(ListadoMateriales));
         Routing.RegisterRoute(nameof(RegisterDelivery), typeof(RegisterDelivery));
+        #endregion
 
-        #endregion DELIVERIES
-
+        #region CORRECTIVOS MAYORES
         Routing.RegisterRoute(nameof(CorrectivosMayores), typeof(CorrectivosMayores));
         Routing.RegisterRoute(nameof(ListaCorrectivosM), typeof(ListaCorrectivosM));
         Routing.RegisterRoute(nameof(RegistrosCorrctivosM), typeof(RegistrosCorrctivosM));
+        #endregion
 
         #region MANTENIMIENTO
-
         Routing.RegisterRoute(nameof(OrdenTrabajo), typeof(OrdenTrabajo));
         Routing.RegisterRoute(nameof(ManoObra), typeof(ManoObra));
         Routing.RegisterRoute(nameof(MaterialesUtilizados), typeof(MaterialesUtilizados));
         Routing.RegisterRoute(nameof(FotoEvidenciaPage), typeof(FotoEvidenciaPage));
         Routing.RegisterRoute(nameof(EncuestaPage), typeof(EncuestaPage));
         Routing.RegisterRoute(nameof(GenerarOrdenTrabajo), typeof(GenerarOrdenTrabajo));
-
-        #endregion MANTENIMIENTO
+        #endregion
 
         #region SUPERVISION
-
         Routing.RegisterRoute(nameof(SupervisionPage), typeof(SupervisionPage));
         Routing.RegisterRoute(nameof(SupervisionInmueblePage), typeof(SupervisionInmueblePage));
         Routing.RegisterRoute(nameof(MaterialesPage), typeof(MaterialesPage));
@@ -104,11 +113,9 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(EvaluacionPage), typeof(EvaluacionPage));
         Routing.RegisterRoute(nameof(ChecklistOperadorPage), typeof(ChecklistOperadorPage));
         Routing.RegisterRoute(nameof(VideoPage), typeof(VideoPage));
-
-        #endregion SUPERVISION
+        #endregion
 
         #region VACANTES
-
         Routing.RegisterRoute(nameof(VacantesPage), typeof(VacantesPage));
         Routing.RegisterRoute(nameof(DatosGeneralesPage), typeof(DatosGeneralesPage));
         Routing.RegisterRoute(nameof(DatosSueldoPage), typeof(DatosSueldoPage));
@@ -116,18 +123,14 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(DireccionFiscalPage), typeof(DireccionFiscalPage));
         Routing.RegisterRoute(nameof(DatosComplementariosPage), typeof(DatosComplementariosPage));
         Routing.RegisterRoute(nameof(DocumentosPage), typeof(DocumentosPage));
-
-        #endregion VACANTES
+        #endregion
 
         #region SANITIZACION
-
         Routing.RegisterRoute(nameof(SanitizacionPage), typeof(SanitizacionPage));
         Routing.RegisterRoute(nameof(EvidenciasPage), typeof(EvidenciasPage));
-
-        #endregion SANITIZACION
+        #endregion
 
         #region SUPERVISION MANTENIMIENTO
-
         Routing.RegisterRoute(nameof(SupervisionMantenimientoPage), typeof(SupervisionMantenimientoPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoInmueblePage), typeof(SupervisionMantenimientoInmueblePage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoPreguntasPage), typeof(SupervisionMantenimientoPreguntasPage));
@@ -139,35 +142,29 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(SupervisionMantenimientoFirmasPage), typeof(SupervisionMantenimientoFirmasPage));
         #endregion
 
-        #region Supervision Mantenimiento Tecnico
+        #region SUPERVISION MANTENIMIENTO TECNICO
         Routing.RegisterRoute(nameof(SupervisionesMantenimientoProgramadasPage), typeof(SupervisionesMantenimientoProgramadasPage));
         Routing.RegisterRoute(nameof(SeleccionPisosPage), typeof(SeleccionPisosPage));
         Routing.RegisterRoute(nameof(SeccionesFormularioPage), typeof(SeccionesFormularioPage));
-        Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
-        Routing.RegisterRoute(nameof(SeccionesFormularioPage), typeof(SeccionesFormularioPage));
-        Routing.RegisterRoute(nameof(IteracionesSeccionPage), typeof(IteracionesSeccionPage)); // <-- Nueva pantalla
+        Routing.RegisterRoute(nameof(IteracionesSeccionPage), typeof(IteracionesSeccionPage));
         Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
         Routing.RegisterRoute(nameof(ResumenSupervisionPage), typeof(ResumenSupervisionPage));
         #endregion
 
-        #region Supervision Mantenimiento Supervisor
+        #region SUPERVISION MANTENIMIENTO SUPERVISOR
         Routing.RegisterRoute(nameof(SupervisionMantenimientoSupervisorPage), typeof(SupervisionMantenimientoSupervisorPage));
         Routing.RegisterRoute(nameof(IteracionesSeccionSupervisorPage), typeof(IteracionesSeccionSupervisorPage));
         Routing.RegisterRoute(nameof(PreguntasSeccionSupervisorPage), typeof(PreguntasSeccionSupervisorPage));
         Routing.RegisterRoute(nameof(SeccionesFormularioSupervisorPage), typeof(SeccionesFormularioSupervisorPage));
         Routing.RegisterRoute(nameof(SeleccionPisoSupervisorPage), typeof(SeleccionPisoSupervisorPage));
         Routing.RegisterRoute(nameof(ResumenSupervisionSupervisorPage), typeof(ResumenSupervisionSupervisorPage));
-
         #endregion
 
         #region SOLICITUD COTIZACION
-
         Routing.RegisterRoute(nameof(SolicitudCotizacionPage), typeof(SolicitudCotizacionPage));
-
-        #endregion SOLICITUD COTIZACION
+        #endregion
 
         #region CONTROL DE APARADORES
-
         Routing.RegisterRoute(nameof(CheckListAparadoresInmueblePage), typeof(CheckListAparadoresInmueblePage));
         Routing.RegisterRoute(nameof(CheckListAparadoresPreguntasUnoPage), typeof(CheckListAparadoresPreguntasUnoPage));
         Routing.RegisterRoute(nameof(CheckListAparadoresPreguntasDosPage), typeof(CheckListAparadoresPreguntasDosPage));
@@ -175,17 +172,13 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(CheckListAparadoresPreguntasCuatroPage), typeof(CheckListAparadoresPreguntasCuatroPage));
         Routing.RegisterRoute(nameof(CheckListAparadoresPreguntasCincoPage), typeof(CheckListAparadoresPreguntasCincoPage));
         Routing.RegisterRoute(nameof(CheckListAparadoresPreguntasResumenPage), typeof(CheckListAparadoresPreguntasResumenPage));
-
-        #endregion CONTROL DE APARADORES
+        #endregion
 
         #region INCIDENCIAS BIOMETA
-
         Routing.RegisterRoute(nameof(IncidenciasBiometaPage), typeof(IncidenciasBiometaPage));
+        #endregion
 
-        #endregion INCIDENCIAS BIOMETA
-
-        #region SUPERVICION_ALDOCONTI
-
+        #region SUPERVISION ALDOCONTI
         Routing.RegisterRoute(nameof(ChecklistPage), typeof(ChecklistPage));
         Routing.RegisterRoute(nameof(AparadoristasPage), typeof(AparadoristasPage));
         Routing.RegisterRoute(nameof(LimpiezaPage), typeof(LimpiezaPage));
@@ -193,29 +186,26 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(DiarioGerentePage), typeof(DiarioGerentePage));
         Routing.RegisterRoute(nameof(ReporteMantenimientoPage), typeof(ReporteMantenimientoPage));
         Routing.RegisterRoute(nameof(DiarioLimpiezaPage), typeof(DiarioLimpiezaPage));
+        #endregion
 
-        #endregion SUPERVICION_ALDOCONTI
-
+        #region NOTIFICACIONES Y RUTAS
         Routing.RegisterRoute(nameof(TiposListadoPage), typeof(TiposListadoPage));
         Routing.RegisterRoute(nameof(CentroNotificacionesSupervisor), typeof(CentroNotificacionesSupervisor));
+        #endregion
+    }
 
-        
-        #endregion Rutas
+    private async void AppShell_Loaded(object? sender, EventArgs e) {
+        try {
+            EsSupervisor = UserSession.IdPuesto == 118;
+            OnPropertyChanged(nameof(EsSupervisor));
 
-        _syncService = new SyncService();
-        Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
-
-        WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
-            MainThread.BeginInvokeOnMainThread(() => {
-                ConteoNotificaciones = m.Value;
-            });
-        });
-
-        if(EsSupervisor) {
-            string idSupervisorLogueado = UserSession.IdPersonal.ToString();
-
-            _signalRService = new Utils.NotificacionesSupervisor.SignalRService(idSupervisorLogueado);
-            Task.Run(async () => await _signalRService.ConectarAsync());
+            if(EsSupervisor && UserSession.IdPersonal > 0) {
+                string idSupervisorLogueado = UserSession.IdPersonal.ToString();
+                _signalRService = new Utils.NotificacionesSupervisor.SignalRService(idSupervisorLogueado);
+                await _signalRService.ConectarAsync();
+            }
+        } catch(Exception ex) {
+            System.Diagnostics.Debug.WriteLine($"[SignalR_Init_Error] No se pudo conectar SignalR al iniciar: {ex.Message}");
         }
     }
 
@@ -274,6 +264,7 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
 
     public void Dispose() {
         Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged;
+        Loaded -= AppShell_Loaded;
         GC.SuppressFinalize(this);
     }
 }
