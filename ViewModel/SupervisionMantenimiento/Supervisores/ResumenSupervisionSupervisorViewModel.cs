@@ -17,6 +17,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
         #region Propiedades de Cabecero
 
         private SupervisionStateService _stateService;
+        private readonly SupervisionesService _supervisionesService;
 
         [ObservableProperty]
         private string _observacionesGenerales = string.Empty;
@@ -40,8 +41,9 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
 
         public bool CondicionRespondida => !string.IsNullOrWhiteSpace(CondicionSeleccionada);
 
-        public ResumenSupervisionSupervisorViewModel(SupervisionStateService stateService) {
+        public ResumenSupervisionSupervisorViewModel(SupervisionStateService stateService, SupervisionesService supervisionesService) {
             _stateService = stateService;
+            _supervisionesService = supervisionesService;
         }
 
         #region Métodos Auxiliares
@@ -184,23 +186,19 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
                     }
                 }
 
-                // 6. Enviar payload a la BD para obtener el ID de supervisión generado
-                string urlGuardar = $"{ApiBaseUrl}SupervisionMantenimiento/GuardarCompleta";
-                var response = await _httpHelper.PostBodyAsync<SupervisionPayloadDto, SupervisionResponseDto>(urlGuardar, payload);
+                // 6. Delegar el guardado (Online/Offline) al Servicio
+                var (fueEnviadoOnline, mensaje) = await _supervisionesService.ProcesarGuardadoSupervisionAsync(
+                    payload,
+                    mapaFotos,
+                    todasLasRutasFotos
+                    );
 
-                if(response != null && response.Success && response.Id_Supervisionm > 0) {
-                    // 7. Ya con el ID devuelto por SQL Server, subir los archivos físicos de fotos a su carpeta
-                    if(todasLasRutasFotos.Any()) {
-                        await SubirFotografiasAsync(todasLasRutasFotos, response.Id_Supervisionm, mapaFotos);
-                    }
+                //7. Mostrar resultado al usuario y navegar
+                string tituloAlerta=fueEnviadoOnline? "Éxito" : "Modo Offline";
+                await Shell.Current.DisplayAlert(tituloAlerta,mensaje, "OK");
 
-                    await Shell.Current.DisplayAlert("Éxito", response.Mensaje ?? "Supervisión guardada correctamente.", "OK");
-                    await Shell.Current.Navigation.PopToRootAsync(false);
-                    await Shell.Current.GoToAsync(nameof(SupervisionMantenimientoSupervisorPage), true);
-                } else {
-                    string mensajeError = response?.Mensaje ?? "Ocurrió un error al procesar la solicitud en el servidor.";
-                    await Shell.Current.DisplayAlert("Error", mensajeError, "OK");
-                }
+                await Shell.Current.Navigation.PopToRootAsync(false);
+                await Shell.Current.GoToAsync(nameof(SupervisionMantenimientoSupervisorPage), true);
             } catch(Exception ex) {
                 await Shell.Current.DisplayAlert("Error", $"Excepción al guardar: {ex.Message}", "OK");
             } finally {
