@@ -15,12 +15,15 @@ using System.Threading.Tasks;
 namespace BatiaSuite.Data {
 
     public class SyncService {
+
         #region variables
+
         private readonly HttpClient _httpClient;
         private readonly LocalDbContext _dbContext;
         private readonly string _baseApiUrl = $"{Constants.API_BASE_URL}";
         private static readonly HashSet<Type> _tablasLimpiadas = new HashSet<Type>();
-        #endregion
+
+        #endregion variables
 
         public SyncService() {
             _httpClient = new HttpClient();
@@ -56,9 +59,7 @@ namespace BatiaSuite.Data {
                         }
                     }
                 }
-
-                await _dbContext.VerificarRegistrosOrdenesTrabajo();
-
+               await _dbContext.VerificarRegistrosSeccionesSupervision();
                 return true;
             } catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine($"Error crítico en sincronización de {typeof(T).Name}: {ex.Message}");

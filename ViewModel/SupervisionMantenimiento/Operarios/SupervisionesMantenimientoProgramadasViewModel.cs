@@ -1,23 +1,13 @@
 ﻿using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
-using BatiaSuite.ViewModel.OrdenesTrabajo;
+using BatiaSuite.Interfaz.Repositories;
+using BatiaSuite.Services.SupervisionesMantenimiento;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SlackAPI;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace BatiaSuite.ViewModel {
-
-    using BatiaSuite.Data;
-    using BatiaSuite.Interfaz.Repositories;
-    using BatiaSuite.Models.EntidadesLocal.Supervisiones;
-    using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
-    using BatiaSuite.Repositories;
-    using BatiaSuite.Services.SupervisionesMantenimiento;
-    using CommunityToolkit.Mvvm.ComponentModel;
-    using CommunityToolkit.Mvvm.Input;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
 
     public partial class SupervisionesMantenimientoProgramadasViewModel : ObservableObject {
 
@@ -54,13 +44,12 @@ namespace BatiaSuite.ViewModel {
 
         #endregion Variables y Servicios
 
-        public SupervisionesMantenimientoProgramadasViewModel(SupervisionStateService stateService,IOrdenesRepository ordenesRepository,IPlantillasRepository plantillasRepository) {
+        public SupervisionesMantenimientoProgramadasViewModel(SupervisionStateService stateService, IOrdenesRepository ordenesRepository, IPlantillasRepository plantillasRepository) {
             _ordenesRepository = ordenesRepository;
             _stateService = stateService;
             _plantillasRepository = plantillasRepository;
 
             InitValues();
-           
         }
 
         private void InitValues() {
@@ -74,7 +63,7 @@ namespace BatiaSuite.ViewModel {
             }
         }
 
-        partial void OnFiltroTextoChanged(string value) {
+         partial void OnFiltroTextoChanged(string value) {
             if(string.IsNullOrWhiteSpace(value)) {
                 SucursalesFiltradas = new ObservableCollection<OrdenTrabajoModel>(Ordenes);
             } else {
@@ -113,24 +102,23 @@ namespace BatiaSuite.ViewModel {
         public async Task CargarOrdenesAsync() {
             if(IsLoading) return;
             try {
-                IsLoading=true; 
+                IsLoading = true;
 
-                int idTecnico = UserSession.IdEmpleado;  
-                int mes= _filterMonth;
-                int anio= FilterYear;
+                int idTecnico = UserSession.IdEmpleado;
+                int mes = _filterMonth;
+                int anio = FilterYear;
 
-                var resultado=await _ordenesRepository.ObtenerOrdenesAsync(idTecnico, mes, anio);
+                var resultado = await _ordenesRepository.ObtenerOrdenesAsync(idTecnico, mes, anio);
 
-                Ordenes=new ObservableCollection<OrdenTrabajoModel>(resultado);
+                Ordenes = new ObservableCollection<OrdenTrabajoModel>(resultado);
                 OnFiltroTextoChanged(FiltroTexto);
             } catch(Exception ex) {
-
                 await Shell.Current.DisplayAlert("Error", "No se cargó la información correctamente. Intente de nuevo", "Ok");
 
                 Debug.WriteLine($"Error en CargarOrdenesAsync: {ex.Message}");
             } finally {
                 IsLoading = false;
-                IsRefreshing=false;
+                IsRefreshing = false;
             }
         }
 
@@ -138,7 +126,7 @@ namespace BatiaSuite.ViewModel {
         private async Task VerFormularioSupervision(OrdenTrabajoModel ordenSeleccionada) {
             if(ordenSeleccionada == null || IsLoading) return;
             try {
-             IsLoading = true;
+                IsLoading = true;
                 // 1. Inicializar sesión y estado
                 _stateService.LimpiarSesion();
                 _stateService.OrdenActual = ordenSeleccionada;
@@ -146,7 +134,7 @@ namespace BatiaSuite.ViewModel {
 
                 // 2. Cargar plantilla usando el repositorio si no está en memoria
                 if(_stateService.PlantillaBaseSecciones == null || !_stateService.PlantillaBaseSecciones.Any()) {
-
+                    //TODO: checar desde aquí para guiarse en el local de supervisiones para supervisores
                     var plantilla = await _plantillasRepository.ObtenerPlantillaAsync(UserSession.IdRol);
 
                     if(plantilla == null || !plantilla.Any()) {
@@ -159,7 +147,6 @@ namespace BatiaSuite.ViewModel {
 
                 // 3. Navegación
                 await Shell.Current.GoToAsync("SeleccionPisosPage");
-
             } catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine($"Error en VerFormularioSupervision: {ex.Message}");
                 await Shell.Current.DisplayAlert("Error", "Ocurrió un inconveniente al abrir la supervisión.", "OK");

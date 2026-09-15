@@ -194,6 +194,9 @@ public static class MauiProgram {
         builder.Services.AddSingleton<LocalDbContext>();
         builder.Services.AddSingleton<IOrdenesRepository, OrdenesRepository>();
         builder.Services.AddSingleton<IPlantillasRepository, PlantillasRepository>();
+        builder.Services.AddSingleton<ITiposServicioRepository, TiposServicioRepository>();
+        builder.Services.AddSingleton<IClientesRepository, ClientesRepository>();
+        builder.Services.AddSingleton<IInmueblesRepository, InmueblesRepository>();
 
         #region Correctivos Mayores
         builder.Services.AddTransient<CorrectivosMayoresViewModel>();

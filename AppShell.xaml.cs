@@ -1,4 +1,6 @@
-﻿using BatiaSuite.Data;
+﻿#region using directives
+
+using BatiaSuite.Data;
 using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
 using BatiaSuite.Services;
 using BatiaSuite.Utils;
@@ -32,11 +34,13 @@ using Plugin.LocalNotification;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+#endregion
+
 namespace BatiaSuite;
 
 public partial class AppShell : Shell, INotifyPropertyChanged {
     private readonly IAutoSyncService _autoSyncService;
-    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService; 
+    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService;
     private bool _isSyncing = false;
 
     private int _conteoNotificaciones;
@@ -52,9 +56,11 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
 
     public bool MostrarBadge => ConteoNotificaciones > 0;
     public bool EsSupervisor { get; set; }
+
     // 1. Constructor por defecto (para llamadas con `new AppShell()`)
     public AppShell() : this(IPlatformApplication.Current?.Services.GetRequiredService<IAutoSyncService>()!) {
     }
+
     public AppShell(IAutoSyncService autoSyncService) {
         InitializeComponent();
         _autoSyncService = autoSyncService;
@@ -142,9 +148,11 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(SupervisionMantenimientoHidrantesObjectPage), typeof(SupervisionMantenimientoHidrantesObjectPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoExtintoresObjectPage), typeof(SupervisionMantenimientoExtintoresObjectPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoFirmasPage), typeof(SupervisionMantenimientoFirmasPage));
+
         #endregion
 
         #region Supervision Mantenimiento Tecnico
+
         Routing.RegisterRoute(nameof(SupervisionesMantenimientoProgramadasPage), typeof(SupervisionesMantenimientoProgramadasPage));
         Routing.RegisterRoute(nameof(SeleccionPisosPage), typeof(SeleccionPisosPage));
         Routing.RegisterRoute(nameof(SeccionesFormularioPage), typeof(SeccionesFormularioPage));
@@ -153,9 +161,11 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(IteracionesSeccionPage), typeof(IteracionesSeccionPage)); // <-- Nueva pantalla
         Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
         Routing.RegisterRoute(nameof(ResumenSupervisionPage), typeof(ResumenSupervisionPage));
+
         #endregion
 
         #region Supervision Mantenimiento Supervisor
+
         Routing.RegisterRoute(nameof(SupervisionMantenimientoSupervisorPage), typeof(SupervisionMantenimientoSupervisorPage));
         Routing.RegisterRoute(nameof(IteracionesSeccionSupervisorPage), typeof(IteracionesSeccionSupervisorPage));
         Routing.RegisterRoute(nameof(PreguntasSeccionSupervisorPage), typeof(PreguntasSeccionSupervisorPage));
@@ -204,10 +214,8 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(TiposListadoPage), typeof(TiposListadoPage));
         Routing.RegisterRoute(nameof(CentroNotificacionesSupervisor), typeof(CentroNotificacionesSupervisor));
 
-        
         #endregion Rutas
 
-       
         Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
 
         WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
@@ -222,6 +230,11 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
             _signalRService = new Utils.NotificacionesSupervisor.SignalRService(idSupervisorLogueado);
             Task.Run(async () => await _signalRService.ConectarAsync());
         }
+    }
+
+    protected override async void OnAppearing() {
+        base.OnAppearing();
+        await SolicitarPermisoNotificacionesAsync();
     }
 
     private async void OnNotificationBellTapped(object sender, EventArgs e) {
@@ -255,5 +268,17 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
     public void Dispose() {
         Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged;
         GC.SuppressFinalize(this);
+    }
+
+    private async Task SolicitarPermisoNotificacionesAsync() {
+        var status = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
+
+        if(status != PermissionStatus.Granted) {
+            status = await Permissions.RequestAsync<Permissions.PostNotifications>();
+        }
+
+        if(status == PermissionStatus.Granted) {
+            System.Diagnostics.Debug.WriteLine("[Permisos] Notificaciones permitidas.");
+        }
     }
 }
