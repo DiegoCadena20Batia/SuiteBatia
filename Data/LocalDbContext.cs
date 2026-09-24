@@ -1,6 +1,7 @@
 ﻿using BatiaSuite.Interfaz;
 using BatiaSuite.Models.EntidadesLocal;
 using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
+using BatiaSuite.Models.EntidadesLocal.Supervisiones;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -188,6 +189,85 @@ namespace BatiaSuite.Data {
                 System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en RutasInmueblesPendientes: {ex.Message}");
             }
         }
+
+        public async Task VerificarRegistrosSeccionesSupervision() {
+            var todasLasSeciones = await ObtenerListaLocalAsync<SeccionesSupervisionLocal>(x => true);
+            if(!todasLasSeciones.Any()) Debug.WriteLine("Tabla Vacia");
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM Secciones ({todasLasSeciones.Count} registros) ---");
+
+                foreach(var r in todasLasSeciones) {
+                    System.Diagnostics.Debug.WriteLine($"Clave: {r.Clave} | Json: {r.JsonData}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM Secciones ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en Secciones: {ex.Message}");
+            }
+        }
+        public async Task VerificarRegistrosOrdenesTrabajo() {
+            var todasLasOrdenes = await ObtenerListaLocalAsync<OrdenTrabajoLocal>(x => true);
+            if(!todasLasOrdenes.Any()) Debug.WriteLine("Tabla Vacia");
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM OrdenesTrabajo ({todasLasOrdenes.Count} registros) ---");
+
+                foreach(var r in todasLasOrdenes) {
+                    System.Diagnostics.Debug.WriteLine($"Clave: {r.idOrden} | Json: {r.descripcion}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM OrdenesTrabajo ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en OrdenesTrabajo: {ex.Message}");
+            }
+        }
+
+        public async Task VerificarRegistrosTipoServicio() {
+            var tiposServicio = await ObtenerListaLocalAsync<TipoServicioLocal>(x => true);
+            if(!tiposServicio.Any()) Debug.WriteLine("Tabla Vacia");
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM TipoServicio ({tiposServicio.Count} registros) ---");
+
+                foreach(var r in tiposServicio) {
+                    System.Diagnostics.Debug.WriteLine($"Clave: {r.IdTipoServicio} | Json: {r.Descripcion}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM TipoServicio ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en TipoServicio: {ex.Message}");
+            }
+        }
+        public async Task VerificarRegistrosClientes() {
+            var clientes = await ObtenerListaLocalAsync<ClientesLocal>(x => true);
+            if(!clientes.Any()) Debug.WriteLine("Tabla Vacia");
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM Clientes ({clientes.Count} registros) ---");
+
+                foreach(var r in clientes) {
+                    System.Diagnostics.Debug.WriteLine($"Clave: {r.IdLocal} | Json: {r.nombre}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM Clientes ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en Clientes: {ex.Message}");
+            }
+        }
+        public async Task VerificarRegistrosInmuebles() {
+            var inmuebles = await ObtenerListaLocalAsync<InmueblesLocal>(x => true);
+            if(!inmuebles.Any()) Debug.WriteLine("Tabla Vacia");
+            try {
+                System.Diagnostics.Debug.WriteLine($"--- INICIO SELECT * FROM Inmuebles ({inmuebles.Count} registros) ---");
+
+                foreach(var r in inmuebles) {
+                    System.Diagnostics.Debug.WriteLine($"Clave: {r.id_inmueble} | Json: {r.nombre}");
+                }
+
+                System.Diagnostics.Debug.WriteLine("--- FIN SELECT * FROM Inmuebles ---");
+            } catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine($"Error al hacer SELECT en Inmuebles: {ex.Message}");
+            }
+        }
+
+
         #endregion
     }
 }

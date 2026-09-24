@@ -112,10 +112,11 @@ plataforma = "2";
                     System.Diagnostics.Debug.WriteLine($"Error en la sincronización automatizada: {ex.Message}");
                 }
 
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
+                MainThread.BeginInvokeOnMainThread(() => {
                     App.Current.MainPage = new AppShell();
                 });
+
+
             } else {
                 await App.Current.MainPage.DisplayAlert(string.Empty, Constants.USER_PASS_INCORRECTOS, Constants.ACEPTAR);
             }

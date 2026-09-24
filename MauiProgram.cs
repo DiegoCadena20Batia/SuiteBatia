@@ -1,7 +1,11 @@
 ﻿using BatiaSuite.Data;
+using BatiaSuite.Interfaz;
+using BatiaSuite.Interfaz.Repositories;
+using BatiaSuite.Repositories;
 using BatiaSuite.Resources.IconFonts;
 using BatiaSuite.Services;
 using BatiaSuite.Services.SupervisionesMantenimiento;
+using BatiaSuite.SyncHandlers;
 using BatiaSuite.Utils;
 using BatiaSuite.ViewModel;
 using BatiaSuite.ViewModel.CheckListAparadores;
@@ -130,6 +134,22 @@ public static class MauiProgram {
         builder.Services.AddTransient<SeccionesFormularioSupervisorViewModel>();
         builder.Services.AddTransient<SeleccionPisoSupervisorViewModel>();
         builder.Services.AddTransient<ResumenSupervisionSupervisorViewModel>();
+        #endregion
+
+
+
+
+        builder.Services.AddSingleton<SupervisionStateService>();
+
+
+
+        builder.Services.AddSingleton<DbContext>();
+        builder.Services.AddSingleton<LocalDbContext>();
+        builder.Services.AddSingleton<IOrdenesRepository, OrdenesRepository>();
+        builder.Services.AddSingleton<IPlantillasRepository, PlantillasRepository>();
+        builder.Services.AddSingleton<ITiposServicioRepository, TiposServicioRepository>();
+        builder.Services.AddSingleton<IClientesRepository, ClientesRepository>();
+        builder.Services.AddSingleton<IInmueblesRepository, InmueblesRepository>();
 
         // Módulo: Correctivos Mayores y Notificaciones
         builder.Services.AddTransient<ListaCorrectivosM>();

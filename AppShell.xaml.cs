@@ -1,5 +1,8 @@
-﻿using BatiaSuite.Data;
+﻿#region using directives
+
+using BatiaSuite.Data;
 using BatiaSuite.Models.EntidadesLocal.RutasEntregas;
+using BatiaSuite.Services;
 using BatiaSuite.Utils;
 using BatiaSuite.Utils.NotificacionesSupervisor;
 using BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios;
@@ -31,12 +34,15 @@ using Plugin.LocalNotification;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+#endregion
+
 namespace BatiaSuite;
 
 public partial class AppShell : Shell, INotifyPropertyChanged {
-    private readonly SyncService _syncService;
-    private BatiaSuite.Utils.NotificacionesSupervisor.SignalRService? _signalRService;
+    private readonly IAutoSyncService _autoSyncService;
+    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService;
     private bool _isSyncing = false;
+
     private int _conteoNotificaciones;
 
     public int ConteoNotificaciones {
@@ -51,8 +57,13 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
     public bool MostrarBadge => ConteoNotificaciones > 0;
     public bool EsSupervisor { get; set; }
 
-    public AppShell() {
+    // 1. Constructor por defecto (para llamadas con `new AppShell()`)
+    public AppShell() : this(IPlatformApplication.Current?.Services.GetRequiredService<IAutoSyncService>()!) {
+    }
+
+    public AppShell(IAutoSyncService autoSyncService) {
         InitializeComponent();
+        _autoSyncService = autoSyncService;
 
         BindingContext = this;
 
@@ -140,18 +151,22 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Routing.RegisterRoute(nameof(SupervisionMantenimientoHidrantesObjectPage), typeof(SupervisionMantenimientoHidrantesObjectPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoExtintoresObjectPage), typeof(SupervisionMantenimientoExtintoresObjectPage));
         Routing.RegisterRoute(nameof(SupervisionMantenimientoFirmasPage), typeof(SupervisionMantenimientoFirmasPage));
+
         #endregion
 
-        #region SUPERVISION MANTENIMIENTO TECNICO
+        #region Supervision Mantenimiento Tecnico
+
         Routing.RegisterRoute(nameof(SupervisionesMantenimientoProgramadasPage), typeof(SupervisionesMantenimientoProgramadasPage));
         Routing.RegisterRoute(nameof(SeleccionPisosPage), typeof(SeleccionPisosPage));
         Routing.RegisterRoute(nameof(SeccionesFormularioPage), typeof(SeccionesFormularioPage));
         Routing.RegisterRoute(nameof(IteracionesSeccionPage), typeof(IteracionesSeccionPage));
         Routing.RegisterRoute(nameof(PreguntasSeccionPage), typeof(PreguntasSeccionPage));
         Routing.RegisterRoute(nameof(ResumenSupervisionPage), typeof(ResumenSupervisionPage));
+
         #endregion
 
-        #region SUPERVISION MANTENIMIENTO SUPERVISOR
+        #region Supervision Mantenimiento Supervisor
+
         Routing.RegisterRoute(nameof(SupervisionMantenimientoSupervisorPage), typeof(SupervisionMantenimientoSupervisorPage));
         Routing.RegisterRoute(nameof(IteracionesSeccionSupervisorPage), typeof(IteracionesSeccionSupervisorPage));
         Routing.RegisterRoute(nameof(PreguntasSeccionSupervisorPage), typeof(PreguntasSeccionSupervisorPage));
@@ -209,6 +224,11 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         }
     }
 
+    protected override async void OnAppearing() {
+        base.OnAppearing();
+        await SolicitarPermisoNotificacionesAsync();
+    }
+
     private async void OnNotificationBellTapped(object sender, EventArgs e) {
         await Shell.Current.GoToAsync("CentroNotificacionesSupervisor");
     }
@@ -218,35 +238,10 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
             await Task.Run(async () => {
                 try {
                     _isSyncing = true;
-                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión detectada. Procesando cola de entregas...");
+                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Conexión a Internet detectada. Ejecutando motor de sincronización...");
 
-                    int registrosSincronizados = await _syncService.ProcesarPendientesAsync<RutaInmueblePendiente>();
-
-                    System.Diagnostics.Debug.WriteLine("[Automated_Sync] Sincronización automática de entregas completada.");
-
-                    if(registrosSincronizados > 0) {
-                        string descripcionNotif = registrosSincronizados == 1
-                            ? "Tu entrega pendiente se ha enviado al sistema correctamente. 👍"
-                            : $"Tus {registrosSincronizados} entregas pendientes se han enviado al sistema correctamente. 👍";
-
-                        var notificacion = new NotificationRequest {
-                            NotificationId = 1001,
-                            Title = "BatiaSuite - Sincronización Exitosa",
-                            Description = descripcionNotif,
-                            BadgeNumber = 0,
-                            Schedule = {
-                                NotifyTime = DateTime.Now
-                            },
-                            Android = new Plugin.LocalNotification.AndroidOption.AndroidOptions { }
-                        };
-
-                        await LocalNotificationCenter.Current.Show(notificacion);
-                        MainThread.BeginInvokeOnMainThread(() => {
-                            CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Send("SyncCompletado");
-                        });
-                    } else {
-                        System.Diagnostics.Debug.WriteLine("[Automated_Sync] No se encontraron registros pendientes de envío. Notificación omitida.");
-                    }
+                    // Toda la lógica de iteración, notificaciones y envío se realiza aquí
+                    await _autoSyncService.SincronizarTodoAsync();
                 } catch(Exception ex) {
                     System.Diagnostics.Debug.WriteLine($"[Automated_Sync_Error] Error de sincronización: {ex.Message}");
                 } finally {
@@ -266,5 +261,17 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged;
         Loaded -= AppShell_Loaded;
         GC.SuppressFinalize(this);
+    }
+
+    private async Task SolicitarPermisoNotificacionesAsync() {
+        var status = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
+
+        if(status != PermissionStatus.Granted) {
+            status = await Permissions.RequestAsync<Permissions.PostNotifications>();
+        }
+
+        if(status == PermissionStatus.Granted) {
+            System.Diagnostics.Debug.WriteLine("[Permisos] Notificaciones permitidas.");
+        }
     }
 }
