@@ -118,12 +118,12 @@
 		<EnableAssemblyILStripping>false</EnableAssemblyILStripping>
 	</PropertyGroup>
 	
-	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+	<!--<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
 	  <ProvisioningType>manual</ProvisioningType>
 	  <CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
-	  <!--<CodesignProvision>SuiteBatia_AdHoc</CodesignProvision>-->
+	  <CodesignProvision>SuiteBatia_AdHoc</CodesignProvision>
 	  <CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
-	</PropertyGroup>
+	</PropertyGroup>-->
 
 	<!--iOS Debug-->
 	<!--<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' And '$(Configuration)' == 'Debug'">

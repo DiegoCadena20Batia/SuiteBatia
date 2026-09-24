@@ -294,6 +294,7 @@ StrokeThickness="1.5">
         <!-- Botón auxiliar de testing rápido -->
         <!--<Button Text="⚡ AUTO-LLENAR (DEBUG)"
         Command="{Binding AutoLlenarSupervisionModoDebugCommand}"
+        IsVisible="{x:Static flags:DebugFlags.EsDebug}"
         BackgroundColor="#E53E3E"
         TextColor="White"
         FontAttributes="Bold"

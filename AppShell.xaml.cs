@@ -40,7 +40,7 @@ namespace BatiaSuite;
 
 public partial class AppShell : Shell, INotifyPropertyChanged {
     private readonly IAutoSyncService _autoSyncService;
-    private readonly BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService;
+    private BatiaSuite.Utils.NotificacionesSupervisor.SignalRService _signalRService;
     private bool _isSyncing = false;
 
     private int _conteoNotificaciones;
@@ -70,7 +70,7 @@ public partial class AppShell : Shell, INotifyPropertyChanged {
         // Registro de rutas centralizado y sin duplicados
         RegistrarRutas();
 
-        _syncService = new SyncService();
+        _autoSyncService = autoSyncService;
         Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
 
         WeakReferenceMessenger.Default.Register<NotificationCountMessage>(this, (r, m) => {
