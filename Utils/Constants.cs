@@ -30,9 +30,9 @@ public static class Constants {
 
     #region API URI´s 
     //URL BASE PARA PRODUCCIÓN
-    public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
+    //public const string API_BASE_URL = "https://www.singa.com.mx:5500/api/";
     //URL BASE PARA PRUEBAS
-    //public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
+    public const string API_BASE_URL = "https://www.singa.com.mx:8086/api/";
     public const string ENT_GET_PRECARGA_API = "entregaprecarga";
     public const string GET_MODULOS_MENU = "ObtenerModulos";
     public const string GET_TECNICOS_ORDENES_TRABAJO_API = "OTTecnico";
@@ -55,7 +55,6 @@ public static class Constants {
     public const string SUP_POST_FOTOS = "Carga/CargaMultiple";
     public const string SUP_POST_FOTOS_STREAMING = "Carga/Streaming";
     public const string SUP_POST_ENVIAR_SUPERVISION = "SupervisionApp";
-
     public const string VAC_GET_VACANTES = "RHVacanteApp";
     public const string VAC_POST_RFC = "util/getrfc";
     public const string VAC_POST_CURP = "util/getcurp";
@@ -63,16 +62,13 @@ public static class Constants {
     public const string VAC_GET_VALIDA_DATOS_BANCO = "ValidaBancoCandidato";
     public const string VAC_GET_CANDIDATO_DOCUMENTOS = "CandidatoDocumentos";
     public const string VAC_POST_VACANTE_DATA = "CandidatosAppN";
-
     public const string SAN_POST_SANITIZACION_DATA = "SanitizacionApp";
-
     public const string GET_CLIENTES_API = "Cliente";
     public const string GET_CLIENTE_SUPERVISIONES_API = "ClienteSupervisiones";
     public const string GET_ESTADOS_API = "Estado";
     public const string GET_INMUEBLES_API = "Sucursales";
     public const string GET_TOTAL_INMUEBLES_API = "TotalSucursales";
     public const string GET_BANCOS_API = "Banco";
-
     public const string GET_SUPERVISION_SECCIONTIPO = "SupervisionPreguntas/SeccionTipoByInmueble";
     public const string GET_SUPERVISION_PREGUNTAS = "SupervisionPreguntas/Preguntas";
     public const string GET_SUPERVISION_PREGUNTAS_EVALUACION = "SupervisionPreguntas/EvaluacionP";

@@ -75,8 +75,11 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Operarios {
                 }
 
                 // Generar Stream a partir de la colección de trazos
-                using var streamTecnico = await DrawingView.GetImageStream(LineasTecnico, new Size(300, 120), Colors.White);
-                using var streamCliente = await DrawingView.GetImageStream(LineasCliente, new Size(300, 120), Colors.White);
+                
+                await using var streamTecnico = await DrawingViewService.GetImageStream(ImageLineOptions.JustLines(LineasTecnico, new Size(300, 120), Brush.White));
+
+
+                await using var streamCliente = await DrawingViewService.GetImageStream(ImageLineOptions.JustLines(LineasCliente, new Size(300, 120), Brush.White));
 
                 // 1. Recolectar rutas locales de fotos
                 var todasLasRutasFotos = _stateService.Pisos

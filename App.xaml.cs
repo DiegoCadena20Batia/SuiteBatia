@@ -1,13 +1,9 @@
 ﻿using BatiaSuite.Controls;
 using BatiaSuite.Data;
-using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Utils;
 using BatiaSuite.Views;
-using SQLitePCL;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
-using BatiaSuite.Services;
 
 #if IOS
 using UIKit;
@@ -20,6 +16,7 @@ public partial class App : Application {
     private readonly SyncService _syncService;
 
     public App() {
+        Debug.WriteLine("App initialized");
         _syncService = new SyncService();
 
         SQLitePCL.Batteries_V2.Init();

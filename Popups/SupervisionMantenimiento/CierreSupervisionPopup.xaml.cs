@@ -12,8 +12,8 @@ namespace BatiaSuite.Popups.SupervisionMantenimiento;
             drawingViewFirma.Lines.Clear();
         }
 
-        private void OnCancelarClicked(object sender, EventArgs e) {
-            Close(null); // Cierra el Popup regresando null
+        private async void OnCancelarClicked(object sender, EventArgs e) {
+        await CloseAsync(); // Cierra el Popup regresando null
         }
 
         private async void OnConfirmarClicked(object sender, EventArgs e) {

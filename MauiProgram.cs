@@ -71,10 +71,7 @@ public static class MauiProgram {
         //        builder.Logging.AddConsole();
         //#endif
 
-
-        builder.Services.AddSingleton<App>();
         builder.Services.AddSingleton<AppShell>();
-
 
         // Para configurar servicios de navegación si los usas
         //builder.Services.AddSingleton<INavigationService, NavigationService>();
@@ -82,7 +79,7 @@ public static class MauiProgram {
         builder.Services.AddTransient<RegisterDelivery>();
         builder.Services.AddTransient<SupplierRegisterDelivery>();
         builder.Services.AddTransient<ListaCorrectivosM>();
-        builder.Services.AddSingleton<DbContext>();
+
         builder.Services.AddTransient<EntregasInteligentesViewModel>();
         builder.Services.AddTransient<EntregasInteligentesPage>();
         builder.Services.AddTransient<DeliveriesViewModel>();
@@ -104,6 +101,7 @@ public static class MauiProgram {
         #endregion xaml pages Entregas
 
         #region CHECKLIST APARADORES
+
         builder.Services.AddSingleton<CheckListService>();
 
         builder.Services.AddTransient<CheckListAparadoresInmuebleViewModel>();
@@ -126,7 +124,9 @@ public static class MauiProgram {
 
         builder.Services.AddTransient<CheckListAparadoresPreguntasResumenViewModel>();
         builder.Services.AddTransient<CheckListAparadoresPreguntasResumenPage>();
-        #endregion  
+        #endregion CHECKLIST APARADORES
+
+
 
         #region SUPERVISION MANTENIMIENTO
 
@@ -158,9 +158,11 @@ public static class MauiProgram {
 
         builder.Services.AddTransient<SeleccionPisosPage>();
         builder.Services.AddTransient<SeleccionPisosViewModel>();
-        #endregion
+
+        #endregion SUPERVISION MANTENIMIENTO
 
         #region SupervisionMantenimientoTecnico
+
         builder.Services.AddTransient<SeccionesFormularioPage>();
         builder.Services.AddTransient<SeccionesFormularioViewModel>();
         builder.Services.AddTransient<PreguntasSeccionPage>();
@@ -170,25 +172,23 @@ public static class MauiProgram {
         builder.Services.AddTransient<ResumenSupervisionViewModel>();
         builder.Services.AddTransient<ResumenSupervisionPage>();
         builder.Services.AddTransient<SupervisionesService>();
-        #endregion
+
+        #endregion SupervisionMantenimientoTecnico
 
         #region SupervisionMantenimientoSupervisor
+
         builder.Services.AddTransient<SupervisionMantenimientoSupervisorPage>();
         builder.Services.AddTransient<SupervisionMantenimientoSupervisorViewModel>();
         builder.Services.AddTransient<IteracionesSeccionSupervisorViewModel>();
         builder.Services.AddTransient<PreguntasSeccionSupervisorViewModel>();
         builder.Services.AddTransient<SeccionesFormularioSupervisorViewModel>();
-        builder.Services.AddTransient<SeleccionPisoSupervisorViewModel>();
+
         builder.Services.AddTransient<SeleccionPisoSupervisorViewModel>();
         builder.Services.AddTransient<ResumenSupervisionSupervisorViewModel>();
-        #endregion
 
-
-
+        #endregion SupervisionMantenimientoSupervisor
 
         builder.Services.AddSingleton<SupervisionStateService>();
-
-
 
         builder.Services.AddSingleton<DbContext>();
         builder.Services.AddSingleton<LocalDbContext>();
@@ -199,27 +199,32 @@ public static class MauiProgram {
         builder.Services.AddSingleton<IInmueblesRepository, InmueblesRepository>();
 
         #region Correctivos Mayores
+
         builder.Services.AddTransient<CorrectivosMayoresViewModel>();
 
         builder.Services.AddSingleton<LocalDatabaseService>();
-        #endregion
+
+        #endregion Correctivos Mayores
 
         #region EntregasRutas
+
         builder.Services.AddTransient<TiposListadoPage>();
         builder.Services.AddTransient<TiposListadoViewModel>();
 
         builder.Services.AddTransient<CentroNotificacionesSupervisorViewModel>();
         builder.Services.AddTransient<CentroNotificacionesSupervisor>();
-        #endregion
 
+        #endregion EntregasRutas
 
         #region Sincronización
+
         builder.Services.AddSingleton<SyncService>();
         builder.Services.AddTransient<ISyncHandler, EntregasSyncHandler>();
         builder.Services.AddTransient<ISyncHandler, SupervisionesSyncHandler>();
 
         builder.Services.AddSingleton<IAutoSyncService, AutoSyncService>();
-        #endregion
+
+        #endregion Sincronización
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();
