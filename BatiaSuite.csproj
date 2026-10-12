@@ -54,8 +54,8 @@
 		<AndroidKeyStore>True</AndroidKeyStore>
 		<AndroidSigningKeyStore>SuiteBatiaFirma.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
-		<AndroidSigningKeyPass>TU_PASSWORD</AndroidSigningKeyPass>
-		<AndroidSigningStorePass>TU_PASSWORD</AndroidSigningStorePass>
+		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
+		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
     </PropertyGroup>-->
 
 	<!--Release apk Android-->
@@ -66,8 +66,8 @@
 		<AndroidKeyStore>True</AndroidKeyStore>
 		<AndroidSigningKeyStore>SuiteBatiaFirma.keystore</AndroidSigningKeyStore>
 		<AndroidSigningKeyAlias>suitebatiafirma</AndroidSigningKeyAlias>
-		<AndroidSigningKeyPass>TU_PASSWORD</AndroidSigningKeyPass>
-		<AndroidSigningStorePass>TU_PASSWORD</AndroidSigningStorePass>
+		<AndroidSigningKeyPass>batia*2024</AndroidSigningKeyPass>
+		<AndroidSigningStorePass>batia*2024</AndroidSigningStorePass>
 	</PropertyGroup>-->
 
 	<!--CONFIGURACIÓN CUANDO ESTÁS EN VISUAL STUDIO (DEBUG / DESARROLLO) -->
@@ -102,16 +102,13 @@
 		<ApplicationId>com.GrupoBatia.SuiteBatia</ApplicationId>
 		<ApplicationTitle>Suite Batia</ApplicationTitle>
 
-		<!-- Configuración del Mac de compilación -->
-		<ServerAddress>192.168.11.194</ServerAddress>
+		<ServerAddress>192.168.11.103</ServerAddress>
 		<ServerUser>ricardoberistain</ServerUser>
 
-		<!-- Firmado de la App -->
 		<ProvisioningType>manual</ProvisioningType>
 		<CodesignKey>Apple Distribution: Jesus Ricardo Beristain Ramos (5AB67MUU5A)</CodesignKey>
 		<CodesignProvision>SuiteBatia_AppStore</CodesignProvision>
 
-		<!-- PREVENCIÓN DE CRASHES AOT/TRIMMING EN DISPOSITIVOS FÍSICOS -->
 		<PublishTrimmed>true</PublishTrimmed>
 		<MtouchLink>None</MtouchLink>
 		<UseInterpreter>true</UseInterpreter>

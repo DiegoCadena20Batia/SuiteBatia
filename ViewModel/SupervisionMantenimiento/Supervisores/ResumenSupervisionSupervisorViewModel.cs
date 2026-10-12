@@ -1,5 +1,6 @@
 ﻿using BatiaSuite.Models.SupervisionMantenimiento;
 using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
+using BatiaSuite.Models.SupervisionMantenimiento.Supervisores;
 using BatiaSuite.Services.SupervisionesMantenimiento;
 using BatiaSuite.Utils;
 using BatiaSuite.Views.SupervisionMantenimiento.Supervisores;
@@ -32,6 +33,9 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
         private bool _isBusy;
 
         private string ApiBaseUrl => Constants.API_BASE_URL;
+
+        [ObservableProperty]
+        private ObservableCollection<PreguntaResumenModel> _preguntas = new();
 
         #endregion Propiedades de Cabecero
 
@@ -99,6 +103,10 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
             }
         }
 
+        public async Task CargarPreguntasAsync() {
+            var preguntasResumen = _stateService.PlantillaPreguntasResumen;
+            Preguntas = new ObservableCollection<PreguntaResumenModel>(preguntasResumen);
+        }
         #endregion Métodos Auxiliares
 
         #region Comando Principal
@@ -113,6 +121,17 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
                     await Shell.Current.DisplayAlert("Advertencia", "Faltan las firmas correspondientes.", "OK");
                     return;
                 }
+
+                var preguntasSinResponder = Preguntas.Where(p => p.Respuesta == 0).ToList();
+                if(preguntasSinResponder.Any()) {
+                    await Shell.Current.DisplayAlert("Atención", "Por favor califique todas las preguntas antes de enviar.", "OK");
+                    return;
+                }
+
+                List<RespuestaResumenDto> RespuestasResumen = Preguntas.Select(p => new RespuestaResumenDto {
+                    IdPregunta = p.id_pregunta, 
+                    Estado = p.Respuesta      
+                }).ToList();
 
                 // Generar Stream a partir de la colección de trazos
                 using var streamTecnico = await DrawingViewService.GetImageStream(ImageLineOptions.JustLines(LineasTecnico, new Size(300, 120), Brush.White));
@@ -151,12 +170,12 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
                     Observaciones = ObservacionesGenerales,
                     IdRol = UserSession.IdRol,
                     IdTipoServicio = _stateService.IdTipoServicio,
-                    ResumenSupervision = CondicionSeleccionada ?? string.Empty,
                     Firmas = new List<FirmaDto>
                     {
                         new FirmaDto { IdFirma = 1, Nombre = Guid.NewGuid().ToString(), Firmas = base64Tecnico },
                         new FirmaDto { IdFirma = 2, Nombre = Guid.NewGuid().ToString(), Firmas = base64Cliente }
-                    }
+                    },
+                    ResumenSupervision = RespuestasResumen
                 };
 
                 // 5. Aplanar la estructura de UI e incorporar los nombres mapeados de fotos
@@ -186,19 +205,36 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
                     }
                 }
 
-                // 6. Delegar el guardado (Online/Offline) al Servicio
+                // 6. Delegar el guardado al servicio
                 var (fueEnviadoOnline, mensaje) = await _supervisionesService.ProcesarGuardadoSupervisionAsync(
                     payload,
                     mapaFotos,
                     todasLasRutasFotos
-                    );
+                );
 
-                //7. Mostrar resultado al usuario y navegar
-                string tituloAlerta=fueEnviadoOnline? "Éxito" : "Modo Offline";
-                await Shell.Current.DisplayAlert(tituloAlerta,mensaje, "OK");
+                // Check de conectividad para determinar el tipo de resultado real
+                bool hayInternet = Utils.InternetUtil.IsConnectedInternet();
 
-                await Shell.Current.Navigation.PopToRootAsync(false);
-                await Shell.Current.GoToAsync(nameof(SupervisionMantenimientoSupervisorPage), true);
+                // 7. Evaluar el resultado y determinar el comportamiento
+                if(fueEnviadoOnline) {
+                    // CASO 1: Envío Online Exitoso
+                    await Shell.Current.DisplayAlert("Éxito", mensaje, "OK");
+
+                    // Navegar de regreso
+                    await Shell.Current.Navigation.PopToRootAsync(false);
+                    await Shell.Current.GoToAsync(nameof(SupervisionMantenimientoSupervisorPage), true);
+                } else if(!hayInternet) {
+                    // CASO 2: Guardado Offline Exitoso (SQLite)
+                    await Shell.Current.DisplayAlert("Modo Offline", mensaje, "OK");
+
+                    // Navegar de regreso permitiendo que la app continúe
+                    await Shell.Current.Navigation.PopToRootAsync(false);
+                    await Shell.Current.GoToAsync(nameof(SupervisionMantenimientoSupervisorPage), true);
+                } else {
+                    // CASO 3: Error de API / Validaciones en Servidor (Había Internet pero falló)
+                    // NO se navega fuera para que el usuario pueda corregir los datos o reintentar
+                    await Shell.Current.DisplayAlert("Atención", mensaje, "Entendido");
+                }
             } catch(Exception ex) {
                 await Shell.Current.DisplayAlert("Error", $"Excepción al guardar: {ex.Message}", "OK");
             } finally {

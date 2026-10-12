@@ -10,6 +10,8 @@ using System.Diagnostics;
 namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
 
     public partial class SupervisionMantenimientoSupervisorViewModel : ViewModelBase {
+        #region
+        public string FechaActual => DateTime.Now.ToString("dd MMM");
 
         [ObservableProperty]
         private SupervisionStateService _stateService;
@@ -41,25 +43,56 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
         private readonly IClientesRepository _clientesRepository;
         private readonly IInmueblesRepository _inmueblesRepository;
         private readonly IPlantillasRepository _plantillasRepository;
+        private readonly IPlantillaResumenRepository _plantillaResumenRepository;
 
-        public SupervisionMantenimientoSupervisorViewModel(SupervisionStateService stateService, ITiposServicioRepository tiposServicioRepository, IClientesRepository clientesRepository, IInmueblesRepository inmueblesRepository,IPlantillasRepository plantillasRepository) {
+        public SupervisionMantenimientoSupervisorViewModel(SupervisionStateService stateService, ITiposServicioRepository tiposServicioRepository, IClientesRepository clientesRepository, IInmueblesRepository inmueblesRepository, IPlantillasRepository plantillasRepository, IPlantillaResumenRepository plantillaResumenRepository) {
             _stateService = stateService;
             _tiposServicioRepository = tiposServicioRepository;
             _clientesRepository = clientesRepository;
             _inmueblesRepository = inmueblesRepository;
             _plantillasRepository = plantillasRepository;
-            LlenarPickers();
+            _plantillaResumenRepository = plantillaResumenRepository;
         }
 
-        private void LlenarPickers() {
-            ObtenerClientes();
-            ObtenerTiposServicio();
+        #endregion
+
+        #region Cambio de Selección de Cliente
+
+        /// <summary>
+        /// Se dispara automáticamente al cambiar la propiedad ClienteSelected
+        /// </summary>
+        partial void OnClienteSelectedChanged(ClientsModel value) {
+            Inmuebles.Clear();
+            InmuebleSelected = null;
+
+            if(value != null) {
+                _ = ObtenerSucursales();
+            }
+        }
+
+        #endregion
+
+        [RelayCommand]
+        public async Task CargarDatosInicialesAsync() {
+            if(IsLoading) return;
+
+            try {
+                IsLoading = true;
+                await Task.WhenAll(ObtenerClientes(), ObtenerTiposServicio());
+            } catch(Exception ex) {
+                Debug.WriteLine($"Error al cargar datos iniciales: {ex.Message}");
+            } finally {
+                IsLoading = false;
+            }
+            await Task.CompletedTask;
         }
 
         private async Task ObtenerTiposServicio() {
             try {
-               var resultado= await _tiposServicioRepository.ObtenerTiposServicioAsync();
-                TiposServicio = new ObservableCollection<TipoServicioModel>(resultado);
+                var resultado = await _tiposServicioRepository.ObtenerTiposServicioAsync();
+                MainThread.BeginInvokeOnMainThread(() => {
+                    TiposServicio = new ObservableCollection<TipoServicioModel>(resultado);
+                });
             } catch(Exception ex) {
                 Debug.WriteLine($"Error al obtener los tipos de servicio: {ex.Message}");
                 Shell.Current.DisplayAlert("Error", "No se pudieron obtener los tipos de servicio. Por favor, inténtelo de nuevo más tarde.", "OK");
@@ -69,8 +102,9 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
         private async Task ObtenerClientes() {
             try {
                 var resultado = await _clientesRepository.ObtenerClientesAsync();
-
-                Clientes = new ObservableCollection<ClientsModel>(resultado);
+                MainThread.BeginInvokeOnMainThread(() => {
+                    Clientes = new ObservableCollection<ClientsModel>(resultado);
+                });
             } catch(Exception ex) {
                 Debug.WriteLine($"Error al obtener los clientes: {ex.Message}");
                 Shell.Current.DisplayAlert("Error", "No se pudieron obtener los clientes. Por favor, inténtelo de nuevo más tarde.", "OK");
@@ -83,7 +117,7 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
             if(ClienteSelected == null) return;
 
             try {
-               var resultado = await _inmueblesRepository.ObtenerInmueblesAsync(ClienteSelected.idCliente);
+                var resultado = await _inmueblesRepository.ObtenerInmueblesAsync(ClienteSelected.idCliente);
                 Inmuebles = new ObservableCollection<InmuebleModel>(resultado);
             } catch(Exception ex) {
                 Debug.WriteLine($"Error al obtener los inmuebles: {ex.Message}");
@@ -101,28 +135,41 @@ namespace BatiaSuite.ViewModel.SupervisionMantenimiento.Supervisores {
 
             try {
                 IsLoading = true;
-           
-            // 1. Limpiar sesión e inicializar la orden seleccionada en el StateService
-            _stateService.LimpiarSesion();
-            _stateService.FechaInicio = DateTime.Now;
-            _stateService.IdCliente = ClienteSelected.idCliente;
-            _stateService.Inmueble = InmuebleSelected;
-            _stateService.IdTipoServicio = TipoServicioSelected.IdTipoServicio;
 
-            // 2. Si la plantilla de secciones y preguntas no está cargada, la consultamos
-            if(_stateService.PlantillaBaseSecciones == null || !_stateService.PlantillaBaseSecciones.Any()) {
-                var plantilla = await _plantillasRepository.ObtenerPlantillaAsync(UserSession.IdRol);
+                // 1. Limpiar sesión e inicializar la orden seleccionada en el StateService
+                _stateService.LimpiarSesion();
+                _stateService.FechaInicio = DateTime.Now;
+                _stateService.IdCliente = ClienteSelected.idCliente;
+                _stateService.Inmueble = InmuebleSelected;
+                _stateService.IdTipoServicio = TipoServicioSelected.IdTipoServicio;
 
-                if(plantilla == null || !plantilla.Any()) {
-                    await Shell.Current.DisplayAlert("Atención", "No se pudo obtener el catálogo de secciones y preguntas.", "OK");
-                    return;
+                // 2. Si la plantilla de secciones y preguntas no está cargada, la consultamos
+                if(_stateService.PlantillaBaseSecciones == null || !_stateService.PlantillaBaseSecciones.Any()) {
+                    var plantilla = await _plantillasRepository.ObtenerPlantillaAsync(UserSession.IdRol);
+
+                    if(plantilla == null || !plantilla.Any()) {
+                        await Shell.Current.DisplayAlert("Atención", "No se pudo obtener el catálogo de secciones y preguntas.", "OK");
+                        return;
+                    }
+
+                    // Guardamos la plantilla base con sus preguntas anidadas en el StateService
+                    _stateService.PlantillaBaseSecciones = plantilla;
+                }
+                // 2.5. Si la plantilla de preguntas de resumen no está cargada, la consultamos
+                if(_stateService.PlantillaPreguntasResumen == null || !_stateService.PlantillaPreguntasResumen.Any()) {
+                    var plantillaResumen = await _plantillaResumenRepository.ObtenerPlantillaResumenAsync();
+
+                    if(plantillaResumen == null || !plantillaResumen.Any()) {
+                        await Shell.Current.DisplayAlert("Atención", "No se pudo obtener el catálogo de preguntas de resumen.", "OK");
+                        return;
+                    }
+
+                    // Guardamos la plantilla de preguntas de resumen en el StateService
+                    _stateService.PlantillaPreguntasResumen = plantillaResumen;
                 }
 
-                // Guardamos la plantilla base con sus preguntas anidadas en el StateService
-                _stateService.PlantillaBaseSecciones = plantilla;
-            }
-            // 3. Navegamos a la pantalla de selección de pisos
-            await Shell.Current.GoToAsync("SeleccionPisoSupervisorPage");
+                // 3. Navegamos a la pantalla de selección de pisos
+                await Shell.Current.GoToAsync("SeleccionPisoSupervisorPage");
             } catch(Exception ex) {
                 Debug.WriteLine($"Error al navegar a la pantalla de selección de pisos: {ex.Message}");
                 await Shell.Current.DisplayAlert("Error", "No se pudo navegar a la pantalla de selección de pisos. Por favor, inténtelo de nuevo más tarde.", "OK");

@@ -12,6 +12,13 @@ public partial class ResumenSupervisionSupervisorPage : ContentPage
 		BindingContext = _viewModel;
     }
 
+    protected override async void OnAppearing() {
+        base.OnAppearing();
+
+        // Llamada asíncrona al cargar la pantalla
+        await _viewModel.CargarPreguntasAsync();
+    }
+
     private void OnLimpiarFirmaTecnicoClicked(object sender, EventArgs e) {
         tecnicoDrawingView.Lines.Clear();
         _viewModel.LineasTecnico.Clear();

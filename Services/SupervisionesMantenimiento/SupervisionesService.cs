@@ -26,25 +26,48 @@ namespace BatiaSuite.Services.SupervisionesMantenimiento {
         /// Procesa el guardado de la supervisión. Si hay internet intenta enviarla a la API,
         /// si falla o no hay conexión, la guarda en SQLite de forma local.
         /// </summary>
-        public async Task<(bool FueEnviadoOnline, string Mensaje)> ProcesarGuardadoSupervisionAsync( SupervisionPayloadDto payload, Dictionary<string, string> mapaFotos, List<string> rutasFotosLocales) {
+        public async Task<(bool FueEnviadoOnline, string Mensaje)> ProcesarGuardadoSupervisionAsync(
+     SupervisionPayloadDto payload,
+     Dictionary<string, string> mapaFotos,
+     List<string> rutasFotosLocales) {
+            // 1. Diagnóstico explícito de red antes de intentar
             bool hayInternet = Utils.InternetUtil.IsConnectedInternet();
 
             if(hayInternet) {
                 try {
                     var response = await GuardarCompletaApiAsync(payload);
 
-                    if(response != null && response.Success && response.Id_Supervisionm > 0) {
+                    // CASO A: El servidor devolvió NULL (Respondió 400 Bad Request, 500 Error, etc.)
+                    if(response == null) {
+                        return (false, "El servidor rechazó o no pudo procesar la solicitud. Revisa la información e intenta de nuevo.");
+                    }
+
+                    // CASO B: El servidor respondió pero indicó fallo en la validación de negocio
+                    if(!response.Success) {
+                        return (false, !string.IsNullOrWhiteSpace(response.Mensaje)
+                            ? response.Mensaje
+                            : "La API no pudo registrar la supervisión por una validación de datos.");
+                    }
+
+                    // CASO C: Guardado exitoso en el backend central
+                    if(response.Id_Supervisionm > 0) {
                         if(rutasFotosLocales != null && rutasFotosLocales.Any()) {
                             await SubirFotografiasApiAsync(rutasFotosLocales, response.Id_Supervisionm, mapaFotos);
                         }
 
-                        return (true, response.Mensaje ?? "Supervisión guardada correctamente.");
+                        return (true, !string.IsNullOrWhiteSpace(response.Mensaje)
+                            ? response.Mensaje
+                            : "Supervisión guardada correctamente.");
                     }
+
+                    return (false, "No se recibió un identificador válido desde el servidor.");
                 } catch(Exception ex) {
-                    System.Diagnostics.Debug.WriteLine($"[SupervisionesService] Falló el envío directo: {ex.Message}. Guardando localmente...");
+                    // Solo si ocurrió una interrupción de red/transporte inesperada a mitad de camino
+                    System.Diagnostics.Debug.WriteLine($"[SupervisionesService] Excepción de transporte HTTP: {ex.Message}. Procediendo a respaldo local...");
                 }
             }
 
+            // 2. CONTINGENCIA OFFLINE: Se ejecuta si no hay red o si falló el transporte HTTP
             try {
                 var registroPendiente = new SupervisionPendienteLocal {
                     IdOrdenSupervisionM = payload.IdOrdenSupervisionM,
@@ -56,12 +79,11 @@ namespace BatiaSuite.Services.SupervisionesMantenimiento {
 
                 await _localDbContext.GuardarLocalAsync(registroPendiente);
 
-                return (false, "Sin conexión. La supervisión se guardó localmente y se enviará automáticamente al reconectarse.");
+                return (false, "Sin conexión a Internet. La supervisión se guardó localmente en el dispositivo y se enviará automáticamente al reconectarse.");
             } catch(Exception ex) {
-                return (false, $"Error al guardar localmente en SQLite: {ex.Message}");
+                return (false, $"Error crítico al intentar guardar en la base de datos local SQLite: {ex.Message}");
             }
         }
-
         #region Métodos de Red (API)
 
         /// <summary>

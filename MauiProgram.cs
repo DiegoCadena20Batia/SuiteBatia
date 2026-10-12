@@ -126,8 +126,6 @@ public static class MauiProgram {
         builder.Services.AddTransient<CheckListAparadoresPreguntasResumenPage>();
         #endregion CHECKLIST APARADORES
 
-
-
         #region SUPERVISION MANTENIMIENTO
 
         builder.Services.AddSingleton<SupervisionMantenimientoService>();
@@ -197,6 +195,7 @@ public static class MauiProgram {
         builder.Services.AddSingleton<ITiposServicioRepository, TiposServicioRepository>();
         builder.Services.AddSingleton<IClientesRepository, ClientesRepository>();
         builder.Services.AddSingleton<IInmueblesRepository, InmueblesRepository>();
+        builder.Services.AddTransient<IPlantillaResumenRepository, PlantillaResumenRepository>();
 
         #region Correctivos Mayores
 

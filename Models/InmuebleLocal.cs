@@ -12,7 +12,6 @@ namespace BatiaSuite.Models
         public int IdInmueble { get; set; }
         public string Nombre { get; set; }
         public int Tipo { get; set; }
-        [Column("id_cliente")]
         public int IdCliente { get; set; }
         public int IdEstado { get; set; }
         public bool AreaBanco { get; set; }

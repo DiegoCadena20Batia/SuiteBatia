@@ -14,7 +14,7 @@ using static SQLite.SQLite3;
 
 namespace BatiaSuite.Repositories {
 
-    internal class PlantillasRepository : IPlantillasRepository {
+    public class PlantillasRepository : IPlantillasRepository {
         private readonly HttpHelper _httpHelper;
         private readonly LocalDbContext _localDbContext;
         private readonly string _baseUrlApi = Constants.API_BASE_URL;

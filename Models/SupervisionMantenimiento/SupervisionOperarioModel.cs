@@ -20,10 +20,10 @@ namespace BatiaSuite.Models.SupervisionMantenimiento {
         public string Observaciones { get; set; } = string.Empty;
         public int IdRol { get; set; }
         public int IdTipoServicio { get; set; }
-        public string ResumenSupervision { get; set; }
 
         public List<InstanciaDto> Instancias { get; set; } = new();
         public List<FirmaDto> Firmas { get; set; } = new();
+        public List<RespuestaResumenDto> ResumenSupervision { get; set; } = new();
     }
 
     public class InstanciaDto {
@@ -39,6 +39,10 @@ namespace BatiaSuite.Models.SupervisionMantenimiento {
         public int Estado { get; set; }
         public int DispNivel { get; set; }
         public string Comentarios { get; set; } = string.Empty;
+    }
+    public class RespuestaResumenDto {
+        public int IdPregunta { get; set; }
+        public int Estado { get; set; }
     }
 
     public class FirmaDto {

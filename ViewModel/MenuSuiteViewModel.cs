@@ -209,42 +209,6 @@ plataforma = "2";
         public List<int> Modulo { get; set; }
     }
 
-    private void CreateMonkeyCollection() {
-        Monkeys = new ObservableCollection<Monkey> {
-            new Monkey {
-                Name =Constants.ENTREGAS,
-                Details = Constants.DETALLES_ENTREGAS,
-                ImageUrl = "iconoentregaspng.png"
-            },
-            new Monkey {
-                Name = Constants.CORRECTIVOS_MAYORES,
-                Details = Constants.DETALLES_CORRECTIVOS_MAYORES,
-                ImageUrl = "logo_correctivos.png"
-            },
-            new Monkey {
-                Name = Constants.MANTENIMIENTO,
-                Details = Constants.DETALLES_CORRECTIVOS_MENORES,
-                ImageUrl = "mantenimiento.png"
-            },
-            new Monkey {
-                Name = Constants.SUPERVISION,
-                Details = Constants.DETALLES_SUPERVISION,
-                ImageUrl = "supervision.png",
-                OrdenesTotales = _ordenesSupervisionTotal
-            },
-            new Monkey {
-                Name = Constants.VACANTES,
-                Details = Constants.DETALLES_VACANTES,
-                ImageUrl = "vacantes.png"
-            },
-            new Monkey {
-                Name = Constants.SANITIZACION,
-                Details = Constants.DETALLES_SANITIZACION,
-                ImageUrl = "sanitizacion.png"
-            }
-       };
-    }
-
     public async Task<ObservableCollection<Monkey>> GenerarMenu() {
         // ! VERIFICAR POSIBLES NULL Y TAMBIEN RETORNOS PARA USUARIOS DESACTUALIZADOS
 
@@ -444,7 +408,7 @@ plataforma = "2";
                 break;
 
             case Constants.SUPERVISION_MANTENIMIENTO:
-                route = $"{nameof(SupervisionMantenimientoSupervisorPage)}";
+                route = nameof(SupervisionMantenimientoSupervisorPage);
                 break;
 
             case Constants.SOLICITUD_COTIZACION:
@@ -503,15 +467,6 @@ plataforma = "2";
         IsLoading = false;
     }
 
-    [RelayCommand]
-    private async Task Logout() {
-        IsLoading = true;
-        await Task.Delay(200);
-        UserSession.ClearSession();
-        App.Current.MainPage = new Logueo();
-        IsLoading = false;
-    }
-
     private bool CanExecuteNextPage() {
         return !IsBusy;
     }
@@ -542,5 +497,50 @@ plataforma = "2";
         } catch(Exception ex) {
             Debug.WriteLine($"Error al navegar desde la campanita: {ex.Message}");
         }
+    }
+
+    [RelayCommand]
+    private async Task Logout() {
+        IsLoading = true;
+        await Task.Delay(200);
+        UserSession.ClearSession();
+        App.Current.MainPage = new Logueo();
+        IsLoading = false;
+    }
+
+    private void CreateMonkeyCollection() {
+        Monkeys = new ObservableCollection<Monkey> {
+            new Monkey {
+                Name =Constants.ENTREGAS,
+                Details = Constants.DETALLES_ENTREGAS,
+                ImageUrl = "iconoentregaspng.png"
+            },
+            new Monkey {
+                Name = Constants.CORRECTIVOS_MAYORES,
+                Details = Constants.DETALLES_CORRECTIVOS_MAYORES,
+                ImageUrl = "logo_correctivos.png"
+            },
+            new Monkey {
+                Name = Constants.MANTENIMIENTO,
+                Details = Constants.DETALLES_CORRECTIVOS_MENORES,
+                ImageUrl = "mantenimiento.png"
+            },
+            new Monkey {
+                Name = Constants.SUPERVISION,
+                Details = Constants.DETALLES_SUPERVISION,
+                ImageUrl = "supervision.png",
+                OrdenesTotales = _ordenesSupervisionTotal
+            },
+            new Monkey {
+                Name = Constants.VACANTES,
+                Details = Constants.DETALLES_VACANTES,
+                ImageUrl = "vacantes.png"
+            },
+            new Monkey {
+                Name = Constants.SANITIZACION,
+                Details = Constants.DETALLES_SANITIZACION,
+                ImageUrl = "sanitizacion.png"
+            }
+       };
     }
 }

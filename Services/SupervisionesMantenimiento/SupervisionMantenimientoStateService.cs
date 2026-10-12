@@ -2,6 +2,7 @@
 using BatiaSuite.Models.OrdenesTrabajo;
 using BatiaSuite.Models.SupervisionMantenimiento;
 using BatiaSuite.Models.SupervisionMantenimiento.Operarios;
+using BatiaSuite.Models.SupervisionMantenimiento.Supervisores;
 using BatiaSuite.Utils;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace BatiaSuite.Services.SupervisionesMantenimiento {
         public List<SeccionModel> PlantillaBaseSecciones { get; set; } = new();
 
         public ObservableCollection<PisoModel> Pisos { get; set; } = new();
+        public List<PreguntaResumenModel> PlantillaPreguntasResumen { get; set; } = new();
 
         /// <summary>
         /// Genera una copia 100% nueva e independiente de las secciones y preguntas base

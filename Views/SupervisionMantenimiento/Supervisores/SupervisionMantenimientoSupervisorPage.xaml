@@ -57,10 +57,10 @@
                             Stroke="{AppThemeBinding Light=#334155, Dark=#334155}"
                             Padding="10,6">
                             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="0">
-                                <Label Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{0:dd MMM}'}"
-                                   TextColor="#F8FAFC"
-                                   FontSize="13"
-                                   HorizontalTextAlignment="Center" />
+                                <Label Text="{Binding FechaActual}" 
+                                       TextColor="#F8FAFC" 
+                                       FontSize="13" 
+                                       HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
@@ -118,8 +118,8 @@
                                     HeightRequest="44">
                                     <Picker.Behaviors>
                                         <toolkit:EventToCommandBehavior
-                                        EventName="SelectedIndexChanged"
-                                        Command="{Binding ObtenerSucursalesCommand}" />
+                                            EventName="SelectedIndexChanged"
+                                            Command="{Binding BindingContext.ObtenerSucursalesCommand}" />
                                     </Picker.Behaviors>
                                 </Picker>
                             </Border>

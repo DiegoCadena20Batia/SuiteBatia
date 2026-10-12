@@ -15,7 +15,6 @@ namespace BatiaSuite.Models.SupervisionMantenimiento.Operarios {
 
         [JsonIgnore]
         public ObservableCollection<PreguntaModel> Preguntas { get; set; } = new();
-
         public ObservableCollection<IteracionModel> Iteraciones { get; set; } = new();
 
         [JsonIgnore]

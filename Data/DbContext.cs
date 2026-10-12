@@ -168,22 +168,22 @@ public class DbContext {
 
         // ORDEN DE PRIORIDAD - solo asignar PK si no se ha asignado ya
         if(!primaryKeyAssigned) {
-            // PKs válidas
-            if(prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase) ||
-               prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
-               prop.Name.Equals("IdCorrectivoLocal", StringComparison.OrdinalIgnoreCase) ||
-               prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase) ||
-
-               // PKs reales de catálogos
-               prop.Name.Equals("id_inmueble", StringComparison.OrdinalIgnoreCase) ||
-               prop.Name.Equals("idCliente", StringComparison.OrdinalIgnoreCase)) {
+            // 1. Identificar las Claves Primarias (PKs reales)
+            if(prop.Name.Equals("IdInmueble", StringComparison.OrdinalIgnoreCase) ||  // <-- PK para InmuebleLocal
+                prop.Name.Equals("id_inmueble", StringComparison.OrdinalIgnoreCase) ||
+                prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase) ||
+                prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
+                prop.Name.Equals("IdCorrectivoLocal", StringComparison.OrdinalIgnoreCase) ||
+                prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase)) {
                 constraints.Add("PRIMARY KEY");
 
-                // AUTOINCREMENT solo para IDs locales internos
-                if(prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase) ||
-                   prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
-                   prop.Name.Equals("IdCorrectivoLocal", StringComparison.OrdinalIgnoreCase) ||
-                   prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase)) {
+                // AUTOINCREMENT para IDs enteros primarios
+                if(prop.Name.Equals("IdInmueble", StringComparison.OrdinalIgnoreCase) ||
+                    prop.Name.Equals("id_inmueble", StringComparison.OrdinalIgnoreCase) ||
+                    prop.Name.Equals("IdConsec", StringComparison.OrdinalIgnoreCase) ||
+                    prop.Name.Equals("IdLocal", StringComparison.OrdinalIgnoreCase) ||
+                    prop.Name.Equals("IdCorrectivoLocal", StringComparison.OrdinalIgnoreCase) ||
+                    prop.Name.Equals("IdCarga", StringComparison.OrdinalIgnoreCase)) {
                     constraints.Add("AUTOINCREMENT");
                 }
 
