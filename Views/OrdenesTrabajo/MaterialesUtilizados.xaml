@@ -9,329 +9,311 @@
     Title="{x:Static const:Constants.MATERIALES_UTILIZADOS}"
     Shell.FlyoutBehavior="Disabled">
 
-    <ContentPage.BindingContext>
+    <!--<ContentPage.BindingContext>
         <viewModel:MaterialesUtilizadosViewModel />
-    </ContentPage.BindingContext>
+    </ContentPage.BindingContext>-->
 
-    <Grid>
+    <Grid x:Name="rootGrid">
 
         <ScrollView
-            Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}">
+        Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}">
 
             <Grid
-                RowDefinitions="auto, auto, auto, auto, auto, auto, auto,auto,auto,auto,auto"
-                ColumnDefinitions="*, auto"
-                Padding="10,0">
+            RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto, auto, auto"
+            ColumnDefinitions="*, auto"
+            Padding="10,0">
 
+                <!-- ========== SUMINISTRADOS CLIENTE ========== -->
                 <Label
-                    Text="{x:Static const:Constants.SUMINISTRADOS_CLIENTE}"
-                    Style="{StaticResource ContentBoldLabelStyle}"
-                    TextColor="Black"
-                    FontSize="17"/>
+                Text="{x:Static const:Constants.SUMINISTRADOS_CLIENTE}"
+                Style="{StaticResource ContentBoldLabelStyle}"
+                TextColor="Black"
+                FontSize="17" />
 
                 <ImageButton
-                    Grid.Column="1"
-                    Style="{StaticResource ImageButtonIconStyle}"
-                    Source="{StaticResource GreenPlusIcon}"
-                    Command="{Binding AddMatSumClienteCommand}" />
-                <Label
-                    Grid.Row="1"
-                    HeightRequest="2"
-                    VerticalOptions="End"
-                    Margin="0,0,0,0"
-                    BackgroundColor="LightGray"
-                ></Label>
+                Grid.Column="1"
+                Style="{StaticResource ImageButtonIconStyle}"
+                Source="{StaticResource GreenPlusIcon}"
+                Command="{Binding AddMatSumClienteCommand}" />
+
+                <BoxView
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                HeightRequest="2"
+                Color="LightGray" />
+
                 <VerticalStackLayout
-                    Grid.Row="2"
-                    Grid.ColumnSpan="2"
-                    BindableLayout.ItemsSource="{Binding MatSumClienteList}"
-                    Spacing="10"
-                    Margin="0,10,0,20"
-                    x:Name="stackSumnistradosCliente">
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                BindableLayout.ItemsSource="{Binding MatSumClienteList}"
+                Spacing="10"
+                Margin="0,10,0,20">
 
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItem
-                                        BackgroundColor="Red"
-                                        Text="{x:Static const:Constants.QUITAR}"
-                                        Command="{Binding Source={x:Reference stackSumnistradosCliente}, Path=BindingContext.RemoveMatSumClienteCommand}"
-                                        CommandParameter="{Binding .}" />
+                                    BackgroundColor="Red"
+                                    Text="{x:Static const:Constants.QUITAR}"
+                                    Invoked="OnQuitarInvoked"
+                                    CommandParameter="{Binding Source={x:Reference rootGrid}, Path=BindingContext.RemoveMatSumClienteCommand}" />
                                 </SwipeView.RightItems>
-                                <Frame
-                                    CornerRadius="20"
-                                    Padding="{OnIdiom 15, Tablet=20}"
-                                    Style="{StaticResource FrameStyle}">
+
+                                <Border
+                                Style="{StaticResource BorderStyle}"
+                                StrokeShape="RoundRectangle 20"
+                                Padding="{OnIdiom 15, Tablet=20}">
 
                                     <Grid
-                                        RowDefinitions="*, *"
-                                        ColumnDefinitions="auto, *"
-                                        ColumnSpacing="10">
+                                    RowDefinitions="*, *"
+                                    ColumnDefinitions="auto, *"
+                                    ColumnSpacing="10">
 
                                         <Label
-                                            Text="{Binding Descripcion}"
-                                            Style="{StaticResource ContentLabelStyle}"
-                                            FontAttributes="Bold"
-                                            Grid.ColumnSpan="2" />
+                                        Grid.ColumnSpan="2"
+                                        Text="{Binding Descripcion}"
+                                        Style="{StaticResource ContentLabelStyle}"
+                                        FontAttributes="Bold" />
 
                                         <Label
-                                            Grid.Row="1"
-                                            Text="{Binding Cantidad, StringFormat='Cantidad : {0}'}"
-                                            Style="{StaticResource ContentLabelStyle}" />
+                                        Grid.Row="1"
+                                        Text="{Binding Cantidad, StringFormat='Cantidad : {0}'}"
+                                        Style="{StaticResource ContentLabelStyle}" />
 
                                         <Label
-                                            Grid.Row="1"
-                                            Grid.Column="1"
-                                            Text="{Binding Unidad.Descripcion}"
-                                            Style="{StaticResource ContentLabelStyle}" />
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Text="{Binding Unidad.Descripcion}"
+                                        Style="{StaticResource ContentLabelStyle}" />
                                     </Grid>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
 
+                <!-- ========== ALMACÉN ========== -->
                 <Grid
-                    Grid.Row="3"
-                    Grid.ColumnSpan="2"
-                    RowDefinitions="auto, auto,auto"
-                    ColumnDefinitions="*, auto"
-                    Margin="0,0,0,30">
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                RowDefinitions="auto, auto, auto"
+                ColumnDefinitions="*, auto"
+                Margin="0,0,0,30">
 
                     <Label
-                        Text="{x:Static const:Constants.BUSCAR_ALMACEN}"
-                        Style="{StaticResource ContentBoldLabelStyle}"
-                        TextColor="Black"
-                        FontSize="17"  />
-
-                    <ImageButton
-                        Grid.Column="1"
-                        Style="{StaticResource ImageButtonIconStyle}"
-                        Source="{StaticResource SearchIcon}"
-                        Command="{Binding GetAlmacenCommand}" />
-                    <Label
-                        Grid.Row="1"
-                        HeightRequest="2"
-                        VerticalOptions="End"
-                        Margin="0,0,0,0"
-                        BackgroundColor="LightGray"
-                    ></Label>
-                    <Frame
-                        CornerRadius="20"
-                        Grid.Row="2"
-                        Grid.ColumnSpan="2"
-                        Style="{StaticResource FrameStyle}"
-                        Margin="0,10,0,0">
-
-                        <Label
-                            Text="{Binding Almacen.Nombre}"
-                            Style="{StaticResource ContentLabelStyle}"
-                            FontAttributes="Bold">
-                            
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    NumberOfTapsRequired="1"
-                                    Command="{Binding GetAlmacenCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
-                    </Frame>
-                </Grid>
-
-                <Label
-                    Margin="0,0,0,0"
-                    Grid.Row="4"
-                    Text="{x:Static const:Constants.SUMINISTRADOS_ALMACEN}"
+                    Text="{x:Static const:Constants.BUSCAR_ALMACEN}"
                     Style="{StaticResource ContentBoldLabelStyle}"
                     TextColor="Black"
                     FontSize="17" />
 
-                <ImageButton
-                    Grid.Row="4"
+                    <ImageButton
                     Grid.Column="1"
                     Style="{StaticResource ImageButtonIconStyle}"
-                    Source="{StaticResource GreenPlusIcon}"
-                    Command="{Binding AddMatSumAlmacenCommand}"
-                    Margin="0,0,0,0" />
-                <Label
-                    Grid.Row="5"
-                    HeightRequest="2"
-                    VerticalOptions="End"
-                    Margin="0,0,0,0"
-                    BackgroundColor="LightGray"
-                ></Label>
-                <VerticalStackLayout
-                    Grid.Row="6"
+                    Source="{StaticResource SearchIcon}"
+                    Command="{Binding GetAlmacenCommand}" />
+
+                    <BoxView
+                    Grid.Row="1"
                     Grid.ColumnSpan="2"
-                    BindableLayout.ItemsSource="{Binding MatSumAlmacenList}"
-                    Spacing="10"
-                    Margin="0,10,0,20">
+                    HeightRequest="2"
+                    Color="LightGray" />
+
+                    <Border
+                    Grid.Row="2"
+                    Grid.ColumnSpan="2"
+                    Style="{StaticResource BorderStyle}"
+                    StrokeShape="RoundRectangle 20"
+                    Margin="0,10,0,0">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GetAlmacenCommand}" />
+                        </Border.GestureRecognizers>
+
+                        <Label
+                        Text="{Binding Almacen.Nombre}"
+                        Style="{StaticResource ContentLabelStyle}"
+                        FontAttributes="Bold" />
+                    </Border>
+                </Grid>
+
+                <!-- ========== SUMINISTRADOS ALMACÉN ========== -->
+                <Label
+                Grid.Row="4"
+                Text="{x:Static const:Constants.SUMINISTRADOS_ALMACEN}"
+                Style="{StaticResource ContentBoldLabelStyle}"
+                TextColor="Black"
+                FontSize="17" />
+
+                <ImageButton
+                Grid.Row="4"
+                Grid.Column="1"
+                Style="{StaticResource ImageButtonIconStyle}"
+                Source="{StaticResource GreenPlusIcon}"
+                Command="{Binding AddMatSumAlmacenCommand}" />
+
+                <BoxView
+                Grid.Row="5"
+                Grid.ColumnSpan="2"
+                HeightRequest="2"
+                Color="LightGray" />
+
+                <VerticalStackLayout
+                Grid.Row="6"
+                Grid.ColumnSpan="2"
+                BindableLayout.ItemsSource="{Binding MatSumAlmacenList}"
+                Spacing="10"
+                Margin="0,10,0,20">
 
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItem
-                                        BackgroundColor="Red"
-                                        Text="{x:Static const:Constants.QUITAR}"
-                                        Command="{Binding Source={x:Reference stackSumnistradosCliente}, Path=BindingContext.RemoveMatSumAlmacenCommand}"
-                                        CommandParameter="{Binding .}" />
+                                    BackgroundColor="Red"
+                                    Text="{x:Static const:Constants.QUITAR}"
+                                    Invoked="OnQuitarInvoked"
+                                    CommandParameter="{Binding Source={x:Reference rootGrid}, Path=BindingContext.RemoveMatSumAlmacenCommand}" />
                                 </SwipeView.RightItems>
-                                <Frame
-                                    CornerRadius="20"
-                                    Padding="{OnIdiom 15, Tablet=20}"
-                                    Style="{StaticResource FrameStyle}">
 
-                                    <Grid
-                                        RowDefinitions="*, *, *, *">
+                                <Border
+                                Style="{StaticResource BorderStyle}"
+                                StrokeShape="RoundRectangle 20"
+                                Padding="{OnIdiom 15, Tablet=20}">
 
-                                        <HorizontalStackLayout
-                                            Spacing="20">
+                                    <Grid RowDefinitions="*, *, *, *">
+
+                                        <HorizontalStackLayout Spacing="20">
+                                            <Label
+                                            Text="{Binding Clave}"
+                                            Style="{StaticResource ContentLabelStyle}"
+                                            TextColor="{StaticResource AzulClaro}" />
 
                                             <Label
-                                                Text="{Binding Clave}"
-                                                Style="{StaticResource ContentLabelStyle}"
-                                                TextColor="{StaticResource AzulClaro}"/>
-
-                                            <Label
-                                                Text="{Binding Descripcion}"
-                                                Style="{StaticResource ContentLabelStyle}"
-                                                LineBreakMode="TailTruncation"
-                                                FontAttributes="Bold" />
+                                            Text="{Binding Descripcion}"
+                                            Style="{StaticResource ContentLabelStyle}"
+                                            FontAttributes="Bold"
+                                            LineBreakMode="TailTruncation" />
                                         </HorizontalStackLayout>
 
-                                        <HorizontalStackLayout
-                                            Grid.Row="1"
-                                            Spacing="20">
+                                        <HorizontalStackLayout Grid.Row="1" Spacing="20">
+                                            <Label
+                                            Text="{Binding CantidadUsada, StringFormat='Cantidad : {0}'}"
+                                            Style="{StaticResource ContentLabelStyle}" />
 
                                             <Label
-                                                Text="{Binding CantidadUsada, StringFormat='Cantidad : {0}'}"
-                                                Style="{StaticResource ContentLabelStyle}" />
-
-                                            <Label
-                                                Text="{Binding Unidad}"
-                                                Style="{StaticResource ContentLabelStyle}" />
+                                            Text="{Binding Unidad}"
+                                            Style="{StaticResource ContentLabelStyle}" />
                                         </HorizontalStackLayout>
 
                                         <Label
-                                            Grid.Row="2"
-                                            Text="{Binding CostoUnitario, StringFormat='Costo unitario : {0:C2}'}"
+                                        Grid.Row="2"
+                                        Text="{Binding CostoUnitario, StringFormat='Costo unitario : {0:C2}'}"
+                                        Style="{StaticResource ContentLabelStyle}" />
+
+                                        <Grid Grid.Row="3" ColumnDefinitions="*, auto">
+                                            <Label
+                                            Text="{Binding CantidadXCobrar, StringFormat='Cantidad a cobrar: {0}'}"
                                             Style="{StaticResource ContentLabelStyle}" />
 
-                                        <Grid
-                                            Grid.Row="3"
-                                            ColumnDefinitions="*, auto">
-
                                             <Label
-                                                Text="{Binding CantidadXCobrar, StringFormat='Cantidad a cobrar: {0}'}"
-                                                Style="{StaticResource ContentLabelStyle}" />
-
-                                            <Label
-                                                Grid.Column="1"
-                                                Text="{Binding CostoXCobrar, StringFormat='Costo: {0:C2}'}"
-                                                Style="{StaticResource ContentLabelStyle}" />
+                                            Grid.Column="1"
+                                            Text="{Binding CostoXCobrar, StringFormat='Costo: {0:C2}'}"
+                                            Style="{StaticResource ContentLabelStyle}" />
                                         </Grid>
                                     </Grid>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
 
+                <!-- ========== SUMINISTRADOS COMPRA ========== -->
                 <Label
-                    Grid.Row="7"
-                    Text="{x:Static const:Constants.SUMINISTRADOS_COMPRA}"
-                    Style="{StaticResource ContentBoldLabelStyle}"
-                    TextColor="Black"
-                    FontSize="17"  />
+                Grid.Row="7"
+                Text="{x:Static const:Constants.SUMINISTRADOS_COMPRA}"
+                Style="{StaticResource ContentBoldLabelStyle}"
+                TextColor="Black"
+                FontSize="17" />
 
                 <ImageButton
-                    Grid.Row="7"
-                    Grid.Column="1"
-                    Style="{StaticResource ImageButtonIconStyle}"
-                    Source="{StaticResource GreenPlusIcon}"
-                    Command="{Binding AddMatSumCompraCommand}"
-                    Margin="0,0,0,0" />
-                <Label
-                    Grid.Row="7"
-                    HeightRequest="2"
-                    VerticalOptions="End"
-                    Margin="0,0,0,0"
-                    BackgroundColor="LightGray"
-                ></Label>
+                Grid.Row="7"
+                Grid.Column="1"
+                Style="{StaticResource ImageButtonIconStyle}"
+                Source="{StaticResource GreenPlusIcon}"
+                Command="{Binding AddMatSumCompraCommand}" />
+
+                <BoxView
+                Grid.Row="8"
+                Grid.ColumnSpan="2"
+                HeightRequest="2"
+                Color="LightGray" />
+
                 <VerticalStackLayout
-                    Grid.Row="8"
-                    Grid.ColumnSpan="2"
-                    BindableLayout.ItemsSource="{Binding MatSumCompraList}"
-                    Spacing="10"
-                    Margin="0,10,0,0">
+                Grid.Row="9"
+                Grid.ColumnSpan="2"
+                BindableLayout.ItemsSource="{Binding MatSumCompraList}"
+                Spacing="10"
+                Margin="0,10,0,0">
 
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItem
-                                        BackgroundColor="Red"
-                                        Text="{x:Static const:Constants.QUITAR}"
-                                        Command="{Binding Source={x:Reference stackSumnistradosCliente}, Path=BindingContext.RemoveMatSumCompraCommand}"
-                                        CommandParameter="{Binding .}" />
+                                    BackgroundColor="Red"
+                                    Text="{x:Static const:Constants.QUITAR}"
+                                    Invoked="OnQuitarInvoked"
+                                    CommandParameter="{Binding Source={x:Reference rootGrid}, Path=BindingContext.RemoveMatSumCompraCommand}" />
                                 </SwipeView.RightItems>
-                                <Frame
-                                    CornerRadius="20"
-                                    Padding="{OnIdiom 15, Tablet=20}"
-                                    Style="{StaticResource FrameStyle}">
 
-                                    <Grid
-                                        RowDefinitions="*, *, *, *">
+                                <Border
+                                Style="{StaticResource BorderStyle}"
+                                StrokeShape="RoundRectangle 20"
+                                Padding="{OnIdiom 15, Tablet=20}">
 
-                                        <HorizontalStackLayout
-                                            Spacing="20">
+                                    <Grid RowDefinitions="*, *, *, *">
+
+                                        <HorizontalStackLayout Spacing="20">
+                                            <Label
+                                            Text="{Binding Clave}"
+                                            Style="{StaticResource ContentLabelStyle}"
+                                            TextColor="{StaticResource AzulClaro}" />
 
                                             <Label
-                                                Text="{Binding Clave}"
-                                                Style="{StaticResource ContentLabelStyle}"
-                                                TextColor="{StaticResource AzulClaro}"/>
-
-                                            <Label
-                                                Text="{Binding Descripcion}"
-                                                Style="{StaticResource ContentLabelStyle}"
-                                                FontAttributes="Bold"
-                                                LineBreakMode="TailTruncation" />
+                                            Text="{Binding Descripcion}"
+                                            Style="{StaticResource ContentLabelStyle}"
+                                            FontAttributes="Bold"
+                                            LineBreakMode="TailTruncation" />
                                         </HorizontalStackLayout>
 
-                                        <HorizontalStackLayout
-                                            Grid.Row="1"
-                                            Spacing="20">
+                                        <HorizontalStackLayout Grid.Row="1" Spacing="20">
+                                            <Label
+                                            Text="{Binding CantidadUsada, StringFormat='Cantidad comprada : {0}'}"
+                                            Style="{StaticResource ContentLabelStyle}" />
 
                                             <Label
-                                                Text="{Binding CantidadUsada, StringFormat='Cantidad comprada : {0}'}"
-                                                Style="{StaticResource ContentLabelStyle}" />
-
-                                            <Label
-                                                Text="{Binding Unidad}"
-                                                Style="{StaticResource ContentLabelStyle}" />
+                                            Text="{Binding Unidad}"
+                                            Style="{StaticResource ContentLabelStyle}" />
                                         </HorizontalStackLayout>
 
                                         <Label
-                                            Grid.Row="2"
-                                            Text="{Binding CostoUnitario, StringFormat='Costo unitario : {0:C2}'}"
+                                        Grid.Row="2"
+                                        Text="{Binding CostoUnitario, StringFormat='Costo unitario : {0:C2}'}"
+                                        Style="{StaticResource ContentLabelStyle}" />
+
+                                        <Grid Grid.Row="3" ColumnDefinitions="*, auto">
+                                            <Label
+                                            Text="{Binding CantUtilizada, StringFormat='Cantidad utilizada: {0}'}"
                                             Style="{StaticResource ContentLabelStyle}" />
 
-                                        <Grid
-                                            Grid.Row="3"
-                                            ColumnDefinitions="*, auto">
-
                                             <Label
-                                                Text="{Binding CantUtilizada, StringFormat='Cantidad utilizada: {0}'}"
-                                                Style="{StaticResource ContentLabelStyle}" />
-
-                                            <Label
-                                                Grid.Column="1"
-                                                Text="{Binding Total, StringFormat='Total: {0:C2}'}"
-                                                Style="{StaticResource ContentLabelStyle}" />
+                                            Grid.Column="1"
+                                            Text="{Binding Total, StringFormat='Total: {0:C2}'}"
+                                            Style="{StaticResource ContentLabelStyle}" />
                                         </Grid>
                                     </Grid>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
@@ -340,27 +322,29 @@
         </ScrollView>
 
         <ImageButton
-            Source="{StaticResource ArrowIcon}"
-            Style="{StaticResource FloatingButtonStyle}"
-            Command="{Binding NextPageCommand}" />
+        Source="{StaticResource ArrowIcon}"
+        Style="{StaticResource FloatingButtonStyle}"
+        Command="{Binding NextPageCommand}" />
+
+        <!-- ========== OVERLAY DE CARGA ========== -->
         <Grid
-    Grid.RowSpan="3"
-    RowDefinitions="*,*"
-    BackgroundColor="#88000000"
-    IsVisible="{Binding IsLoading}">
+        RowDefinitions="*, *"
+        BackgroundColor="#88000000"
+        IsVisible="{Binding IsLoading}">
+
             <ActivityIndicator
-        Grid.Row="0"
-        VerticalOptions="End"
-        Color="White"
-        IsRunning="{Binding IsLoading}"
-        HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            VerticalOptions="End"
+            Color="White"
+            IsRunning="{Binding IsLoading}"
+            HeightRequest="{OnIdiom 70, Tablet=120}" />
+
             <Label
-         VerticalOptions="Start"
-         HorizontalOptions="Center"
-         Grid.Row="1"
-         TextColor="White"
-         Text="{Binding TextLoading}"
-    ></Label>
+            Grid.Row="1"
+            VerticalOptions="Start"
+            HorizontalOptions="Center"
+            TextColor="White"
+            Text="{Binding TextLoading}" />
         </Grid>
     </Grid>
+
 </ContentPage>

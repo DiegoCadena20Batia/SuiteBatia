@@ -15,18 +15,9 @@
         <Grid
             RowDefinitions="auto, *, auto">
 
-            <Entry
-                x:Name="searchEntry"
-                Placeholder="{x:Static const:Constants.BUSCAR_ALMACEN}"
-                Margin="10, 10, 10, 0">
-
-                <Entry.Behaviors>
-                    <toolkit:EventToCommandBehavior
-                        EventName="TextChanged"
-                        Command="{Binding GetAlmacenListCommand}"
-                        CommandParameter="{Binding Source={x:Reference searchEntry}, Path=Text}" />
-                </Entry.Behaviors>
-            </Entry>
+            <Entry Text="{Binding TextoBusqueda}"
+       Placeholder="{x:Static const:Constants.BUSCAR_ALMACEN}"
+       Margin="10, 10, 10, 0" />
 
             <CollectionView
                 Grid.Row="1"

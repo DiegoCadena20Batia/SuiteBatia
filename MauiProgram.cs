@@ -13,6 +13,7 @@ using BatiaSuite.ViewModel;
 using BatiaSuite.ViewModel.CheckListAparadores;
 using BatiaSuite.ViewModel.EntregasInteligentes;
 using BatiaSuite.ViewModel.NotificacionesSupervisores;
+using BatiaSuite.ViewModel.OrdenesTrabajo;
 using BatiaSuite.ViewModel.RutasEntregas;
 using BatiaSuite.ViewModel.Supervisionmantenimiento;
 using BatiaSuite.ViewModel.SupervisionMantenimiento;
@@ -224,6 +225,10 @@ public static class MauiProgram {
         builder.Services.AddSingleton<IAutoSyncService, AutoSyncService>();
 
         #endregion Sincronización
+
+        #region Ordenes de trabajo
+        builder.Services.AddTransient<MaterialesUtilizadosViewModel>();
+        #endregion
 
 #if ANDROID || IOS
         builder.Services.AddGps<MyGpsDelegate>();

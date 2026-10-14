@@ -99,7 +99,8 @@ public partial class ManoObraViewModel : ViewModelBase, IQueryAttributable {
             { Constants.ORDEN_TRABAJO_KEY, _ordenTrabajo }
         };
 
-        await Shell.Current.GoToAsync($"{nameof(MaterialesUtilizados)}", true, datos);
+            await Shell.Current.GoToAsync(nameof(MaterialesUtilizados), true, datos);
+       
         IsLoading = false;
         TextLoading = "";
     }

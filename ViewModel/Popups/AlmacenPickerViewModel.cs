@@ -15,10 +15,15 @@ public partial class AlmacenPickerViewModel : ViewModelBase {
     AlmacenModel _oldAlmacen;
 
     [ObservableProperty]
+    private string textoBusqueda;
+
+    [ObservableProperty]
     string _emptyView;
 
     [ObservableProperty]
     ObservableCollection<AlmacenModel> _almacenList;
+
+
 
     public event EventHandler<AlmacenModel> SelectedAlmacen;
     protected void OnSelectedAlmacen(AlmacenModel almacen) {
@@ -30,6 +35,9 @@ public partial class AlmacenPickerViewModel : ViewModelBase {
         _oldAlmacen = oldAlmacen;
         AlmacenList = new ObservableCollection<AlmacenModel>();
     }
+
+    partial void OnTextoBusquedaChanged(string value)
+       => _ = GetAlmacenList(value);
 
     [RelayCommand]
     async Task GetAlmacenList(string query) {

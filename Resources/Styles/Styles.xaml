@@ -203,8 +203,20 @@
         <Setter Property="CornerRadius" Value="{OnIdiom 5, Tablet=10}" />
         <Setter Property="BorderColor" Value="{StaticResource LightGray}" />
         <Setter Property="Padding" Value="{OnIdiom 10, Tablet=20}" />        
-    </Style>    
-    
+    </Style>
+
+    <Style TargetType="Border" x:Key="BorderStyle">
+        <Setter Property="BackgroundColor" Value="White" />
+        <Setter Property="Stroke" Value="{StaticResource LightGray}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="{OnIdiom 10, Tablet=20}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{OnIdiom 5, Tablet=10}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="ImageButton">
         <Setter Property="Opacity" Value="1" />
         <Setter Property="BorderColor" Value="Transparent"/>
