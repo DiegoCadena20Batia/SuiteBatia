@@ -228,6 +228,7 @@ public static class MauiProgram {
 
         #region Ordenes de trabajo
         builder.Services.AddTransient<MaterialesUtilizadosViewModel>();
+        builder.Services.AddTransient<ManoObraViewModel>();
         #endregion
 
 #if ANDROID || IOS

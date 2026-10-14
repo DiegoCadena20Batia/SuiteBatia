@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.GrupoBatia.SuiteBatia" android:versionCode="82" android:versionName="3.4.1">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.GrupoBatia.SuiteBatia" android:versionCode="83" android:versionName="3.4.2">
 	<!-- Permisos de Red y Almacenamiento -->
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />

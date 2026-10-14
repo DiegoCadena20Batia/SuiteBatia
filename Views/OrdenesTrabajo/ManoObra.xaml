@@ -12,225 +12,198 @@
     x:Name="ManoObraPage"
     Shell.FlyoutBehavior="Disabled">
 
-    <ContentPage.BindingContext>
-        <viewModel:ManoObraViewModel />
-    </ContentPage.BindingContext>
-
     <Grid>
         <ScrollView
-            Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}">
+        Padding="{OnIdiom '0, 0, 0, 70', Tablet='0, 0, 0, 105'}">
 
             <Grid
-                Margin="10,0,10,0"
-                RowDefinitions="auto,auto,auto,auto,auto, auto, *">
-                
-                
-                <!--<Label
-                    Margin="0,0,0,0"
-                    Grid.Row="3"
-                    FontSize="15"
-                    Style="{StaticResource ContentLabelStyle}"
-                    Text="{Binding DescripcionTrabajos}"
-                    ></Label>-->
+            Margin="10,0"
+            RowDefinitions="auto, auto, auto, auto, auto">
 
-                <Frame
-                    
-                    BackgroundColor="White"
-                    BorderColor="LightBlue"
-                    Grid.Row="2"
-                    CornerRadius="15"
-                    Margin="5,5,5,5">
+                <!-- ========== TARJETA DEL SERVICIO ========== -->
+                <Border
+                Margin="5"
+                Padding="{OnIdiom 15, Tablet=20}"
+                BackgroundColor="White"
+                Stroke="LightBlue"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 15">
 
-                    <Grid
-                        RowDefinitions="auto,auto,auto, auto,auto,auto">
+                    <Grid RowDefinitions="auto, auto, auto, auto, auto, auto">
+
                         <Label
-                        Grid.Row="0"
-                        FontSize="16"
-                        FontFamily="MontSemibold"
-                        Style="{StaticResource ContentLabelStyle}"
                         Text="{Binding Cliente}"
-                        HorizontalOptions="Start"
-                        ></Label>
+                        Style="{StaticResource ContentLabelStyle}"
+                        FontSize="16"
+                        FontFamily="MontSemibold" />
+
                         <Label
                         Grid.Row="1"
-                        FontSize="14"
-                        Style="{StaticResource ContentLabelStyle}"
                         Text="{Binding Inmueble}"
-                        TextColor="{StaticResource AzulClaro}"
-                        Margin="0,0,0,0"
-                        HorizontalOptions="Start"
-                        ></Label>
-                        <Label
-                            Grid.Row="2"
-                            HeightRequest="1"
-                            VerticalOptions="End"
-                            BackgroundColor="LightGray"
-                            Margin="0,1,52,0"
-                            ></Label>
-                        <Label
-                            Grid.Row="3"
-                            Text="{Binding Tipo, StringFormat='Tipo: {0}'}"
-                            Style="{StaticResource ContentLabelStyle}"
-                            Margin="0,5,0,5" />
-                        <Frame
-                            Grid.Row="4"
-                            BackgroundColor="#f5f5f5"
-                            BorderColor="Transparent"
-                            CornerRadius="15"
-                            Margin="0,10,0,0"
-                            >
+                        Style="{StaticResource ContentLabelStyle}"
+                        FontSize="14"
+                        TextColor="{StaticResource AzulClaro}" />
 
-                            <ScrollView MinimumHeightRequest="10" MaximumHeightRequest="300" Margin="0">
-                                <Grid RowDefinitions="auto,auto">
-                                    <Label Grid.Row="0"
-                                       TextColor="{StaticResource AzulClaro}"
-                                        Margin="0,0,0,0"
-                                        Text="Descripcion:"
-                                        Style="{StaticResource ContentLabelStyle}" />
+                        <BoxView
+                        Grid.Row="2"
+                        HeightRequest="1"
+                        Margin="0,1,52,0"
+                        Color="LightGray" />
+
+                        <Label
+                        Grid.Row="3"
+                        Margin="0,5"
+                        Text="{Binding Tipo, StringFormat='Tipo: {0}'}"
+                        Style="{StaticResource ContentLabelStyle}" />
+
+                        <Border
+                        Grid.Row="4"
+                        Margin="0,10,0,0"
+                        Padding="15"
+                        BackgroundColor="#f5f5f5"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 15">
+
+                            <ScrollView MaximumHeightRequest="300">
+                                <VerticalStackLayout>
                                     <Label
-                                        Grid.Row="1"
-                                        Margin="0,0,0,0"
-                                        Text="{Binding DescripcionTrabajos, StringFormat='{0}'}"
-                                        Style="{StaticResource ContentLabelStyle}" />
-                                </Grid>
+                                    Text="Descripción:"
+                                    Style="{StaticResource ContentLabelStyle}"
+                                    TextColor="{StaticResource AzulClaro}" />
 
+                                    <Label
+                                    Text="{Binding DescripcionTrabajos}"
+                                    Style="{StaticResource ContentLabelStyle}" />
+                                </VerticalStackLayout>
                             </ScrollView>
-                        </Frame>
-                        <Label
-                            Margin="0,10,0,0"
-                            HorizontalOptions="End"
-                            Grid.Row="5"
-                            Text="{Binding Falta}">
-                            
-                        </Label>
-                    </Grid>
-                    
-                </Frame>
-                <!--<Label
-                    
-                    HeightRequest="2"
-                    VerticalOptions="End"
-                    Margin="0,10,0,10"
-                    BackgroundColor="LightGray"
-                ></Label>-->
-                <Label
-                    Margin="5,10,0,10"
-                    Grid.Row="3"
-                    FontSize="17"
-                    Text="Ingrese los trabajos realizados:"
-                    Style="{StaticResource ContentBoldLabelStyle}"
-                    TextColor="Black"/>
-                <controls:BordererEditor
-                    Grid.Row="4"
-                    Text="{Binding Descripcion}"
-                    Margin="0, 0, 0, 0" />
+                        </Border>
 
+                        <Label
+                        Grid.Row="5"
+                        Margin="0,10,0,0"
+                        HorizontalOptions="End"
+                        Text="{Binding Falta}" />
+                    </Grid>
+                </Border>
+
+                <!-- ========== TRABAJOS REALIZADOS ========== -->
+                <Label
+                Grid.Row="1"
+                Margin="5,10,0,10"
+                Text="Ingrese los trabajos realizados:"
+                Style="{StaticResource ContentBoldLabelStyle}"
+                FontSize="17"
+                TextColor="Black" />
+
+                <controls:BordererEditor
+                Grid.Row="2"
+                Text="{Binding Descripcion}" />
+
+                <!-- ========== PERSONAL ========== -->
                 <Grid
-                    Grid.Row="5"
-                    Margin="10,20,10,0"
-                    RowDefinitions="auto,auto"
-                    ColumnDefinitions="*, auto">
+                Grid.Row="3"
+                Margin="10,20,10,0"
+                RowDefinitions="auto, auto"
+                ColumnDefinitions="*, auto">
 
                     <Label
-                        FontSize="17"
-                        Text="Agregar personal"
-                        Style="{StaticResource ContentBoldLabelStyle}"
-                        TextColor="Black"/>
+                    Text="Agregar personal"
+                    Style="{StaticResource ContentBoldLabelStyle}"
+                    FontSize="17"
+                    TextColor="Black" />
 
                     <ImageButton
-                        Grid.Column="1"
-                        Margin="10,0,0,0"
-                        Source="{StaticResource GreenPlusIcon}"
-                        Style="{StaticResource ImageButtonIconStyle}"
-                        Command="{Binding AgregarPersonalCommand}" />
-                    <Label
-                        Grid.Row="1"
-                        Grid.ColumnSpan="2"
-                        HeightRequest="2"
-                        VerticalOptions="End"
-                        Margin="0,5,0,0"
-                        BackgroundColor="LightGray"
-                    ></Label>
+                    Grid.Column="1"
+                    Margin="10,0,0,0"
+                    Source="{StaticResource GreenPlusIcon}"
+                    Style="{StaticResource ImageButtonIconStyle}"
+                    Command="{Binding AgregarPersonalCommand}" />
+
+                    <BoxView
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    HeightRequest="2"
+                    Margin="0,5,0,0"
+                    Color="LightGray" />
                 </Grid>
 
-                <StackLayout
-                    Grid.Row="6"
-                    BindableLayout.ItemsSource="{Binding SelectedPersonalList}"
-                    Spacing="10"
-                    Margin="0,10,0,0">
+                <VerticalStackLayout
+                Grid.Row="4"
+                BindableLayout.ItemsSource="{Binding SelectedPersonalList}"
+                Spacing="10"
+                Margin="0,10,0,0">
 
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
-
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItem
-                                        Text="{x:Static const:Constants.QUITAR}"
-                                        BackgroundColor="Red"
-                                        Command="{Binding BindingContext.EliminarEmpleadoSeleccionadoCommand, Source={x:Reference Name=ManoObraPage}}"
-                                        CommandParameter="{Binding .}" />
+                                    BackgroundColor="Red"
+                                    Text="{x:Static const:Constants.QUITAR}"
+                                    Invoked="OnQuitarInvoked"
+                                    CommandParameter="{Binding Source={x:Reference ManoObraPage}, Path=BindingContext.EliminarEmpleadoSeleccionadoCommand}" />
                                 </SwipeView.RightItems>
 
-                                <Frame
-                                    CornerRadius="15"
-                                    Padding="{OnIdiom 15, Tablet=20}"
-                                    Style="{StaticResource FrameStyle}">
+                                <Border
+                                Style="{StaticResource BorderStyle}"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="{OnIdiom 15, Tablet=20}">
 
                                     <Grid
-                                        ColumnDefinitions="*, auto"
-                                        RowDefinitions="*, *"
-                                        BackgroundColor="White">
+                                    ColumnDefinitions="*, auto"
+                                    RowDefinitions="auto, auto">
 
                                         <Label
-                                            Text="{Binding Nombre}"
-                                            Style="{StaticResource ContentLabelStyle}"
-                                            FontAttributes="Bold"
-                                            LineBreakMode="TailTruncation"
-                                            Margin="0, 0, 10, 0"/>
+                                        Margin="0,0,10,0"
+                                        Text="{Binding Nombre}"
+                                        Style="{StaticResource ContentLabelStyle}"
+                                        FontAttributes="Bold"
+                                        LineBreakMode="TailTruncation" />
 
                                         <Label
-                                            Grid.Column="1"
-                                            Text="{Binding IdEmpleado}"
-                                            Style="{StaticResource ContentLabelStyle}"
-                                            HorizontalOptions="End"
-                                            VerticalTextAlignment="Center"/>
+                                        Grid.Column="1"
+                                        Text="{Binding IdEmpleado}"
+                                        Style="{StaticResource ContentLabelStyle}"
+                                        HorizontalOptions="End"
+                                        VerticalTextAlignment="Center" />
 
                                         <Label
-                                            Grid.Row="1"
-                                            Text="{Binding Horas, StringFormat='Horas trabajadas: {0}'}"
-                                            Style="{StaticResource ContentLabelStyle}" />
+                                        Grid.Row="1"
+                                        Grid.ColumnSpan="2"
+                                        Text="{Binding Horas, StringFormat='Horas trabajadas: {0}'}"
+                                        Style="{StaticResource ContentLabelStyle}" />
                                     </Grid>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
-                </StackLayout>
-
+                </VerticalStackLayout>
             </Grid>
         </ScrollView>
 
         <ImageButton
-            Source="{StaticResource ArrowIcon}"
-            Style="{StaticResource FloatingButtonStyle}"
-            Command="{Binding ContinuarCommand}" />
+        Source="{StaticResource ArrowIcon}"
+        Style="{StaticResource FloatingButtonStyle}"
+        Command="{Binding ContinuarCommand}" />
+
+        <!-- ========== OVERLAY DE CARGA ========== -->
         <Grid
-    Grid.RowSpan="3"
-    RowDefinitions="*,*"
-    BackgroundColor="#88000000"
-    IsVisible="{Binding IsLoading}">
+        RowDefinitions="*, *"
+        BackgroundColor="#88000000"
+        IsVisible="{Binding IsLoading, FallbackValue=False}">
+
             <ActivityIndicator
-        Grid.Row="0"
-        VerticalOptions="End"
-        Color="White"
-        IsRunning="{Binding IsLoading}"
-        HeightRequest="{OnIdiom 70, Tablet=120}"/>
+            VerticalOptions="End"
+            Color="White"
+            IsRunning="{Binding IsLoading, FallbackValue=False}"
+            HeightRequest="{OnIdiom 70, Tablet=120}" />
+
             <Label
-         VerticalOptions="Start"
-         HorizontalOptions="Center"
-         Grid.Row="1"
-         TextColor="White"
-         Text="{Binding TextLoading}"
-    ></Label>
+            Grid.Row="1"
+            VerticalOptions="Start"
+            HorizontalOptions="Center"
+            TextColor="White"
+            Text="{Binding TextLoading}" />
         </Grid>
     </Grid>
 </ContentPage>
